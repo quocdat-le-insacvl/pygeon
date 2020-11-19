@@ -15,4 +15,3 @@ class Ennemie(Perso):
         self.image = pygame.image.load('assets/ennemy.png')
         self.x=1200
         self.y=400
- nda
