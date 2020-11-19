@@ -35,7 +35,7 @@ class Armor(Items):
 #  REFERENCE : WEAPON(PRIX,POID,DOMMAGE,TYPE,NOM)
 
 # PATH RESOLUTION : 
-first_path = "D:/Pygeon/Pygeon/Addon/Sprite/Items/" # INSERER PATH VERS LE DOSSIER ITEMS
+first_path = "Pygeon/Addon/Sprite/Items/" # INSERER PATH VERS LE DOSSIER ITEMS
 
 def image_loader(path) -> str:
     for i in os.listdir(path):
