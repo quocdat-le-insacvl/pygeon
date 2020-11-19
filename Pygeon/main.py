@@ -23,7 +23,6 @@ class Menu():
         self.perso = player
         self.click = False
         self.point_attrib = (4,2,1,1,2,3,5,7,10,13,17)
-
     def game_loop(self):
         running = True
         Xdd, Ydd, Xdragon, Ydragon = -150, -150, 800, -400
@@ -50,7 +49,6 @@ class Menu():
         mixer.music.stop()
         screen = pygame.display.set_mode((LONGUEUR,LARGEUR),pygame.RESIZABLE)
         self.main_menu()
-
     def main_menu(self):
         running = True
         while running:
@@ -534,9 +532,9 @@ class Menu():
             else : pygame.draw.rect(screen,LIGHT_GREY,button_save_4,1)
 
             text_width, text_height = ColderWeather.size("Sauvegarde 1")
-            path = r'D:\\Pygeon\\Pygeon\\Save\\'
-            if os.path.getsize(r'D:\Pygeon\Pygeon\Save\sauvegarde') > 0 :
-                with open(r'D:\Pygeon\Pygeon\Save\sauvegarde','rb') as fichier:
+            path = r'\Pygeon\\Save\\'
+            if os.path.getsize(r'Pygeon\Save\sauvegarde') > 0 :
+                with open(r'Pygeon\Save\sauvegarde','rb') as fichier:
                     mon_depickler = pickle.Unpickler(fichier)
                     inter = mon_depickler.load()
                     self.draw_text("Sauvegarde 1",ColderWeather,LIGHT_GREY,screen,button_save_1.width//2-text_width//4,100+text_height//4)
@@ -547,8 +545,8 @@ class Menu():
                         choose_path = path + 'sauvegarde'
             else : self.draw_text("VIDE",ColderWeather,LIGHT_GREY,screen,button_save_1.width//2-text_width//4,100+text_height//4)
 
-            if os.path.getsize(r'D:\Pygeon\Pygeon\Save\sauvegarde2') > 0 :
-                with open(r'D:\Pygeon\Pygeon\Save\sauvegarde2','rb') as fichier:
+            if os.path.getsize(r'Pygeon\Save\sauvegarde2') > 0 :
+                with open(r'Pygeon\Save\sauvegarde2','rb') as fichier:
                     mon_depickler = pickle.Unpickler(fichier)
                     inter = mon_depickler.load()
                     self.draw_text("Sauvegarde 2",ColderWeather,LIGHT_GREY,screen,(100-text_width//2+(LONGUEUR//2-100)//2)+LONGUEUR//2-100,100+text_height//4)
@@ -559,8 +557,8 @@ class Menu():
                         choose_path = path + 'sauvegarde2'
             else : self.draw_text("VIDE",ColderWeather,LIGHT_GREY,screen,button_save_1.width//2-text_width//4,100+text_height//4)
 
-            if os.path.getsize(r'D:\Pygeon\Pygeon\Save\sauvegarde3') > 0 :
-                with open(r'D:\Pygeon\Pygeon\Save\sauvegarde3','rb') as fichier:
+            if os.path.getsize(r'Pygeon\Save\sauvegarde3') > 0 :
+                with open(r'Pygeon\Save\sauvegarde3','rb') as fichier:
                     mon_depickler = pickle.Unpickler(fichier)
                     inter = mon_depickler.load()
                     self.draw_text("Sauvegarde 3",ColderWeather,LIGHT_GREY,screen,100-text_width//2+(LONGUEUR//2-100)//2,text_height//4+LARGEUR//2)
@@ -571,8 +569,8 @@ class Menu():
                         choose_path = path + 'sauvegarde3'
             else : self.draw_text("VIDE",ColderWeather,LIGHT_GREY,screen,button_save_1.width//2-text_width//4,100+text_height//4)
         
-            if os.path.getsize(r'D:\Pygeon\Pygeon\Save\sauvegarde4') > 0 :
-                with open(r'D:\Pygeon\Pygeon\Save\sauvegarde4','rb') as fichier:
+            if os.path.getsize(r'Pygeon\Save\sauvegarde4') > 0 :
+                with open(r'Pygeon\Save\sauvegarde4','rb') as fichier:
                     mon_depickler = pickle.Unpickler(fichier)
                     inter = mon_depickler.load()
                     self.draw_text("Sauvegarde 4",ColderWeather,LIGHT_GREY,screen,(100-text_width//2+(LONGUEUR//2-100)//2)+LONGUEUR//2-100,text_height//4+LARGEUR//2)
