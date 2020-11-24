@@ -1,17 +1,18 @@
 import pygame, sys,pickle,os
 import numpy
 import math
+import random
 from pygame import mixer
-from script import pack,player,Wikitem
+from script import pack,player,Wikitem,playerbis,pack_bis,entity_1
 from pygame.locals import *
-from settings.screen import LARGEUR, LONGUEUR, screen
+from settings.screen import LARGEUR, LONGUEUR, screen,WINDOWS_SIZE
 from settings.police import Drifftype,ColderWeather,Rumbletumble,coeff,coeff1,coeff2,ColderWeather_small
 from settings.load_img import *
 from settings.color import *
 
 key = list(Wikitem.keys())
 
-
+clock = pygame.time.Clock()
 pygame.init()
 pygame.display.set_caption('Projet Pygeon')
 
@@ -28,21 +29,22 @@ class Menu():
         Xdd, Ydd, Xdragon, Ydragon = -150, -150, 800, -400
         LONGUEUR_1 = 1000
         LARGEUR_1 = 600
-        screen = pygame.display.set_mode((LONGUEUR_1, LARGEUR_1),pygame.RESIZABLE)
+        global screen
+        display = pygame.Surface((LONGUEUR_1,LARGEUR_1))
         mixer.music.load(r'Pygeon\Addon\Son\background.wav')
         mixer.music.play(-1) 
         while running:
             Xdd, Ydd, Xdragon, Ydragon = Xdd + 1, Ydd + 1, Xdragon - 1.5, Ydragon + 1.5
-            screen.fill(BURGUNDY)
-            self.draw_text('Press ESC to continue', ColderWeather_small,WHITE,screen, LONGUEUR_1 / 4.5, LARGEUR_1 / 11)
+            display.fill(BURGUNDY)
+            self.draw_text('Press ESC to continue', ColderWeather_small,WHITE,display, LONGUEUR_1 / 4.5, LARGEUR_1 / 11)
             if Xdd >= -50: Xdd = -50
             if Ydd >= -50: Ydd = -50
             if Xdragon <= 450: Xdragon = 450
             if Ydragon >= -LONGUEUR / 14: Ydragon = -LONGUEUR / 14
-            screen.blit(DD, (Xdd, Ydd))
-            screen.blit(DK, (-240, 100))
-            screen.blit(D, (Xdragon, Ydragon))
-            
+            display.blit(DD, (Xdd, Ydd))
+            display.blit(DK, (-240, 100))
+            display.blit(D, (Xdragon, Ydragon))
+            screen.blit(pygame.transform.scale(display,(LONGUEUR,LARGEUR)),(0,0))
             running = self.checkevent()
             pygame.display.update()
     
@@ -51,63 +53,42 @@ class Menu():
         self.main_menu()
     def main_menu(self):
         running = True
+        display = pygame.Surface((1980,1024))
         while running:
 
             # SETUP BACKGROUNDS POLICE
             
-            self.printbackgrounds()
+            self.printbackgrounds(display)
             
             # CHOISIR UN MENU : CREATION BOUTON / AFFICHAGE 
 
             text_width, text_height = Drifftype.size("Projet Pygeon")
-            self.draw_text('Projet Pygeon', Drifftype, GREY, screen, LONGUEUR//2 - text_width // 2, LARGEUR//6)
+            self.draw_text('Projet Pygeon', Drifftype, GREY, display, display.get_width()//2 - text_width // 2, display.get_height()//6)
 
-            text_width, text_height = Drifftype.size("Play")
-            button_1 = pygame.Rect(LONGUEUR//2 - text_width // 2, LARGEUR//3, text_width, text_height)
-            self.draw_text('Play',Drifftype,GREY,screen,LONGUEUR//2 - text_width // 2,LARGEUR//3)
-
-            text_width, text_height = Drifftype.size("Option")
-            button_2 = pygame.Rect(LONGUEUR//2 - text_width // 2, LARGEUR//2.1, text_width, text_height)
-            self.draw_text('Option',Drifftype,GREY,screen,LONGUEUR//2 - text_width // 2,LARGEUR//2.1)
-
-            text_width, text_height = Drifftype.size("Credit")
-            self.draw_text('Credit',Drifftype,GREY,screen,LONGUEUR//2 - text_width // 2,LARGEUR//1.6)
-            button_3 = pygame.Rect(LONGUEUR//2 - text_width // 2, LARGEUR//1.6, text_width, text_height)
-
-            text_width, text_height = Drifftype.size("Quit")
-            button_4 = pygame.Rect(LONGUEUR//2 - text_width // 2, LARGEUR//1.3, text_width, text_height)
-            self.draw_text('Quit',Drifftype,GREY,screen,LONGUEUR//2 - text_width // 2,LARGEUR//1.3)
-
-            # CHOISIR UN MENU : DETECTION DE CLICK 
-
-            if self.bouton_click(button_1):
+            if self.create_text_click('Play',Drifftype,GREY,display,display.get_width()//2,display.get_height()//3):
                 self.Play()
-            if self.bouton_click(button_2):
+            if self.create_text_click('Option',Drifftype,GREY,display,display.get_width()//2,display.get_height()//2.1):
                 self.Option()
-            if self.bouton_click(button_3):
+            if self.create_text_click('Credit',Drifftype,GREY,display,display.get_width()//2,display.get_height()//1.6):
                 self.Credit()
-            if self.bouton_click(button_4):
+            if self.create_text_click('Quit',Drifftype,GREY,display,display.get_width()//2,display.get_height()//1.3):
                 self.Quit()
-
+           
             # REFRESH + END EVENT
-
+            screen.blit(pygame.transform.scale(display,WINDOWS_SIZE),(0,0))
             running = self.checkevent()
             pygame.display.update()
     def Play(self) :
         running = True
+        display = pygame.Surface((1980,1024))
         while running:
-            # TEST
-            self.printbackgrounds()
-           
             # SETUP BACKGROUNDS POLICE 
-            
-           
-                
+            self.printbackgrounds(display)
             # BOUTON img_next 
 
             if self.perso.name != None and self.perso.classe != None:
                 if self.creation_img_text_click(img_next,"Suivant",ColderWeather,WHITE,right=1):
-                    self.afficherinventaire(self.perso.inventaire) # HERE GAME LUNCHER 
+                    self.Credit() # HERE GAME LUNCHER 
                     
             if self.creation_img_text_click(img_next,"Reprendre",ColderWeather,WHITE,left=1):
                 self.click = False
@@ -188,32 +169,214 @@ class Menu():
 
             running = self.checkevent()
             pygame.display.update()
+    def load_map(self,path):
+        f = open(path,'r')
+        data = f.read()
+        f.close()
+        data = data.split('\n')
+        map = []
+        for row in data:
+            map.append(list(row))
+        return map   
+    def image_loader(self,path) -> str:
+        for i in os.listdir(path):
+            yield (i,pygame.image.load(path + i)) 
+    def transform_image(self,walk):
+        for x in walk:
+            walk[x] = pygame.transform.scale(walk[x],(3*walk[x].get_width(),3*walk[x].get_height()))
+    def collision_test(self,rect,tiles):
+        hit_list = []
+        for tile in tiles:
+            if rect.colliderect(tile):
+                hit_list.append(tile)
+        return hit_list
+    def move(self,rect,movement,tiles):
+        
+        collision_types = False
+        rect.x += movement[0]
+        hit_list = self.collision_test(rect,tiles)
+        for tile in hit_list:
+            if movement[0] > 0 :
+                rect.right = tile.left 
+                collision_types = True
+            elif movement[0] < 0 :
+                rect.left = tile.right
+                collision_types = True
+        rect.y += movement[1]
+        hit_list = self.collision_test(rect,tiles)
+        for tile in hit_list:
+            if movement[1] > 0 :
+                rect.bottom = tile.top
+                collision_types = True
+            elif movement[1] < 0 :
+                rect.top = tile.bottom
+                collision_types = True
+        return rect,collision_types
+    def print_map(self,Map,display,center_x,center_y):
+        cubesize=190
+        grass = dict(self.image_loader('Pygeon/Addon/grass/'))
+        display.fill(LIGHT_GREY)
+        for x in grass:
+            grass[x] = pygame.transform.scale(grass[x],(200,200))
+        tiles_rect=[]
+        i=0
+        for layer in Map:
+            j=0
+            for tile in layer:
+                x = (j-i)*cubesize//2+9300
+                y = (j+i)*cubesize//4
+                if Map[i][j] != None:
+                    if Map[i][j] == '1' :
+                        n = random.randint(1,5)
+                        display.blit(grass['grass_' + str(n) + '.png'],(x-center_x,y-center_y))
+                    if Map[i][j] == '2' :
+                        display.blit(floor,(x-center_x,y-center_y))
+                        display.blit(arbre,(x-center_x,y-center_y-100))
+                        tiles_rect.append(pygame.Rect((x-center_x)+arbre.get_width()//3,(y-center_y)-arbre.get_height()//3,arbre.get_width()//2.5,arbre.get_height()//3))
+                    if Map[i][j] == '5' :
+                        display.blit(end_game,(x-center_x,y-center_y-50))
+                        tiles_rect.append(pygame.Rect(x-center_x,y-center_y-40,30,30))
+                j+=1    
+            i+=1
+        i=0
+        return display,tiles_rect
+    def print_entity(self,entity):
+        display_entity = pygame.Surface((entity.img.get_width(),entity.img.get_height()))
+        display_entity.fill(LIGHT_GREY)
+        display_entity.set_colorkey(LIGHT_GREY)
+        display_entity.blit(entity.img,(0,0))
+        return display_entity
     def Credit(self):
+        cubesize=190
+        center_x,center_y=-8000,0
+
+        Map = self.load_map(r"C:\Users\Antho\Desktop\Pygeon\pygeon\Pygeon\map.txt")
+        self.draw_text('CHARGEMENT',ColderWeather,WHITE,screen,LONGUEUR//2,LARGEUR//2)
+        
+        
+        display = pygame.Surface((19200,10800))
+        walk_bottom =dict(self.image_loader('Pygeon/Addon/walk_bottom/'))
+        self.transform_image(walk_bottom)
+        walk_right = dict(self.image_loader('Pygeon/Addon/walk_right/'))
+        self.transform_image(walk_right)
+        walk_left = dict(self.image_loader('Pygeon/Addon/walk_left/'))
+        self.transform_image(walk_left)
+        walk_top = dict(self.image_loader('Pygeon/Addon/walk_top/'))
+        
+        self.transform_image(walk_top)
+
+        player_x,player_y=LONGUEUR//2-walk_bottom['walk_bottom_' + str(1) +'.png'].get_width()//2-8000,LARGEUR//2-walk_bottom['walk_bottom_' + str(1) +'.png'].get_height()//2
+        player_rect = pygame.Rect(player_x-center_x,player_y-center_y,walk_bottom['walk_bottom_' + str(1) +'.png'].get_width(),walk_bottom['walk_bottom_' + str(1) +'.png'].get_height())
+        display_joueurs = pygame.Surface((walk_bottom['walk_bottom_' + str(1) +'.png'].get_width(),walk_bottom['walk_bottom_' + str(1) +'.png'].get_height()))
+        display_joueurs.set_colorkey(LIGHT_GREY)
+        center_x = 0
+        afficher_inv = False
+        n=2
+        i,j=0,0
+        mouvement = [False,False,False,False]
         running = True
+        tiles_rect = []
+        display,tiles_rect = self.print_map(Map,display,center_x,center_y)
+        center_x = -8100
+        center_y = -1000
+        player_rect.x = 9000
+        seller = pygame.image.load(r'C:\Users\Antho\Desktop\Pygeon\pygeon\seller_1.png')
+        entity_1.img = pygame.transform.scale(seller,(3*seller.get_width(),3*seller.get_height()))
         while running:
             screen.fill(LIGHT_GREY)
-            #y= 0
-            #for i in range(len(key)):
-            #    if 50*i % LONGUEUR > LONGUEUR - 100:
-            #        y +=1
-            #    screen.blit(key[i].wpn_img,((50*i % LONGUEUR),(y*50)))
-            
-            #self.draw_text('Credit', Drifftype, WHITE, screen, 20, 20)
-            floor = pygame.image.load(r'D:\Pygeon\Pygeon\Addon\Test\grass.png')
-            floor.set_colorkey(BLACK)
-            floor = pygame.transform.scale(floor,(3*floor.get_width()-4,3*floor.get_height()))
-            #for y in range(30):
-            y=0
-            for i in range(30):
-                screen.blit(floor,(i*floor.get_width()+100+floor.get_width()//2,y*floor.get_width()+(floor.get_height()-floor.get_width()//2)))
+            display_entity = self.print_entity(entity_1)
+            #display_joueurs.blit(walk_top['walk_top_' + str(1) +'.png'],(0,0))
+            screen.blit(display,(center_x,center_y))
+            screen.blit(display_joueurs,(center_x+player_rect.x,center_y+player_rect.y))
+            screen.blit(display_entity,(center_x+entity_1.pos_x,center_y+entity_1.pos_y))
+            #pygame.draw.rect(display,WHITE,tiles_rect[0])
+            #pygame.draw.rect(display,WHITE,player_rect)
+            if abs(entity_1.center[0] - player_rect.center[0]) < 100 and abs(entity_1.center[1]- player_rect.center[1]) < 100:
+                if afficher_inv: self.shop_print(player,self.perso)
+                afficher_inv = False
+                self.draw_text("Center_x : %i, Center_y : %i , player_x : %i,player_y : %i"%(center_y,center_y,player_rect.x,player_rect.y),ColderWeather,WHITE,screen,100,100)
+
+            if n > len(walk_bottom)-1 :
+                n=1
+            n +=1
+            if self.creation_img_text_click(img_next,"UP",ColderWeather,WHITE,LONGUEUR//2,0,Click=False) and -1/2*center_x + center_y < 3750 and 1/2*center_x + center_y < -4650:
+                center_y +=25
+                #player_rect.y -=25
+
                 
-                screen.blit(floor,(100+i*floor.get_width(),100+y*floor.get_width()))
-                screen.blit(floor,(100+(i+1)*floor.get_width(),100+y*floor.get_width()))
-                #screen.blit(floor,(100+(i+2)*floor.get_width(),100+y*floor.get_width()))
-                y+=1
-            
-            running = self.checkevent()
+            if self.creation_img_text_click(img_next,'Left',ColderWeather,WHITE,0,LARGEUR//2,Click=False) and 1/2*center_x + center_y < -4650 and -1/2*center_x + center_y > -4000:
+                center_x += 25
+                #player_rect.x +=25
+            if self.creation_img_text_click(img_next,'Right',ColderWeather,WHITE,LONGUEUR,LARGEUR//2,Click=False) and -1/2*center_x + center_y < 3750  and -1/2*center_x - center_y < 12600:
+                center_x -=25
+                #player_rect.x -=25
+                
+            if self.creation_img_text_click(img_next,'Bottom',ColderWeather,WHITE,LONGUEUR//2,LARGEUR,Click=False) and -1/2*center_x + center_y > -4000 and -1/2*center_x - center_y < 12600:
+                center_y -= 25
+                #player_rect.y -= 25
+                
+                
+            if mouvement[0]:
+                player_rect, collision = self.move(player_rect,[0,-10],tiles_rect)
+                display_joueurs.fill(LIGHT_GREY)
+              
+                display_joueurs.blit(walk_top['walk_top_' + str(n) +'.png'],(0,0))
+
+                
+
+            elif mouvement[1]:
+                player_rect, collision = self.move(player_rect,[0,+10],tiles_rect)
+                display_joueurs.fill(LIGHT_GREY)
+
+                display_joueurs.blit(walk_bottom['walk_bottom_' + str(n) +'.png'],(0,0))
+                
+
+
+            elif mouvement[2]:
+                player_rect, collision = self.move(player_rect,[+10,0],tiles_rect)
+                display_joueurs.fill(LIGHT_GREY)
+
+                display_joueurs.blit(walk_right['walk_right_' + str(n) + '.png'],(0,0))
+                
+
+            elif mouvement[3]:
+                player_rect, collision = self.move(player_rect,[-10,0],tiles_rect)
+                display_joueurs.fill(LIGHT_GREY)
+
+                display_joueurs.blit(walk_left['walk_left_' + str(n) + '.png'],(0,0))
+                
+            else:
+                display_joueurs.fill(LIGHT_GREY)
+
+                display_joueurs.blit(walk_bottom['walk_bottom_' + str(1) +'.png'],(0,0))
+
+                
+
+            for event in pygame.event.get():
+                if event.type == QUIT:
+                        sys.exit()
+                if event.type == KEYDOWN:
+                    if event.key == K_UP:
+                        mouvement[0] = True
+                    if event.key == K_DOWN:
+                        mouvement[1] = True
+                    if event.key == K_RIGHT:
+                        mouvement[2] = True
+                    if event.key == K_LEFT:
+                        mouvement[3] = True
+                    if event.key == K_i:
+                        afficher_inv = not afficher_inv
+                if event.type == KEYUP:
+                    if event.key == K_UP:
+                        mouvement[0] = False
+                    if event.key == K_DOWN:
+                        mouvement[1] = False
+                    if event.key == K_RIGHT:
+                        mouvement[2] = False
+                    if event.key == K_LEFT:
+                        mouvement[3] = False  
             pygame.display.update()
+            clock.tick(64)
     def Option(self):
         running = True
         while running:
@@ -300,42 +463,39 @@ class Menu():
                 self.perso.difficulty = self.perso.difficulty + self.point_attrib[cap - 8]
                 return cap -1
         return cap
-    def afficherinventaire(self,pack):
-        running = True
-        while running:
+    def afficherinventaire(self,pack,pos_x,pos_y,Is_perso = True,Is_shop = False):
             #AFFICHAGE BACKGROUNDS 
-            pack = self.perso.inventaire
+            pack = pack 
+            mouse_slot = pack.nb_x*pack.nb_y
+
             
-            screen.fill(LIGHT_GREY)
+            #screen.fill(LIGHT_GREY)
             menu_inventaire = pygame.transform.scale(menu_background,(LONGUEUR//2,LARGEUR//2))
-            screen.blit(menu_inventaire,(LONGUEUR//2-LONGUEUR//4,LARGEUR//2-LARGEUR//4))
-            screen.blit(title,(LONGUEUR//2-LONGUEUR//7.5,LARGEUR//2-LARGEUR//3.5))
+            screen.blit(menu_inventaire,(pos_x//2-LONGUEUR//4,pos_y//2-LARGEUR//4))
+            screen.blit(title,(pos_x//2-title.get_width()//2,pos_y//2-LARGEUR//3.5))
         
             #CREATION BOUTON INVENTAIRE
             bouton_test = dict()
             h=0
             for y in range(50,50+(pack.nb_x*50),50):
                 for i in range(0,pack.nb_y,1):
-                    bouton_test[h+i] = pygame.Rect(53*i+LONGUEUR//2-LONGUEUR//5, 1.05*y+LARGEUR//2-LARGEUR//7, 50, 50)
+                    bouton_test[h+i] = pygame.Rect(53*i+pos_x//2-LONGUEUR//5, 1.05*y+pos_y//2-LARGEUR//7, 50, 50)
                 h += pack.nb_y
 
             # AFFICHER LES BOUTONS INVENTAIRE   
+            if Is_perso:
+                text_width, text_height = Drifftype.size("Inventaire")
+
+                self.draw_text('Inventaire', ColderWeather, WHITE, screen, pos_x//2-text_width//4,pos_y//2-text_height//2-menu_inventaire.get_height()//2.1)
+                text_width, text_height = ColderWeather_small.size("Piece :  ")
+
+                self.draw_text('Pieces : %i'%self.perso.argent,ColderWeather_small,WHITE,screen,pos_x//2-text_width//2,pos_y//2+LARGEUR//6)
+                self.draw_text('Poids : %i / %i'%(self.perso.poid_actuel,self.perso.poid_max),ColderWeather_small,WHITE,screen,pos_x//2-LARGEUR//3,pos_y//2+LARGEUR//6)
+
             
-            text_width, text_height = Drifftype.size("Inventaire")
-
-            self.draw_text('Inventaire', ColderWeather, WHITE, screen, LONGUEUR//2-text_width//4,LARGEUR//2-text_height//2-LONGUEUR//6.3)
-
             for i in range(0,pack.nb_x*pack.nb_y):
-                #pygame.draw.rect(screen,WHITE,bouton_test[i])
                 pygame.draw.rect(screen,LIGHT_GREY,bouton_test[i],1)
-            for i in range(0,pack.nb_x*pack.nb_y):
-                if self.bouton_click(bouton_test[i]):
-                    pygame.draw.rect(screen,(255,0,255),bouton_test[i]) 
-                    if(pack.backpack[i] != None):
-                        self.draw_text(key[pack.backpack[i]].wpn_name,Drifftype, WHITE, screen, 20,20)
-                        
-            
-
+           
             # AFFICHER LES ITEMS INVENTAIRE
             h = 0
             for y in range(50,50+(pack.nb_x*50),50):
@@ -344,22 +504,23 @@ class Menu():
                        screen.blit(key[pack.backpack[h+i]].wpn_img,(bouton_test[h+i].x, bouton_test[h+i].y))     
                 h += pack.nb_y
             
-            #CREATION BOUTONS JOUEURS ET AFFICHAGE
-            bouton_arm = dict()
+            if Is_perso:
+                #CREATION BOUTONS JOUEURS ET AFFICHAGE
+                bouton_arm = dict()
 
-            for i in range(0,4):
-                bouton_arm[i] = pygame.Rect(LONGUEUR//2-LONGUEUR//5+pack.nb_y*50*1.4, 1.05*(50*(i+1))+LARGEUR//2-LARGEUR//7,50,50)
-               # pygame.draw.rect(screen,WHITE,bouton_arm[i])
-                pygame.draw.rect(screen,LIGHT_GREY,bouton_arm[i],1)
+                for i in range(0,4):
+                    bouton_arm[i] = pygame.Rect(pos_x//2-LONGUEUR//5+pack.nb_y*50*1.4, 1.05*(50*(i+1))+pos_y//2-LARGEUR//7,50,50)
+                # pygame.draw.rect(screen,WHITE,bouton_arm[i])
+                    pygame.draw.rect(screen,LIGHT_GREY,bouton_arm[i],1)
+                    
+                for i in range(0,2):
+                    bouton_arm[4+i] = pygame.Rect(pos_x//2-LONGUEUR//5+pack.nb_y*50*1.6+53*i,1.05*50+pos_y//2-LARGEUR//7,50,50)
+                    pygame.draw.rect(screen,LIGHT_GREY,bouton_arm[4+i],1)
                 
-            for i in range(0,2):
-                bouton_arm[4+i] = pygame.Rect(LONGUEUR//2-LONGUEUR//5+pack.nb_y*50*1.6+53*i,1.05*50+LARGEUR//2-LARGEUR//7,50,50)
-                pygame.draw.rect(screen,LIGHT_GREY,bouton_arm[4+i],1)
-            
-            for i in range(0,6):
-                if self.perso.armor[i] != None:
-                    screen.blit(key[self.perso.armor[i]].wpn_img,(bouton_arm[i].x,bouton_arm[i].y))
-                    #self.draw_text(self.perso.armor[i].armor_name,Drifftype,WHITE,screen,100,100)  
+                for i in range(0,6):
+                    if self.perso.armor[i] != None:
+                        screen.blit(key[self.perso.armor[i]].wpn_img,(bouton_arm[i].x,bouton_arm[i].y))
+                        #self.draw_text(self.perso.armor[i].armor_name,Drifftype,WHITE,screen,100,100)  
 
 
             #AFFICHER ITEMS CORPS JOUEURS
@@ -369,56 +530,72 @@ class Menu():
             mx,my = pygame.mouse.get_pos()
             #button_drag = pygame.Rect(mx,my,50,50)
             #pygame.draw.rect(screen,RED,button_drag)
-            mouse_slot = pack.nb_x*pack.nb_y
 
             # TEST : PRENDRE UN OBJECT DANS LA MOUSE
+            if pack.backpack[mouse_slot] != None:
+                have_object = True
+                
+
+            else:
+                have_object = False
+            i = 0
+            while pack.backpack[i] != None:
+                i += 1
+            last_moove = i
 
             for i in range(pack.nb_x*pack.nb_y):
                 if self.bouton_click(bouton_test[i]):
                     if pack.backpack[i] != None and have_object == False:
-                        pack.backpack[pack.nb_x*pack.nb_y] = pack.backpack[i]
+                        pack.backpack[mouse_slot] = pack.backpack[i]
                         pack.backpack[i] = None
                         last_moove = i
                         have_object = True
-                if i < 6 and self.bouton_click(bouton_test[i]):
-                    if self.perso.armor[i] != None and have_object == False:
-                        pack.backpack[pack.nb_x*pack.nb_y] = self.perso.armor[i]
-                        self.perso.armor[i] = None
-                        last_moove = mouse_slot+i+1
-                        have_object = True
+                if Is_perso:
+                    if i < 6 and self.bouton_click(bouton_arm[i]):
+                        if self.perso.armor[i] != None and have_object == False:
+                            pack.backpack[pack.nb_x*pack.nb_y] = self.perso.armor[i]
+                            self.perso.armor[i] = None
+                            last_moove = mouse_slot+i+1
+                            have_object = True
+            if Is_shop :Is_buying = self.creation_img_text_click(img_next,"Acheter",ColderWeather,WHITE,pos_x//2+img_next.get_width()//2,pos_y//2,Click=False) and pack.backpack[mouse_slot] != None
             # TEST : DEPOSER UN OBJECT DE LA MOUSE VERS L INVENTAIRE 
-
             if pack.backpack[mouse_slot] != None:
                 if any(pygame.mouse.get_pressed()):
                     have_object =True
                     screen.blit(key[pack.backpack[mouse_slot]].wpn_img,(mx,my))
                 elif not(any(pygame.mouse.get_pressed())):
-                    for i in range(pack.nb_y*pack.nb_x):
-                        if bouton_test[i].collidepoint((mx,my)) :
-                            pack.backpack[last_moove] = pack.backpack[i]
-                            pack.backpack[i] = pack.backpack[mouse_slot]
-                            pack.backpack[mouse_slot] = None
-                            last_moove = mouse_slot
-                        if i < 6 and bouton_arm[i].collidepoint((mx,my)) and key[pack.backpack[mouse_slot]].wpn_type == i:
-                            pack.backpack[last_moove] = self.perso.armor[i]
-                            self.perso.armor[i] = pack.backpack[mouse_slot]
-                            pack.backpack[mouse_slot] = None
-                            last_moove = mouse_slot
-
-                    if last_moove <= mouse_slot:
-                        pack.backpack[last_moove] = pack.backpack[mouse_slot]
+                    if Is_shop and Is_buying: 
+                        items = pack.backpack[mouse_slot]
                         pack.backpack[mouse_slot] = None
-                        have_object = False
+                        return items
                     else:
-                        self.perso.armor[last_moove-mouse_slot-1] = pack.backpack[mouse_slot]
-                        pack.backpack[mouse_slot] =None
-                        have_object = False
-            else:
-                #pygame.draw.rect(screen,RED,button_drag)
-                have_object = False
+                        for i in range(pack.nb_y*pack.nb_x):
+                            
+                            if bouton_test[i].collidepoint((mx,my)) :
+                                pack.backpack[last_moove] = pack.backpack[i]
+                                pack.backpack[i] = pack.backpack[mouse_slot]
+                                pack.backpack[mouse_slot] = None
+                                last_moove = mouse_slot
+                            if Is_perso:
+                                if i < 6 and bouton_arm[i].collidepoint((mx,my)) and key[pack.backpack[mouse_slot]].wpn_type == i:
+                                    pack.backpack[last_moove] = self.perso.armor[i]
+                                    self.perso.armor[i] = pack.backpack[mouse_slot]
+                                    pack.backpack[mouse_slot] = None
+                                    last_moove = mouse_slot
 
-            running = self.checkevent()
-            pygame.display.update()
+                        if last_moove <= mouse_slot:
+                            pack.backpack[last_moove] = pack.backpack[mouse_slot]
+                            pack.backpack[mouse_slot] = None
+                            have_object = False
+                        else:
+                            if Is_perso:
+                                self.perso.armor[last_moove-mouse_slot-1] = pack.backpack[mouse_slot]
+                                pack.backpack[mouse_slot] =None
+                                have_object = False
+            else:
+                last_moove = -1
+                #pygame.draw.rect(screen,RED,button_drag)
+                have_object = False  
     def bouton_click(self,bouton,constant_click = 0):
         # TEST : BOUTON EST CLIQUE ?
         mx, my = pygame.mouse.get_pos()
@@ -432,9 +609,11 @@ class Menu():
             if event.type == KEYDOWN:
                 if event.key == K_ESCAPE:
                     return False
+                
             if event.type == MOUSEBUTTONDOWN:
                 if event.button == 1:
                     self.click = True     
+                
         return True
     def checkclavier(self,x,y,screen,rect):
         running = True
@@ -500,11 +679,11 @@ class Menu():
                             mot += '9'
                     
             pygame.display.update()
-    def printbackgrounds(self):
-        screen.fill(LIGHT_GREY)
+    def printbackgrounds(self,display):
+        display.fill(LIGHT_GREY)
         global menu_background 
-        menu_background = pygame.transform.scale(menu_background,(LONGUEUR,LARGEUR))
-        screen.blit(menu_background,(0,0))     
+        menu_background = pygame.transform.scale(menu_background,(display.get_width(),display.get_height()))
+        display.blit(menu_background,(0,0))     
     def load_game(self):
         running = True
         Choose = False
@@ -609,7 +788,8 @@ class Menu():
         while running:
             # Backgrounds :
             global img_backgrounds_warning 
-            self.printbackgrounds()
+            #self.printbackgrounds()
+            screen.fill(LIGHT_GREY)
             img_backgrounds_warning = pygame.transform.scale(img_backgrounds_warning,(LONGUEUR//2,LARGEUR//4))
             screen.blit(img_backgrounds_warning,(LONGUEUR//2-img_backgrounds_warning.get_width()//2,LARGEUR//2-img_backgrounds_warning.get_height()))
             screen.blit(exclamation,(LONGUEUR//2+img_backgrounds_warning.get_width()//2.5,LARGEUR//2-1.1*img_backgrounds_warning.get_height()))
@@ -619,7 +799,7 @@ class Menu():
                 return True
             running = self.checkevent() 
             pygame.display.update()
-    def creation_img_text_click(self,img,text,font,color,x=0,y=0,button=1,left=0,right=0): 
+    def creation_img_text_click(self,img,text,font,color,x=0,y=0,button=1,left=0,right=0,Click = True): 
         text_width, text_height = font.size(text)
         if img.get_width() < text_width:
             img = pygame.transform.scale(img,(text_width+50,img.get_height()))
@@ -635,9 +815,42 @@ class Menu():
         screen.blit(img,(x,y))
         button_crea = pygame.Rect(x,y,img.get_width(),img.get_height())
         self.draw_text(text,font,color,screen,x+img.get_width()//2-text_width//2,y+img.get_height()//2-img.get_height()//2)
-        if self.bouton_click(button_crea):
+        if Click :
+            if self.bouton_click(button_crea):
+                return True
+        else:
+            mx,my = pygame.mouse.get_pos()
+            return button_crea.collidepoint((mx,my))
+    def create_text_click(self,text,font,color,display,x=0,y=0):
+        mx,my = pygame.mouse.get_pos()
+        mx = mx - (-display.get_width()//2 + screen.get_width()//2)
+        my = my - (-display.get_height()//2+screen.get_height()//2)
+        text_width, text_height = font.size(text)
+        button_1 = pygame.Rect(x - text_width // 2, y, text_width, text_height)
+        pygame.draw.rect(screen,WHITE,button_1)
+        self.draw_text(text,font,color,display,x - text_width // 2,y)
+        if button_1.collidepoint((mx,my)) and self.click:
             return True
 
+    def shop_print(self,perso1,perso2,just_print = False):
+        running = True
+        while running:
+            screen.fill(LIGHT_GREY)
+            items = None
+            items = self.afficherinventaire(perso1.inventaire,LONGUEUR,LARGEUR//2,False,Is_shop=True)
+            if items != None:
+                print(key[items].value)
+                if (perso2.argent - key[items].value) < 0 :
+                    self.Validation_screen("Vous avez pas assez d'argent")
+                    #self.afficherinventaire(perso2.inventaire,LONGUEUR,1.5*LARGEUR)
+
+                    perso1.inventaire.ajouteritems(perso1,key[items])
+                else:
+                    perso2.argent -= key[items].value
+                    perso2.inventaire.ajouteritems(perso2,key[items])
+            self.afficherinventaire(perso2.inventaire,LONGUEUR,1.5*LARGEUR)
+            pygame.display.update()
+            running = self.checkevent()
 menu = Menu(player)
 
-menu.game_loop()
+menu.main_menu()

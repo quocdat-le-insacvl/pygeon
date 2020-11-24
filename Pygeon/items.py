@@ -33,7 +33,6 @@ class Armor(Items):
 
 #  REFERENCE : https://www.d20pfsrd.com/equipmenT/weapons/#weapons-simple
 #  REFERENCE : WEAPON(PRIX,POID,DOMMAGE,TYPE,NOM)
-
 # PATH RESOLUTION : 
 first_path = "Pygeon/Addon/Sprite/Items/" # INSERER PATH VERS LE DOSSIER ITEMS
 
