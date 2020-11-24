@@ -53,15 +53,14 @@ class Menu():
         self.main_menu()
     def main_menu(self):
         running = True
-        display = pygame.Surface((1980,1024))
+        display = pygame.Surface((1980,1000))
         while running:
 
             # SETUP BACKGROUNDS POLICE
             
             self.printbackgrounds(display)
-            
+           
             # CHOISIR UN MENU : CREATION BOUTON / AFFICHAGE 
-
             text_width, text_height = Drifftype.size("Projet Pygeon")
             self.draw_text('Projet Pygeon', Drifftype, GREY, display, display.get_width()//2 - text_width // 2, display.get_height()//6)
 
@@ -72,7 +71,7 @@ class Menu():
             if self.create_text_click('Credit',Drifftype,GREY,display,display.get_width()//2,display.get_height()//1.6):
                 self.Credit()
             if self.create_text_click('Quit',Drifftype,GREY,display,display.get_width()//2,display.get_height()//1.3):
-                self.Quit()
+                sys.Quit()
            
             # REFRESH + END EVENT
             screen.blit(pygame.transform.scale(display,WINDOWS_SIZE),(0,0))
@@ -87,10 +86,10 @@ class Menu():
             # BOUTON img_next 
 
             if self.perso.name != None and self.perso.classe != None:
-                if self.creation_img_text_click(img_next,"Suivant",ColderWeather,WHITE,right=1):
+                if self.creation_img_text_click(img_next,"Suivant",ColderWeather,WHITE,display,right=1):
                     self.Credit() # HERE GAME LUNCHER 
                     
-            if self.creation_img_text_click(img_next,"Reprendre",ColderWeather,WHITE,left=1):
+            if self.creation_img_text_click(img_next,"Reprendre",ColderWeather,WHITE,display,left=1):
                 self.click = False
                 self.load_game()
                 
@@ -100,73 +99,74 @@ class Menu():
             # CHOISIR UNE CLASSE : CREATION BOUTON
 
             text_width, text_height = ColderWeather.size("Choisir une classe :")
-            self.draw_text('Choisir une classe',ColderWeather,GREY,screen,LONGUEUR//4 - text_width // 2.5,LARGEUR//6 + 3 * text_height)
+            self.draw_text('Choisir une classe',ColderWeather,GREY,display,display.get_width()//4 - text_width // 2.5,display.get_height()//6 + 3 * text_height)
             
             text_width, text_height = ColderWeather.size("Sorcerer")
-            button_1 = pygame.Rect(LONGUEUR//4 - text_width // 2.5, LARGEUR//6 + 4*text_height, text_width, text_height)
-            button_2 = pygame.Rect(LONGUEUR//4 - text_width // 2.5, LARGEUR//6 + 5*text_height, text_width, text_height)
-            button_3 = pygame.Rect(LONGUEUR//4 - text_width // 2.5, LARGEUR//6 + 6*text_height, text_width, text_height)
+            button_1 = pygame.Rect(display.get_width()//4 - text_width // 2.5, display.get_height()//6 + 4*text_height, text_width, text_height)
+            button_2 = pygame.Rect(display.get_width()//4 - text_width // 2.5, display.get_height()//6 + 5*text_height, text_width, text_height)
+            button_3 = pygame.Rect(display.get_width()//4 - text_width // 2.5, display.get_height()//6 + 6*text_height, text_width, text_height)
 
             # CHOISIR UNE CLASSE : CHANGEMENT DE COULEUR QUAND SELECTIONNER 
 
-            if self.bouton_click(button_1) or self.perso.classe == 'Fighter':
-                self.draw_text('Fighter', ColderWeather, RED, screen, LONGUEUR//4 - text_width // 2.5,LARGEUR//6 + 4*text_height)
+            if self.bouton_click(button_1,display) or self.perso.classe == 'Fighter':
+                self.draw_text('Fighter', ColderWeather, RED, display, display.get_width()//4 - text_width // 2.5,display.get_height()//6 + 4*text_height)
                 self.perso.classe = 'Fighter'
             else:
-                self.draw_text('Fighter', ColderWeather, WHITE, screen, LONGUEUR//4 - text_width // 2.5,LARGEUR//6 + 4*text_height)
+                self.draw_text('Fighter', ColderWeather, WHITE, display, display.get_width()//4 - text_width // 2.5,display.get_height()//6 + 4*text_height)
 
 
-            if self.bouton_click(button_2) or self.perso.classe == 'Sorcerer':
-                self.draw_text('Sorcerer',ColderWeather,RED,screen,LONGUEUR//4 - text_width // 2.5,LARGEUR//6 + 5*text_height)
+            if self.bouton_click(button_2,display) or self.perso.classe == 'Sorcerer':
+                self.draw_text('Sorcerer',ColderWeather,RED,display,display.get_width()//4 - text_width // 2.5,display.get_height()//6 + 5*text_height)
                 self.perso.classe = 'Sorcerer'
             else:
-                self.draw_text('Sorcerer',ColderWeather,WHITE,screen,LONGUEUR//4 - text_width // 2.5,LARGEUR//6 + 5*text_height)
+                self.draw_text('Sorcerer',ColderWeather,WHITE,display,display.get_width()//4 - text_width // 2.5,display.get_height()//6 + 5*text_height)
 
 
-            if self.bouton_click(button_3) or self.perso.classe == 'Rogue':
-                self.draw_text('Rogue',ColderWeather,RED,screen,LONGUEUR//4 - text_width // 2.5,LARGEUR//6 + 6*text_height)
+            if self.bouton_click(button_3,display) or self.perso.classe == 'Rogue':
+                self.draw_text('Rogue',ColderWeather,RED,display,display.get_width()//4 - text_width // 2.5,display.get_height()//6 + 6*text_height)
                 self.perso.classe = 'Rogue'
             else:
-                self.draw_text('Rogue',ColderWeather,WHITE,screen,LONGUEUR//4 - text_width // 2.5,LARGEUR//6 + 6*text_height)
+                self.draw_text('Rogue',ColderWeather,WHITE,display,display.get_width()//4 - text_width // 2.5,display.get_height()//6 + 6*text_height)
         
             # CHANGEMENTS CAPACITES JOUEURS : AFFICHAGE 
 
             text_width, text_height = ColderWeather.size("Points Disponible")
-            self.draw_text('Points Disponible : %d'%(self.perso.difficulty), ColderWeather, GREY, screen, LONGUEUR - LONGUEUR//4 - text_width // 1.5,LARGEUR//6 )
+            self.draw_text('Points Disponible : %d'%(self.perso.difficulty), ColderWeather, GREY, display, display.get_width() - display.get_width()//4 - text_width // 1.5,display.get_height()//6 )
             text_width, text_height = ColderWeather.size("STR")
-            self.draw_text('STR : %d'%(self.perso.STR), ColderWeather, WHITE, screen, LONGUEUR - LONGUEUR//4 - 2.5*text_width,LARGEUR//6 + 1*text_height )
-            self.draw_text('DEX : %d'%(self.perso.DEX), ColderWeather, WHITE, screen, LONGUEUR - LONGUEUR//4 - 2.5*text_width,LARGEUR//6 + 2*text_height)
-            self.draw_text('CON : %d'%(self.perso.CON), ColderWeather, WHITE, screen,LONGUEUR - LONGUEUR//4 - 2.5*text_width,LARGEUR//6 + 3*text_height)
-            self.draw_text('INT : %d'%(self.perso.INT), ColderWeather, WHITE, screen, LONGUEUR - LONGUEUR//4 - 2.5*text_width,LARGEUR//6 + 4*text_height)
-            self.draw_text('WIS : %d'%(self.perso.WIS), ColderWeather, WHITE, screen, LONGUEUR - LONGUEUR//4 - 2.5*text_width,LARGEUR//6 + 5*text_height)
-            self.draw_text('CHA : %d'%(self.perso.CHA), ColderWeather, WHITE, screen,LONGUEUR - LONGUEUR//4 - 2.5*text_width ,LARGEUR//6 + 6*text_height)
+            self.draw_text('STR : %d'%(self.perso.STR), ColderWeather, WHITE, display, display.get_width() - display.get_width()//4 - 2.5*text_width,display.get_height()//6 + 1*text_height )
+            self.draw_text('DEX : %d'%(self.perso.DEX), ColderWeather, WHITE, display, display.get_width() - display.get_width()//4 - 2.5*text_width,display.get_height()//6 + 2*text_height)
+            self.draw_text('CON : %d'%(self.perso.CON), ColderWeather, WHITE, display,display.get_width() - display.get_width()//4 - 2.5*text_width,display.get_height()//6 + 3*text_height)
+            self.draw_text('INT : %d'%(self.perso.INT), ColderWeather, WHITE, display, display.get_width() - display.get_width()//4 - 2.5*text_width,display.get_height()//6 + 4*text_height)
+            self.draw_text('WIS : %d'%(self.perso.WIS), ColderWeather, WHITE, display, display.get_width() - display.get_width()//4 - 2.5*text_width,display.get_height()//6 + 5*text_height)
+            self.draw_text('CHA : %d'%(self.perso.CHA), ColderWeather, WHITE, display,display.get_width() - display.get_width()//4 - 2.5*text_width ,display.get_height()//6 + 6*text_height)
 
             # CHANGEMENTS CAPACITES JOUEURS : MISE A JOUR 
 
-            self.perso.STR = self.affichage_set_point(LONGUEUR - LONGUEUR//4 + 0.5*text_width,LARGEUR//6 + 1*text_height,self.perso.STR)
-            self.perso.DEX = self.affichage_set_point(LONGUEUR - LONGUEUR//4 + 0.5*text_width,LARGEUR//6 + 2*text_height,self.perso.DEX)
-            self.perso.CON = self.affichage_set_point(LONGUEUR - LONGUEUR//4 + 0.5*text_width,LARGEUR//6 + 3*text_height,self.perso.CON)
-            self.perso.INT = self.affichage_set_point(LONGUEUR - LONGUEUR//4 + 0.5*text_width,LARGEUR//6 + 4*text_height,self.perso.INT)
-            self.perso.WIS = self.affichage_set_point(LONGUEUR - LONGUEUR//4 + 0.5*text_width,LARGEUR//6 + 5*text_height,self.perso.WIS)
-            self.perso.CHA = self.affichage_set_point(LONGUEUR - LONGUEUR//4 + 0.5*text_width,LARGEUR//6 + 6*text_height,self.perso.CHA)
+            self.perso.STR = self.affichage_set_point(display.get_width() - display.get_width()//4 + 0.5*text_width,display.get_height()//6 + 1*text_height,self.perso.STR,display)
+            self.perso.DEX = self.affichage_set_point(display.get_width() - display.get_width()//4 + 0.5*text_width,display.get_height()//6 + 2*text_height,self.perso.DEX,display)
+            self.perso.CON = self.affichage_set_point(display.get_width() - display.get_width()//4 + 0.5*text_width,display.get_height()//6 + 3*text_height,self.perso.CON,display)
+            self.perso.INT = self.affichage_set_point(display.get_width() - display.get_width()//4 + 0.5*text_width,display.get_height()//6 + 4*text_height,self.perso.INT,display)
+            self.perso.WIS = self.affichage_set_point(display.get_width() - display.get_width()//4 + 0.5*text_width,display.get_height()//6 + 5*text_height,self.perso.WIS,display)
+            self.perso.CHA = self.affichage_set_point(display.get_width() - display.get_width()//4 + 0.5*text_width,display.get_height()//6 + 6*text_height,self.perso.CHA,display)
 
             # CHANGEMENTS NOM 
 
             text_width, text_height = ColderWeather.size("Choisir un Nom")
-            self.draw_text('Choisir un Nom', ColderWeather, GREY, screen, LONGUEUR//4 - text_width // 2.5, LARGEUR//6)
-            bouton_nom = pygame.Rect(LONGUEUR//4 - text_width // 2.5, LARGEUR//6+1.5*text_height,text_width, text_height)
-            pygame.draw.rect(screen,(150,150,150),bouton_nom,1)
+            self.draw_text('Choisir un Nom', ColderWeather, GREY, display, display.get_width()//4 - text_width // 2.5, display.get_height()//6)
+            bouton_nom = pygame.Rect(display.get_width()//4 - text_width // 2.5, display.get_height()//6+1.5*text_height,text_width, text_height)
+            pygame.draw.rect(display,(150,150,150),bouton_nom,1)
 
-            if self.bouton_click(bouton_nom):
-                self.perso.name = self.checkclavier((LONGUEUR//4 - text_width // 2.5),(LARGEUR//6+1.5*text_height),screen,bouton_nom)
+            if self.bouton_click(bouton_nom,display):
+                self.perso.name = self.checkclavier((display.get_width()//4 - text_width // 2.5),(display.get_height()//6+1.5*text_height),display,bouton_nom)
 
-            self.draw_text(self.perso.name,ColderWeather,WHITE,screen,LONGUEUR//4 - text_width // 2.5, LARGEUR//6+1.5*text_height)
+            self.draw_text(self.perso.name,ColderWeather,WHITE,display,display.get_width()//4 - text_width // 2.5, display.get_height()//6+1.5*text_height)
             if self.perso.name != None:
                 if len(self.perso.name) < 2 :
                     self.perso.name = None
-                    self.Validation_screen("Erreur : Nom incorrect")
-            # REFRESH + END EVENT
+                    self.Validation_screen("Erreur : Nom incorrect",display)
 
+            # REFRESH + END EVENT
+            screen.blit(pygame.transform.scale(display,WINDOWS_SIZE),(0,0))
             running = self.checkevent()
             pygame.display.update()
     def load_map(self,path):
@@ -191,7 +191,6 @@ class Menu():
                 hit_list.append(tile)
         return hit_list
     def move(self,rect,movement,tiles):
-        
         collision_types = False
         rect.x += movement[0]
         hit_list = self.collision_test(rect,tiles)
@@ -240,12 +239,22 @@ class Menu():
             i+=1
         i=0
         return display,tiles_rect
-    def print_entity(self,entity):
+    def print_entity(self,entity,center_x,center_y,tiles_rect):
         display_entity = pygame.Surface((entity.img.get_width(),entity.img.get_height()))
         display_entity.fill(LIGHT_GREY)
         display_entity.set_colorkey(LIGHT_GREY)
         display_entity.blit(entity.img,(0,0))
-        return display_entity
+        screen.blit(display_entity,(center_x+entity.pos_x,center_y+entity.pos_y))
+        tiles_rect.append(pygame.Rect(entity.pos_x,entity.pos_y,entity.img.get_width(),entity.img.get_height()//2))
+        return tiles_rect
+    def move_ramdom_entity(self,entity,tiles_rect,n):
+        if n < 24 :
+            pass
+        else:
+            self.move(entity.rect,[0,-1],tiles_rect)
+            entity.pos_x = entity.rect.x
+            entity.pos_y = entity.rect.y
+        entity.update_center()
     def Credit(self):
         cubesize=190
         center_x,center_y=-8000,0
@@ -282,15 +291,13 @@ class Menu():
         player_rect.x = 9000
         seller = pygame.image.load(r'C:\Users\Antho\Desktop\Pygeon\pygeon\seller_1.png')
         entity_1.img = pygame.transform.scale(seller,(3*seller.get_width(),3*seller.get_height()))
+        entity_1.update_center()
+        q=0
         while running:
             screen.fill(LIGHT_GREY)
-            display_entity = self.print_entity(entity_1)
-            #display_joueurs.blit(walk_top['walk_top_' + str(1) +'.png'],(0,0))
             screen.blit(display,(center_x,center_y))
             screen.blit(display_joueurs,(center_x+player_rect.x,center_y+player_rect.y))
-            screen.blit(display_entity,(center_x+entity_1.pos_x,center_y+entity_1.pos_y))
-            #pygame.draw.rect(display,WHITE,tiles_rect[0])
-            #pygame.draw.rect(display,WHITE,player_rect)
+
             if abs(entity_1.center[0] - player_rect.center[0]) < 100 and abs(entity_1.center[1]- player_rect.center[1]) < 100:
                 if afficher_inv: self.shop_print(player,self.perso)
                 afficher_inv = False
@@ -299,55 +306,35 @@ class Menu():
             if n > len(walk_bottom)-1 :
                 n=1
             n +=1
+
             if self.creation_img_text_click(img_next,"UP",ColderWeather,WHITE,LONGUEUR//2,0,Click=False) and -1/2*center_x + center_y < 3750 and 1/2*center_x + center_y < -4650:
                 center_y +=25
-                #player_rect.y -=25
-
-                
             if self.creation_img_text_click(img_next,'Left',ColderWeather,WHITE,0,LARGEUR//2,Click=False) and 1/2*center_x + center_y < -4650 and -1/2*center_x + center_y > -4000:
                 center_x += 25
-                #player_rect.x +=25
             if self.creation_img_text_click(img_next,'Right',ColderWeather,WHITE,LONGUEUR,LARGEUR//2,Click=False) and -1/2*center_x + center_y < 3750  and -1/2*center_x - center_y < 12600:
                 center_x -=25
-                #player_rect.x -=25
-                
             if self.creation_img_text_click(img_next,'Bottom',ColderWeather,WHITE,LONGUEUR//2,LARGEUR,Click=False) and -1/2*center_x + center_y > -4000 and -1/2*center_x - center_y < 12600:
                 center_y -= 25
-                #player_rect.y -= 25
-                
+ 
                 
             if mouvement[0]:
                 player_rect, collision = self.move(player_rect,[0,-10],tiles_rect)
                 display_joueurs.fill(LIGHT_GREY)
-              
                 display_joueurs.blit(walk_top['walk_top_' + str(n) +'.png'],(0,0))
-
-                
-
             elif mouvement[1]:
                 player_rect, collision = self.move(player_rect,[0,+10],tiles_rect)
                 display_joueurs.fill(LIGHT_GREY)
-
                 display_joueurs.blit(walk_bottom['walk_bottom_' + str(n) +'.png'],(0,0))
-                
-
-
             elif mouvement[2]:
                 player_rect, collision = self.move(player_rect,[+10,0],tiles_rect)
                 display_joueurs.fill(LIGHT_GREY)
-
                 display_joueurs.blit(walk_right['walk_right_' + str(n) + '.png'],(0,0))
-                
-
             elif mouvement[3]:
                 player_rect, collision = self.move(player_rect,[-10,0],tiles_rect)
                 display_joueurs.fill(LIGHT_GREY)
-
                 display_joueurs.blit(walk_left['walk_left_' + str(n) + '.png'],(0,0))
-                
             else:
                 display_joueurs.fill(LIGHT_GREY)
-
                 display_joueurs.blit(walk_bottom['walk_bottom_' + str(1) +'.png'],(0,0))
 
                 
@@ -379,76 +366,63 @@ class Menu():
             clock.tick(64)
     def Option(self):
         running = True
+        display = pygame.Surface((1980,1024))
         while running:
             global LONGUEUR
             global LARGEUR
             global screen
-            global menu_background
-            global coeff
-            global coeff1
-            global coeff2
-
-            screen.fill(LIGHT_GREY)
-            screen.blit(menu_background,(0,0))
+            global WINDOWS_SIZE
+            display.fill(LIGHT_GREY)
+            self.printbackgrounds(display)
             
             old_Largueur = LARGEUR
             # Partie Choisir résolution 
            
             text_width, text_height = ColderWeather.size("Choisir la résolution")
-            self.draw_text('Choisir la resolution', ColderWeather, GREY, screen, LONGUEUR//4 - text_width // 2.5, LARGEUR//6)
+            self.draw_text('Choisir la resolution', ColderWeather, GREY, display, display.get_width()//4 - text_width // 2.5, display.get_height()//6)
             text_width, text_height = ColderWeather.size("    x    ")
-            self.draw_text("    x    ", ColderWeather, GREY, screen,LONGUEUR//4 - text_width // 2, LARGEUR//6+text_height)
+            self.draw_text("    x    ", ColderWeather, GREY, display,display.get_width()//4 - text_width // 2, display.get_height()//6+text_height)
 
             text_width, text_height = ColderWeather.size("1000")
-            bouton_resolution_Longeur = pygame.Rect(LONGUEUR//4 - 2*text_height, LARGEUR//6+text_height, text_width, text_height)
-            bouton_resolution_Largueur = pygame.Rect(LONGUEUR//4 + 0.6*text_height, LARGEUR//6+text_height, text_width, text_height)
+            bouton_resolution_Longeur = pygame.Rect(display.get_width()//4 - 2*text_height, display.get_height()//6+text_height, text_width, text_height)
+            bouton_resolution_Largueur = pygame.Rect(display.get_width()//4 + 0.6*text_height, display.get_height()//6+text_height, text_width, text_height)
 
-            pygame.draw.rect(screen,(150,150,150),bouton_resolution_Longeur,1)
-            pygame.draw.rect(screen,(150,150,150),bouton_resolution_Largueur,1)
+            pygame.draw.rect(display,(150,150,150),bouton_resolution_Longeur,1)
+            pygame.draw.rect(display,(150,150,150),bouton_resolution_Largueur,1)
 
-            if self.bouton_click(bouton_resolution_Longeur):
-                LONGUEUR = self.checkclaviernum((LONGUEUR//4 - 2*text_height),(LARGEUR//6+text_height),screen,bouton_resolution_Longeur)
-                screen = pygame.display.set_mode((LONGUEUR, LARGEUR))
-                menu_background = pygame.transform.scale(menu_background,(LONGUEUR,LARGEUR))
+            if self.bouton_click(bouton_resolution_Longeur,display):
+                WINDOWS_SIZE = (self.checkclaviernum((display.get_width()//4 - 2*text_height),(display.get_height()//6+text_height),display,bouton_resolution_Longeur),LARGEUR)
+                screen = pygame.display.set_mode(WINDOWS_SIZE,RESIZABLE)
 
-            if self.bouton_click(bouton_resolution_Largueur):
-                LARGEUR = self.checkclaviernum((LONGUEUR//4 + 0.6*text_height),(LARGEUR//6+text_height),screen,bouton_resolution_Largueur)
-                screen = pygame.display.set_mode((LONGUEUR, LARGEUR))
-                menu_background = pygame.transform.scale(menu_background,(LONGUEUR,LARGEUR))
-                coeff = LARGEUR * coeff // old_Largueur
-                coeff1 = LARGEUR * coeff1 // old_Largueur
-                coeff2 = LARGEUR * coeff2 // old_Largueur
-
-
-            self.draw_text("%d"%LONGUEUR,ColderWeather,WHITE,screen,(LONGUEUR//4 - 2*text_height), (LARGEUR//6+text_height))
-            self.draw_text("%d"%LARGEUR,ColderWeather,WHITE,screen,(LONGUEUR//4 + 0.6*text_height), (LARGEUR//6+text_height))
-
-            # Partie Curseur
-
+            if self.bouton_click(bouton_resolution_Largueur,display):
+                WINDOWS_SIZE = (LONGUEUR,self.checkclaviernum((display.get_width()//4 + 0.6*text_height),(display.get_height()//6+text_height),display,bouton_resolution_Largueur))
+                screen = pygame.display.set_mode(WINDOWS_SIZE,RESIZABLE)
+                
+            self.draw_text("%d"%LONGUEUR,ColderWeather,WHITE,display,(display.get_width()//4 - 2*text_height), (display.get_height()//6+text_height))
+            self.draw_text("%d"%LARGEUR,ColderWeather,WHITE,display,(display.get_width()//4 + 0.6*text_height), (display.get_height()//6+text_height))
             # Partie son 
+            screen.blit(pygame.transform.scale(display,WINDOWS_SIZE),(0,0))
             running = self.checkevent()
-            pygame.display.update()
-    def Quit(self):
-        sys.exit()      
+            pygame.display.update()     
     def draw_text(self,text, font, color, surface, x, y):
         textobj = font.render(text, 1, color)
         textrect = textobj.get_rect()
         textrect.topleft = (x, y)
         surface.blit(textobj, textrect) 
-    def affichage_set_point(self,x,y,cap):
+    def affichage_set_point(self,x,y,cap,display):
        
         # CREATION/AFFICHAGE : BOUTON + et -
 
         t_width, t_height = Rumbletumble.size("+")
-        self.draw_text('+', Rumbletumble, WHITE, screen, x,y)
+        self.draw_text('+', Rumbletumble, WHITE, display, x,y)
         button_ = pygame.Rect(x,y+0.90*t_width, t_width, t_width)
 
-        self.draw_text('-', Rumbletumble, WHITE, screen, x+3*t_width,y)
+        self.draw_text('-', Rumbletumble, WHITE, display, x+3*t_width,y)
         button_2 = pygame.Rect(x+2.9*t_width,y+0.90*t_width, t_width, t_width)
 
         # REGLE POUR LES POINTS : https://www.d20pfsrd.com/basics-ability-scores/ability-scores
 
-        if self.bouton_click(button_):
+        if self.bouton_click(button_,display):
             if cap < 7 or cap >= 18:
                 return cap
             elif self.perso.difficulty - self.point_attrib[cap - 7] < 0:
@@ -456,14 +430,14 @@ class Menu():
             else:
                 self.perso.difficulty = self.perso.difficulty - self.point_attrib[cap - 7]
                 return cap + 1    
-        if self.bouton_click(button_2):         
+        if self.bouton_click(button_2,display):         
             if cap <= 7 or cap >= 19  :
                 return cap
             else:
                 self.perso.difficulty = self.perso.difficulty + self.point_attrib[cap - 8]
                 return cap -1
         return cap
-    def afficherinventaire(self,pack,pos_x,pos_y,Is_perso = True,Is_shop = False):
+    def afficherinventaire(self,pack,pos_x,pos_y,display,Is_perso = True,Is_shop = False):
             #AFFICHAGE BACKGROUNDS 
             pack = pack 
             mouse_slot = pack.nb_x*pack.nb_y
@@ -471,8 +445,8 @@ class Menu():
             
             #screen.fill(LIGHT_GREY)
             menu_inventaire = pygame.transform.scale(menu_background,(LONGUEUR//2,LARGEUR//2))
-            screen.blit(menu_inventaire,(pos_x//2-LONGUEUR//4,pos_y//2-LARGEUR//4))
-            screen.blit(title,(pos_x//2-title.get_width()//2,pos_y//2-LARGEUR//3.5))
+            display.blit(menu_inventaire,(pos_x//2-LONGUEUR//4,pos_y//2-LARGEUR//4))
+            display.blit(title,(pos_x//2-title.get_width()//2,pos_y//2-LARGEUR//3.5))
         
             #CREATION BOUTON INVENTAIRE
             bouton_test = dict()
@@ -486,22 +460,22 @@ class Menu():
             if Is_perso:
                 text_width, text_height = Drifftype.size("Inventaire")
 
-                self.draw_text('Inventaire', ColderWeather, WHITE, screen, pos_x//2-text_width//4,pos_y//2-text_height//2-menu_inventaire.get_height()//2.1)
+                self.draw_text('Inventaire', ColderWeather, WHITE, display, pos_x//2-text_width//4,pos_y//2-text_height//2-menu_inventaire.get_height()//2.1)
                 text_width, text_height = ColderWeather_small.size("Piece :  ")
 
-                self.draw_text('Pieces : %i'%self.perso.argent,ColderWeather_small,WHITE,screen,pos_x//2-text_width//2,pos_y//2+LARGEUR//6)
-                self.draw_text('Poids : %i / %i'%(self.perso.poid_actuel,self.perso.poid_max),ColderWeather_small,WHITE,screen,pos_x//2-LARGEUR//3,pos_y//2+LARGEUR//6)
+                self.draw_text('Pieces : %i'%self.perso.argent,ColderWeather_small,WHITE,display,pos_x//2-text_width//2,pos_y//2+LARGEUR//6)
+                self.draw_text('Poids : %i / %i'%(self.perso.poid_actuel,self.perso.poid_max),ColderWeather_small,WHITE,display,pos_x//2-LARGEUR//3,pos_y//2+LARGEUR//6)
 
             
             for i in range(0,pack.nb_x*pack.nb_y):
-                pygame.draw.rect(screen,LIGHT_GREY,bouton_test[i],1)
+                pygame.draw.rect(display,LIGHT_GREY,bouton_test[i],1)
            
             # AFFICHER LES ITEMS INVENTAIRE
             h = 0
             for y in range(50,50+(pack.nb_x*50),50):
                 for i in range(0,pack.nb_y,1):
                     if pack.backpack[h+i] != None :
-                       screen.blit(key[pack.backpack[h+i]].wpn_img,(bouton_test[h+i].x, bouton_test[h+i].y))     
+                       display.blit(key[pack.backpack[h+i]].wpn_img,(bouton_test[h+i].x, bouton_test[h+i].y))     
                 h += pack.nb_y
             
             if Is_perso:
@@ -510,17 +484,17 @@ class Menu():
 
                 for i in range(0,4):
                     bouton_arm[i] = pygame.Rect(pos_x//2-LONGUEUR//5+pack.nb_y*50*1.4, 1.05*(50*(i+1))+pos_y//2-LARGEUR//7,50,50)
-                # pygame.draw.rect(screen,WHITE,bouton_arm[i])
-                    pygame.draw.rect(screen,LIGHT_GREY,bouton_arm[i],1)
+                # pygame.draw.rect(display,WHITE,bouton_arm[i])
+                    pygame.draw.rect(display,LIGHT_GREY,bouton_arm[i],1)
                     
                 for i in range(0,2):
                     bouton_arm[4+i] = pygame.Rect(pos_x//2-LONGUEUR//5+pack.nb_y*50*1.6+53*i,1.05*50+pos_y//2-LARGEUR//7,50,50)
-                    pygame.draw.rect(screen,LIGHT_GREY,bouton_arm[4+i],1)
+                    pygame.draw.rect(display,LIGHT_GREY,bouton_arm[4+i],1)
                 
                 for i in range(0,6):
                     if self.perso.armor[i] != None:
-                        screen.blit(key[self.perso.armor[i]].wpn_img,(bouton_arm[i].x,bouton_arm[i].y))
-                        #self.draw_text(self.perso.armor[i].armor_name,Drifftype,WHITE,screen,100,100)  
+                        display.blit(key[self.perso.armor[i]].wpn_img,(bouton_arm[i].x,bouton_arm[i].y))
+                        #self.draw_text(self.perso.armor[i].armor_name,Drifftype,WHITE,display,100,100)  
 
 
             #AFFICHER ITEMS CORPS JOUEURS
@@ -528,8 +502,10 @@ class Menu():
             #DRAG AND DROP
             
             mx,my = pygame.mouse.get_pos()
+            mx = display.get_width() * mx / screen.get_width()
+            my = display.get_height() * my / screen.get_height()
             #button_drag = pygame.Rect(mx,my,50,50)
-            #pygame.draw.rect(screen,RED,button_drag)
+            #pygame.draw.rect(display,RED,button_drag)
 
             # TEST : PRENDRE UN OBJECT DANS LA MOUSE
             if pack.backpack[mouse_slot] != None:
@@ -544,25 +520,25 @@ class Menu():
             last_moove = i
 
             for i in range(pack.nb_x*pack.nb_y):
-                if self.bouton_click(bouton_test[i]):
+                if self.bouton_click(bouton_test[i],display):
                     if pack.backpack[i] != None and have_object == False:
                         pack.backpack[mouse_slot] = pack.backpack[i]
                         pack.backpack[i] = None
                         last_moove = i
                         have_object = True
                 if Is_perso:
-                    if i < 6 and self.bouton_click(bouton_arm[i]):
+                    if i < 6 and self.bouton_click(bouton_arm[i],display):
                         if self.perso.armor[i] != None and have_object == False:
                             pack.backpack[pack.nb_x*pack.nb_y] = self.perso.armor[i]
                             self.perso.armor[i] = None
                             last_moove = mouse_slot+i+1
                             have_object = True
-            if Is_shop :Is_buying = self.creation_img_text_click(img_next,"Acheter",ColderWeather,WHITE,pos_x//2+img_next.get_width()//2,pos_y//2,Click=False) and pack.backpack[mouse_slot] != None
+            if Is_shop :Is_buying = self.creation_img_text_click(img_next,"Acheter",ColderWeather,WHITE,display,pos_x//2+img_next.get_width()//2,pos_y//2,Click=False) and pack.backpack[mouse_slot] != None
             # TEST : DEPOSER UN OBJECT DE LA MOUSE VERS L INVENTAIRE 
             if pack.backpack[mouse_slot] != None:
                 if any(pygame.mouse.get_pressed()):
                     have_object =True
-                    screen.blit(key[pack.backpack[mouse_slot]].wpn_img,(mx,my))
+                    display.blit(key[pack.backpack[mouse_slot]].wpn_img,(mx,my))
                 elif not(any(pygame.mouse.get_pressed())):
                     if Is_shop and Is_buying: 
                         items = pack.backpack[mouse_slot]
@@ -596,9 +572,11 @@ class Menu():
                 last_moove = -1
                 #pygame.draw.rect(screen,RED,button_drag)
                 have_object = False  
-    def bouton_click(self,bouton,constant_click = 0):
+    def bouton_click(self,bouton,display,constant_click = 0):
         # TEST : BOUTON EST CLIQUE ?
         mx, my = pygame.mouse.get_pos()
+        mx = display.get_width() * mx / screen.get_width()
+        my = display.get_height() * my / screen.get_height()
         return bouton.collidepoint((mx,my)) and self.click
     def checkevent(self):
 
@@ -615,13 +593,14 @@ class Menu():
                     self.click = True     
                 
         return True
-    def checkclavier(self,x,y,screen,rect):
+    def checkclavier(self,x,y,display,rect):
         running = True
         mot = ''
         all_key = (K_a,K_b,K_c,K_d,K_e,K_f,K_g,K_h,K_i,K_j,K_k,K_l,K_m,K_n,K_o,K_p,K_q,K_r,K_s,K_t,K_u,K_v,K_w,K_x,K_y,K_z)
         while running:
-            screen.fill(LIGHT_GREY,rect)
-            self.draw_text(mot,ColderWeather,WHITE,screen,x,y)
+            display.fill(LIGHT_GREY,rect)
+
+            self.draw_text(mot,ColderWeather,WHITE,display,x,y)
             
             for event in pygame.event.get():
                 if event.type == QUIT:
@@ -638,14 +617,16 @@ class Menu():
                                 mot += chr(97+i)
                         if event.key == K_SPACE:
                             mot += ' '
+            screen.blit(pygame.transform.scale(display,WINDOWS_SIZE),(0,0))
+
             pygame.display.update()
-    def checkclaviernum(self,x,y,screen,rect):
+    def checkclaviernum(self,x,y,display,rect):
         running = True
         mot = ''
 
         while running:
-            screen.fill(LIGHT_GREY,rect)
-            self.draw_text(mot,ColderWeather,WHITE,screen,x,y)
+            display.fill(LIGHT_GREY,rect)
+            self.draw_text(mot,ColderWeather,WHITE,display,x,y)
             
             for event in pygame.event.get():
                 if event.type == QUIT:
@@ -677,7 +658,8 @@ class Menu():
                             mot += '8'
                         if event.key == K_9:
                             mot += '9'
-                    
+            screen.blit(pygame.transform.scale(display,WINDOWS_SIZE),(0,0))
+
             pygame.display.update()
     def printbackgrounds(self,display):
         display.fill(LIGHT_GREY)
@@ -689,26 +671,26 @@ class Menu():
         Choose = False
         self.click=False
         num = 0
-        
+        display = pygame.Surface((1980,1024))
         while running:
 
-            self.printbackgrounds()
+            self.printbackgrounds(display)
             #screen.blit(img_next,(LONGUEUR-338  ,LARGEUR-112))
             #screen.blit(img_next,(0,LARGEUR-112))
 
-            button_save_1 = pygame.Rect(100,100,LONGUEUR//2-150,LARGEUR//2-150)
-            button_save_2 = pygame.Rect(LONGUEUR//2,100,LONGUEUR//2-150,LARGEUR//2-150)
-            button_save_3 = pygame.Rect(100,LARGEUR//2,LONGUEUR//2-150,LARGEUR//2-150)
-            button_save_4 = pygame.Rect(LONGUEUR//2,LARGEUR//2,LONGUEUR//2-150,LARGEUR//2-150)
+            button_save_1 = pygame.Rect(100,100,display.get_width()//2-150,display.get_height()//2-150)
+            button_save_2 = pygame.Rect(display.get_width()//2,100,display.get_width()//2-150,display.get_height()//2-150)
+            button_save_3 = pygame.Rect(100,display.get_height()//2,display.get_width()//2-150,display.get_height()//2-150)
+            button_save_4 = pygame.Rect(display.get_width()//2,display.get_height()//2,display.get_width()//2-150,display.get_height()//2-150)
 
-            if num == 1 : pygame.draw.rect(screen,RED,button_save_1)
-            else : pygame.draw.rect(screen,LIGHT_GREY,button_save_1,1)
-            if num == 2 : pygame.draw.rect(screen,RED,button_save_2)
-            else : pygame.draw.rect(screen,LIGHT_GREY,button_save_2,1)
-            if num == 3 : pygame.draw.rect(screen,RED,button_save_3)
-            else : pygame.draw.rect(screen,LIGHT_GREY,button_save_3,1)
-            if num == 4 : pygame.draw.rect(screen,RED,button_save_4)
-            else : pygame.draw.rect(screen,LIGHT_GREY,button_save_4,1)
+            if num == 1 : pygame.draw.rect(display,RED,button_save_1)
+            else : pygame.draw.rect(display,LIGHT_GREY,button_save_1,1)
+            if num == 2 : pygame.draw.rect(display,RED,button_save_2)
+            else : pygame.draw.rect(display,LIGHT_GREY,button_save_2,1)
+            if num == 3 : pygame.draw.rect(display,RED,button_save_3)
+            else : pygame.draw.rect(display,LIGHT_GREY,button_save_3,1)
+            if num == 4 : pygame.draw.rect(display,RED,button_save_4)
+            else : pygame.draw.rect(display,LIGHT_GREY,button_save_4,1)
 
             text_width, text_height = ColderWeather.size("Sauvegarde 1")
             path = r'\Pygeon\\Save\\'
@@ -716,141 +698,144 @@ class Menu():
                 with open(r'Pygeon\Save\sauvegarde','rb') as fichier:
                     mon_depickler = pickle.Unpickler(fichier)
                     inter = mon_depickler.load()
-                    self.draw_text("Sauvegarde 1",ColderWeather,LIGHT_GREY,screen,button_save_1.width//2-text_width//4,100+text_height//4)
-                    self.draw_text("Nom : %s"%(inter.name),ColderWeather,LIGHT_GREY,screen,button_save_1.width//2-text_width//4,200+text_height)
-                    if self.bouton_click(button_save_1):
+                    self.draw_text("Sauvegarde 1",ColderWeather,LIGHT_GREY,display,button_save_1.width//2-text_width//4,100+text_height//4)
+                    self.draw_text("Nom : %s"%(inter.name),ColderWeather,LIGHT_GREY,display,button_save_1.width//2-text_width//4,200+text_height)
+                    if self.bouton_click(button_save_1,display):
                         Choose = True
                         num = 1
                         choose_path = path + 'sauvegarde'
-            else : self.draw_text("VIDE",ColderWeather,LIGHT_GREY,screen,button_save_1.width//2-text_width//4,100+text_height//4)
+            else : self.draw_text("VIDE",ColderWeather,LIGHT_GREY,display,button_save_1.width//2-text_width//4,100+text_height//4)
 
             if os.path.getsize(r'Pygeon\Save\sauvegarde2') > 0 :
                 with open(r'Pygeon\Save\sauvegarde2','rb') as fichier:
                     mon_depickler = pickle.Unpickler(fichier)
                     inter = mon_depickler.load()
-                    self.draw_text("Sauvegarde 2",ColderWeather,LIGHT_GREY,screen,(100-text_width//2+(LONGUEUR//2-100)//2)+LONGUEUR//2-100,100+text_height//4)
-                    self.draw_text("Nom : %s"%(inter.name),ColderWeather,LIGHT_GREY,screen,(100-text_width//2+(LONGUEUR//2-100)//2)+LONGUEUR//2-100,200+text_height)
-                    if self.bouton_click(button_save_2):
+                    self.draw_text("Sauvegarde 2",ColderWeather,LIGHT_GREY,display,(100-text_width//2+(display.get_width()//2-100)//2)+display.get_width()//2-100,100+text_height//4)
+                    self.draw_text("Nom : %s"%(inter.name),ColderWeather,LIGHT_GREY,display,(100-text_width//2+(display.get_width()//2-100)//2)+display.get_width()//2-100,200+text_height)
+                    if self.bouton_click(button_save_2,display):
                         Choose = True
                         num = 2
                         choose_path = path + 'sauvegarde2'
-            else : self.draw_text("VIDE",ColderWeather,LIGHT_GREY,screen,button_save_1.width//2-text_width//4,100+text_height//4)
+            else : self.draw_text("VIDE",ColderWeather,LIGHT_GREY,display,button_save_1.width//2-text_width//4,100+text_height//4)
 
             if os.path.getsize(r'Pygeon\Save\sauvegarde3') > 0 :
                 with open(r'Pygeon\Save\sauvegarde3','rb') as fichier:
                     mon_depickler = pickle.Unpickler(fichier)
                     inter = mon_depickler.load()
-                    self.draw_text("Sauvegarde 3",ColderWeather,LIGHT_GREY,screen,100-text_width//2+(LONGUEUR//2-100)//2,text_height//4+LARGEUR//2)
-                    self.draw_text("Nom : %s"%(inter.name),ColderWeather,LIGHT_GREY,screen,100-text_width//2+(LONGUEUR//2-100)//2,text_height//4+LARGEUR//2+200)
-                    if self.bouton_click(button_save_3):
+                    self.draw_text("Sauvegarde 3",ColderWeather,LIGHT_GREY,display,100-text_width//2+(display.get_width()//2-100)//2,text_height//4+display.get_height()//2)
+                    self.draw_text("Nom : %s"%(inter.name),ColderWeather,LIGHT_GREY,display,100-text_width//2+(display.get_width()//2-100)//2,text_height//4+display.get_height()//2+200)
+                    if self.bouton_click(button_save_3,display):
                         Choose = True
                         num = 3
                         choose_path = path + 'sauvegarde3'
-            else : self.draw_text("VIDE",ColderWeather,LIGHT_GREY,screen,button_save_1.width//2-text_width//4,100+text_height//4)
+            else : self.draw_text("VIDE",ColderWeather,LIGHT_GREY,display,button_save_1.width//2-text_width//4,100+text_height//4)
         
             if os.path.getsize(r'Pygeon\Save\sauvegarde4') > 0 :
                 with open(r'Pygeon\Save\sauvegarde4','rb') as fichier:
                     mon_depickler = pickle.Unpickler(fichier)
                     inter = mon_depickler.load()
-                    self.draw_text("Sauvegarde 4",ColderWeather,LIGHT_GREY,screen,(100-text_width//2+(LONGUEUR//2-100)//2)+LONGUEUR//2-100,text_height//4+LARGEUR//2)
-                    self.draw_text("Nom : %s"%(inter.name),ColderWeather,LIGHT_GREY,screen,(100-text_width//2+(LONGUEUR//2-100)//2)+LONGUEUR//2-100,text_height//4+LARGEUR//2+200)
-                    if self.bouton_click(button_save_4):
+                    self.draw_text("Sauvegarde 4",ColderWeather,LIGHT_GREY,display,(100-text_width//2+(display.get_width()//2-100)//2)+display.get_width()//2-100,text_height//4+display.get_height()//2)
+                    self.draw_text("Nom : %s"%(inter.name),ColderWeather,LIGHT_GREY,display,(100-text_width//2+(display.get_width()//2-100)//2)+display.get_width()//2-100,text_height//4+display.get_height()//2+200)
+                    if self.bouton_click(button_save_4,display):
                         Choose = True
                         num = 4
                         choose_path = path + 'sauvegarde4'
-            else : self.draw_text("VIDE",ColderWeather,LIGHT_GREY,screen,button_save_1.width//2-text_width//4,100+text_height//4)
+            else : self.draw_text("VIDE",ColderWeather,LIGHT_GREY,display,button_save_1.width//2-text_width//4,100+text_height//4)
             
 
             if (Choose):
-                if self.creation_img_text_click(img_next,"Sauvegarder",ColderWeather,WHITE,0,0,right=1):
+                if self.creation_img_text_click(img_next,"Sauvegarder",ColderWeather,WHITE,display,0,0,right=1):
                     if self.perso.name == None:
-                        self.Validation_screen("Erreur : Nom incorrect")
+                        self.Validation_screen("Erreur : Nom incorrect",display)
                     else:
                         self.click = False
                         text = 'Etes vous sur de vouloir sauvegarder ?'
-                        if(self.Validation_screen(text)):
+                        if(self.Validation_screen(text,display)):
                             with open(choose_path,'wb') as fichier:
                                 mon_pickler = pickle.Pickler(fichier)
                                 mon_pickler.dump(self.perso)
 
-                if self.creation_img_text_click(img_next,"Charger",ColderWeather,WHITE,0,0,left=1):
+                if self.creation_img_text_click(img_next,"Charger",ColderWeather,WHITE,display,0,0,left=1):
                     self.click = False
-                    if (self.Validation_screen('Etes vous sur de vouloir charger ?')):
+                    if (self.Validation_screen('Etes vous sur de vouloir charger ?',display)):
                         with open(choose_path,'rb') as fichier:
                             mon_depickler = pickle.Unpickler(fichier)
                             self.perso = mon_depickler.load()
                         return 
 
+            screen.blit(pygame.transform.scale(display,WINDOWS_SIZE),(0,0))
             running = self.checkevent()
             pygame.display.update()
-    def Validation_screen(self,text):
+    def Validation_screen(self,text,display):
         running = True
         while running:
             # Backgrounds :
             global img_backgrounds_warning 
-            #self.printbackgrounds()
-            screen.fill(LIGHT_GREY)
-            img_backgrounds_warning = pygame.transform.scale(img_backgrounds_warning,(LONGUEUR//2,LARGEUR//4))
-            screen.blit(img_backgrounds_warning,(LONGUEUR//2-img_backgrounds_warning.get_width()//2,LARGEUR//2-img_backgrounds_warning.get_height()))
-            screen.blit(exclamation,(LONGUEUR//2+img_backgrounds_warning.get_width()//2.5,LARGEUR//2-1.1*img_backgrounds_warning.get_height()))
+            #self.printbackgrounds(display)
+            display.fill(LIGHT_GREY)
+            img_backgrounds_warning = pygame.transform.scale(img_backgrounds_warning,(display.get_width()//2,display.get_height()//4))
+            display.blit(img_backgrounds_warning,(display.get_width()//2-img_backgrounds_warning.get_width()//2,display.get_height()//2-img_backgrounds_warning.get_height()))
+            display.blit(exclamation,(display.get_width()//2+img_backgrounds_warning.get_width()//2.5,display.get_height()//2-1.1*img_backgrounds_warning.get_height()))
             text_width, text_height = ColderWeather_small.size(text)
-            self.draw_text(text,ColderWeather_small,WHITE,screen,LONGUEUR//2-text_width//2,LARGEUR//2-text_height//2-img_backgrounds_warning.get_height()//2)
-            if self.creation_img_text_click(validation_button,"Valider",ColderWeather,WHITE,LONGUEUR//2,LARGEUR//2):
+            self.draw_text(text,ColderWeather_small,WHITE,display,display.get_width()//2-text_width//2,display.get_height()//2-text_height//2-img_backgrounds_warning.get_height()//2)
+            pygame.display.update()
+            if self.creation_img_text_click(validation_button,"Valider",ColderWeather,WHITE,display,display.get_width()//2,display.get_height()//2):
                 return True
+            screen.blit(pygame.transform.scale(display,WINDOWS_SIZE),(0,0))
             running = self.checkevent() 
             pygame.display.update()
-    def creation_img_text_click(self,img,text,font,color,x=0,y=0,button=1,left=0,right=0,Click = True): 
+    def creation_img_text_click(self,img,text,font,color,display,x=0,y=0,button=1,left=0,right=0,Click = True): 
         text_width, text_height = font.size(text)
         if img.get_width() < text_width:
             img = pygame.transform.scale(img,(text_width+50,img.get_height()))
         if(left):
             x = 0
-            y = LARGEUR-img.get_height()
+            y = display.get_height()-img.get_height()
         elif(right):
-            x = LONGUEUR-img.get_width()
-            y = LARGEUR-img.get_height()
+            x = display.get_width()-img.get_width()
+            y = display.get_height()-img.get_height()
         else:
             x = x-img.get_width()//2
             y = y-img.get_height()//2
-        screen.blit(img,(x,y))
+        display.blit(img,(x,y))
         button_crea = pygame.Rect(x,y,img.get_width(),img.get_height())
-        self.draw_text(text,font,color,screen,x+img.get_width()//2-text_width//2,y+img.get_height()//2-img.get_height()//2)
+        self.draw_text(text,font,color,display,x+img.get_width()//2-text_width//2,y+img.get_height()//2-img.get_height()//2)
         if Click :
-            if self.bouton_click(button_crea):
+            if self.bouton_click(button_crea,display):
                 return True
         else:
             mx,my = pygame.mouse.get_pos()
             return button_crea.collidepoint((mx,my))
     def create_text_click(self,text,font,color,display,x=0,y=0):
-        mx,my = pygame.mouse.get_pos()
-        mx = mx - (-display.get_width()//2 + screen.get_width()//2)
-        my = my - (-display.get_height()//2+screen.get_height()//2)
         text_width, text_height = font.size(text)
         button_1 = pygame.Rect(x - text_width // 2, y, text_width, text_height)
-        pygame.draw.rect(screen,WHITE,button_1)
         self.draw_text(text,font,color,display,x - text_width // 2,y)
-        if button_1.collidepoint((mx,my)) and self.click:
+        if self.bouton_click(button_1,display):
             return True
-
     def shop_print(self,perso1,perso2,just_print = False):
         running = True
+        display = pygame.Surface((1980,1024))
         while running:
-            screen.fill(LIGHT_GREY)
+            display.fill(LIGHT_GREY)
             items = None
-            items = self.afficherinventaire(perso1.inventaire,LONGUEUR,LARGEUR//2,False,Is_shop=True)
+            items = self.afficherinventaire(perso1.inventaire,display.get_width(),display.get_height()//2,display,False,Is_shop=True)
             if items != None:
                 print(key[items].value)
                 if (perso2.argent - key[items].value) < 0 :
-                    self.Validation_screen("Vous avez pas assez d'argent")
-                    #self.afficherinventaire(perso2.inventaire,LONGUEUR,1.5*LARGEUR)
+                    self.Validation_screen("Vous avez pas assez d'argent",display)
+                    #self.afficherinventaire(perso2.inventaire,display.get_width(),1.5*display.get_height())
 
                     perso1.inventaire.ajouteritems(perso1,key[items])
                 else:
                     perso2.argent -= key[items].value
                     perso2.inventaire.ajouteritems(perso2,key[items])
-            self.afficherinventaire(perso2.inventaire,LONGUEUR,1.5*LARGEUR)
+            self.afficherinventaire(perso2.inventaire,display.get_width(),1.5*display.get_height(),display)
+
+
+            screen.blit(pygame.transform.scale(display,WINDOWS_SIZE),(0,0))
             pygame.display.update()
             running = self.checkevent()
+
 menu = Menu(player)
 
-menu.main_menu()
+menu.game_loop()

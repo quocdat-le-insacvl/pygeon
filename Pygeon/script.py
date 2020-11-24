@@ -12,7 +12,7 @@ pack_bis = Inventaire(5,5)
 player = Perso(10,10,10,10,10,10,100,150,pack_bis)
 player.xp = 500
 playerbis = Perso(20,20,20,20,20,20,20,20,pack)
-entity_1 = Entity(8400,1000,seller,'Seller','Seller',100)
+entity_1 = Entity(8400,1000,pygame.image.load(r'C:\Users\Antho\Desktop\Pygeon\pygeon\seller_1.png'),'Seller','Seller',100)
 #Godzilla = Perso(20,10,30,15,15,10,1000,150,'Godzilla')
 
 #print("%i",joueur_recup.xp)
