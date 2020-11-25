@@ -5,7 +5,7 @@ import random
 from pygame import mixer
 from script import pack,player,Wikitem,playerbis,pack_bis,entity_1
 from pygame.locals import *
-from settings.screen import LARGEUR, LONGUEUR, screen,WINDOWS_SIZE
+from settings.screen import *
 from settings.police import Drifftype,ColderWeather,Rumbletumble,coeff,coeff1,coeff2,ColderWeather_small
 from settings.load_img import *
 from settings.color import *
@@ -17,7 +17,7 @@ pygame.init()
 pygame.display.set_caption('Projet Pygeon')
 
 pygame.mouse.set_cursor(*pygame.cursors.broken_x)
-
+fullscreen = False
 
 class Menu():
     def __init__(self,player):
@@ -171,7 +171,7 @@ class Menu():
             pygame.display.update()
     def Option(self):
         running = True
-        display = pygame.Surface((1980,1024))
+        display = pygame.Surface((1980,1020))
         while running:
             global LONGUEUR
             global LARGEUR
@@ -179,32 +179,38 @@ class Menu():
             global WINDOWS_SIZE
             display.fill(LIGHT_GREY)
             self.printbackgrounds(display)
-            
-            old_Largueur = LARGEUR
+            global fullscreen
             # Partie Choisir résolution 
-           
+            if fullscreen:
+                color = RED 
+            else:
+                color = WHITE
             text_width, text_height = ColderWeather.size("Choisir la résolution")
             self.draw_text('Choisir la resolution', ColderWeather, GREY, display, display.get_width()//4 - text_width // 2.5, display.get_height()//6)
-            text_width, text_height = ColderWeather.size("    x    ")
-            self.draw_text("    x    ", ColderWeather, GREY, display,display.get_width()//4 - text_width // 2, display.get_height()//6+text_height)
 
-            text_width, text_height = ColderWeather.size("1000")
-            bouton_resolution_Longeur = pygame.Rect(display.get_width()//4 - 2*text_height, display.get_height()//6+text_height, text_width, text_height)
-            bouton_resolution_Largueur = pygame.Rect(display.get_width()//4 + 0.6*text_height, display.get_height()//6+text_height, text_width, text_height)
+            if self.create_text_click("1980 x 1020",ColderWeather,WHITE,display,display.get_width()//4,display.get_height()//6+1*text_height):
+                WINDOWS_SIZE = (1980,1020)
+                screen = pygame.display.set_mode(WINDOWS_SIZE,pygame.RESIZABLE,32)
+            if self.create_text_click("1536 x 684",ColderWeather,WHITE,display,display.get_width()//4,display.get_height()//6+2.5*text_height):
+                WINDOWS_SIZE = (1536,684)
+                screen = pygame.display.set_mode(WINDOWS_SIZE,pygame.RESIZABLE,32)
+            if self.create_text_click("1152 x 645",ColderWeather,WHITE,display,display.get_width()//4,display.get_height()//6+4*text_height):
+                WINDOWS_SIZE = (1152,645)
+                screen = pygame.display.set_mode(WINDOWS_SIZE,pygame.RESIZABLE,32)
+            if self.create_text_click("768 x 432",ColderWeather,WHITE,display,display.get_width()//4,display.get_height()//6+5.5*text_height):
+                WINDOWS_SIZE = (768 , 432)
+                screen = pygame.display.set_mode(WINDOWS_SIZE,pygame.RESIZABLE,32)
+            if self.create_text_click("Full Screen",ColderWeather,color,display,display.get_width()//4,display.get_height()//6+7*text_height):
+                if not fullscreen:
+                    screen = pygame.display.set_mode(user_size,pygame.FULLSCREEN,32)
+                    WINDOWS_SIZE = (pygame.display.Info().current_w,pygame.display.Info().current_h)
+                if fullscreen:
+                    WINDOWS_SIZE = (1152,645)
+                    screen = pygame.display.set_mode(WINDOWS_SIZE,pygame.RESIZABLE,32)
+                fullscreen = not fullscreen
 
-            pygame.draw.rect(display,(150,150,150),bouton_resolution_Longeur,1)
-            pygame.draw.rect(display,(150,150,150),bouton_resolution_Largueur,1)
 
-            if self.bouton_click(bouton_resolution_Longeur,display):
-                WINDOWS_SIZE = (self.checkclaviernum((display.get_width()//4 - 2*text_height),(display.get_height()//6+text_height),display,bouton_resolution_Longeur),LARGEUR)
-                screen = pygame.display.set_mode(WINDOWS_SIZE,RESIZABLE)
-
-            if self.bouton_click(bouton_resolution_Largueur,display):
-                WINDOWS_SIZE = (LONGUEUR,self.checkclaviernum((display.get_width()//4 + 0.6*text_height),(display.get_height()//6+text_height),display,bouton_resolution_Largueur))
-                screen = pygame.display.set_mode(WINDOWS_SIZE,RESIZABLE)
-                
-            self.draw_text("%d"%LONGUEUR,ColderWeather,WHITE,display,(display.get_width()//4 - 2*text_height), (display.get_height()//6+text_height))
-            self.draw_text("%d"%LARGEUR,ColderWeather,WHITE,display,(display.get_width()//4 + 0.6*text_height), (display.get_height()//6+text_height))
+           
             # Partie son 
             screen.blit(pygame.transform.scale(display,WINDOWS_SIZE),(0,0))
             running = self.checkevent()
@@ -384,7 +390,9 @@ class Menu():
         my = display.get_height() * my / screen.get_height()
         return bouton.collidepoint((mx,my)) and self.click
     def checkevent(self):
-
+        global screen
+        global WINDOWS_SIZE
+        global fullscreen
         self.click = False
         for event in pygame.event.get():
             if event.type == QUIT:
@@ -392,7 +400,10 @@ class Menu():
             if event.type == KEYDOWN:
                 if event.key == K_ESCAPE:
                     return False
-                
+            if event.type == VIDEORESIZE:
+                if not fullscreen:
+                    WINDOWS_SIZE = (event.w,event.h)
+                    screen = pygame.display.set_mode(WINDOWS_SIZE,pygame.RESIZABLE,32)
             if event.type == MOUSEBUTTONDOWN:
                 if event.button == 1:
                     self.click = True     
@@ -643,4 +654,4 @@ class Menu():
 
 menu = Menu(player)
 
-menu.Credit()
+menu.main_menu()

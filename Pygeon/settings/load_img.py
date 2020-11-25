@@ -18,10 +18,10 @@ DK = pygame.image.load(r'Pygeon\Addon\Menu\Intro_menu\f11.png')
 
 # SOL 
 
-floor = pygame.image.load(r'C:\Users\Antho\Desktop\Pygeon\pygeon\test.png')
+
 arbre = pygame.image.load(r'Pygeon\arbre.png')
-floor =pygame.transform.scale(floor,(200,200))
+
 arbre = pygame.transform.scale(arbre,(200,200))
-floor.set_colorkey((255,255,255))
-end_game = pygame.image.load(r'C:\Users\Antho\Desktop\Pygeon\pygeon\Pygeon\Addon\end_game.png')
+
+end_game = pygame.image.load(r'Pygeon\Addon\end_game.png')
 end_game = pygame.transform.scale(end_game,(200,200))
