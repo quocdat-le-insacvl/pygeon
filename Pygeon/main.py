@@ -31,7 +31,7 @@ class Menu():
         LARGEUR_1 = 600
         global screen
         display = pygame.Surface((LONGUEUR_1,LARGEUR_1))
-        mixer.music.load(r'Pygeon\Addon\Son\background.wav')
+        mixer.music.load(r'Addon\Son\background.wav')
         mixer.music.play(-1) 
         while running:
             Xdd, Ydd, Xdragon, Ydragon = Xdd + 1, Ydd + 1, Xdragon - 1.5, Ydragon + 1.5
