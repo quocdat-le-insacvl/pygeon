@@ -1,6 +1,6 @@
 import pygame as pg
 from random import uniform, choice, randint
-from settings import *
+from settings.settings import *
 from tilemap import collide_hit_rect
 vec = pg.math.Vector2
 

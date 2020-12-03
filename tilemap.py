@@ -1,6 +1,6 @@
 import pygame as pg
 import pytmx
-from settings import *
+from settings.settings import *
 
 
 def collide_hit_rect(one, two):

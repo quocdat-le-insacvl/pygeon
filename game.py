@@ -3,7 +3,7 @@ import sys
 from os import path
 
 from pygame.constants import K_g
-from settings import *
+from settings.settings import *
 from sprites import *
 from tilemap import *
 from fonctions import *

@@ -16,13 +16,13 @@ class Entity():
     def update_center(self):
         self.center = [self.pos_x + self.img.get_width()//2,self.pos_y + self.img.get_height()//2]
 
-tavern_img = pygame.image.load(r'tavern_1.png').convert_alpha()
+tavern_img = pygame.image.load(r'Addon\tavern_1.png').convert_alpha()
 tavern_img = pygame.transform.scale(tavern_img,(2*tavern_img.get_width(),2*tavern_img.get_height()))
-tavern_2_img = pygame.image.load(r'C:\Users\Antho\Desktop\Pygeon\pygeon\Addon\tavern_2.png').convert_alpha()
+tavern_2_img = pygame.image.load(r'Addon\tavern_2.png').convert_alpha()
 tavern_2_img = pygame.transform.scale(tavern_2_img,(2*tavern_2_img.get_width(),2*tavern_2_img.get_height()))
 demon = pygame.image.load(r'Addon\demon_walk\walk_1.png').convert_alpha()
 demon = pygame.transform.scale(demon,(10*demon.get_width(),10*demon.get_height()))
-vendeur_1 = pygame.image.load(r'C:\Users\Antho\Desktop\Pygeon\pygeon\Addon\seller\seller_1_hide_1.png').convert_alpha()
+vendeur_1 = pygame.image.load(r'Addon\seller\seller_1_hide_1.png').convert_alpha()
 vendeur_1 = pygame.transform.scale(vendeur_1,(3*vendeur_1.get_width(),3*vendeur_1.get_height()))
 
 

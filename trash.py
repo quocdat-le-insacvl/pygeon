@@ -5,7 +5,7 @@ import random
 from pygame import mixer
 from script import pack,player,Wikitem,playerbis,pack_bis
 from pygame.locals import *
-from settings.screen import LARGEUR, LONGUEUR, screen,WINDOWS_SIZE
+from settings.screen import *
 from settings.police import Drifftype,ColderWeather,Rumbletumble,coeff,coeff1,coeff2,ColderWeather_small
 from settings.load_img import *
 from settings.color import *
@@ -333,4 +333,4 @@ class Game():
 
 game = Game()
 
-game.Credit()
+#game.Credit()
