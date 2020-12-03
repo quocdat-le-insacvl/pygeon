@@ -23,3 +23,10 @@
   
   git push origin new_branch
   
+- Pour faire un merge "pull request":
+  
+  Allez sur le new_branch (sur la site de github)
+  
+  Cliquez petit button : Pull request 
+  
+  Tapper le message => Create pull request
