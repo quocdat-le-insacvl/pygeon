@@ -3,6 +3,8 @@
 ## Attention:
 - Ne push pas au branch Master svp
 
+- Il vaut mieux d'utiliser : git clone , commit et tout, pour Merge facilement !
+
 - Pour téléchargé:
 
   git clone https://github.com/quocdat-le-insacvl/pygeon.git
