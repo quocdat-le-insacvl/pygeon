@@ -71,3 +71,9 @@ MODIFY_HP = False
 ACT_DAMAGE = False #pour activer le calcul des degats
 FIN_COMBAT  = False
 MSGS = ["img/20.png", "img/6.png", "img/player.png"]
+
+# Display texts
+DEFAULT_DISPLAY_TIME = 2000 # milisecond
+TEXT_SIZE = 15
+TEXT_WIDTH = 30
+TEXT_HEIGHT = 40
