@@ -30,3 +30,7 @@
   Cliquez petit button : Pull request 
   
   Tapper le message => Create pull request
+
+## Gestion de tâches: 
+
+https://app.asana.com/0/1199513140691421/board
