@@ -246,6 +246,7 @@ class Dice(pg.sprite.Sprite):
         self.rotated_rect = self.rotated_surface.get_rect(center=(WIDTH, HEIGHT - 3 * TILESIZE))
             #center=(config.SCALE*3+60, config.SCREEN_Y - 2*config.SCALE+40))
         # return rotated_surface, rotated_rect
+    
     def draw(self):
         self.game.screen.blit(self.rotated_surface, self.rotated_rect)
 
