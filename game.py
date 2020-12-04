@@ -40,7 +40,7 @@ class Game:
         self.first = True
         self.angle = 0  # pour la rotation
         self.score = 0  # pour le dice
-        self.dice_evt = DiceEvent(self)
+
         self.msg = "-"
         self.pause = False
         self.tour_monster = True  # cette valeur est a True si c'est le tour du monstre de jouer
@@ -78,6 +78,8 @@ class Game:
         self.bullets = pg.sprite.Group()
         self.spiders = pg.sprite.Group()
         self.texts = pg.sprite.Group()
+        self.dices = pg.sprite.Group()
+        self.dice_evt = DiceEvent(self)
         for tile_object in self.map.tmxdata.objects:
             if tile_object.name == 'player':
                 self.player = Player(self, tile_object.x, tile_object.y)
@@ -107,6 +109,7 @@ class Game:
         # update portion of the game loop
         self.all_sprites.update()
         self.texts.update()
+        self.dices.update()
         self.camera.update(self.player)
         # mobs hit player
         hits = pg.sprite.spritecollide(self.player, self.mobs, False, collide_hit_rect)
@@ -159,6 +162,10 @@ class Game:
         self.draw_log()
         for text in self.texts:
             text.print_text()
+        
+        for dice in self.dices:
+            dice.rotate(self.angle)
+            dice.draw()
         pg.display.flip()
 
     def events(self):

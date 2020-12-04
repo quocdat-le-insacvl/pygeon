@@ -227,21 +227,27 @@ class MuzzleFlash(pg.sprite.Sprite):
 
 class Dice(pg.sprite.Sprite):
 
-    def __init__(self, image, num):
-        super().__init__()
+    def __init__(self, game, image, num):
+        #super().__init__()
+        self.groups = game.dices
+        self.game = game
+        pg.sprite.Sprite.__init__(self, self.groups)
         self.name = image
         self.numero = num  # pour savoir le type du de
         self.image = pg.image.load(image)
         self.rect = self.image.get_rect(center=(WIDTH, HEIGHT - 3 * TILESIZE))
             #center=(config.SCALE*3+60, config.SCREEN_Y - 2*config.SCALE+40))
+        self.rotated_surface = None
+        self.rotated_rect = None
 
-    def rotate(self, surface, angle, screen):
-        rotated_surface = pg.transform.rotozoom(surface, -angle, 1)
+    def rotate(self, angle):
+        self.rotated_surface = pg.transform.rotozoom(self.image, -angle, 1)
         # to not overwrite the original image surface
-        rotated_rect = rotated_surface.get_rect(center=(WIDTH, HEIGHT - 3 * TILESIZE))
+        self.rotated_rect = self.rotated_surface.get_rect(center=(WIDTH, HEIGHT - 3 * TILESIZE))
             #center=(config.SCALE*3+60, config.SCREEN_Y - 2*config.SCALE+40))
         # return rotated_surface, rotated_rect
-        screen.blit(rotated_surface, rotated_rect)
+    def draw(self):
+        self.game.screen.blit(self.rotated_surface, self.rotated_rect)
 
 
 class DiceEvent:
@@ -252,7 +258,7 @@ class DiceEvent:
         self.damage = 0
         self.all_dices = pg.sprite.Group()
         self.resultat = 0
-        self.dice = Dice(MSGS[0], 20)
+        self.dice = Dice(game, MSGS[0], 20)
         self.game = game
         self.start = True
         self.actdamage = False
@@ -290,7 +296,7 @@ class DiceEvent:
     def pause(self):
         if self.limit():
             self.all_dices.remove(self.dice)
-            self.dice = Dice("img/pause.png", 0)
+            self.dice = Dice(self.game, "img/pause.png", 0)
             self.load_dice()
 
     def resume(self, k, n):
@@ -298,7 +304,7 @@ class DiceEvent:
             self.actdamage = True
         self.all_dices.remove(self.dice)
         self.game.pause = False
-        self.dice = Dice(MSGS[k], n)
+        self.dice = Dice(self.game, MSGS[k], n)
         self.load_dice()
         self.reset()
 
