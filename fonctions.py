@@ -1,6 +1,6 @@
 import pygame
 import random
-
+from fonctions import *
 def bonus(attribut): #pour assigner a chaque attribut les pts bonus correspondants
         if attribut == 1:
             return -5
@@ -19,4 +19,3 @@ def affichage_box(window,text,color,x,y,taille):
 
 def generate_randint(a,b):
     return random.randint(a,b)
-

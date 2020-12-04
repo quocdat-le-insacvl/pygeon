@@ -50,7 +50,7 @@ class Player(pg.sprite.Sprite):
         self.mana = 100
 
         #les attributs du joueur a changer les valeurs pour qu'elles soient conformes avec le debut
-        self.stre = 12 
+        self.stre = 12
         self.dex = 16
         self.con = 13
         self.inte = 3
@@ -61,6 +61,7 @@ class Player(pg.sprite.Sprite):
         self.passive_p = 13 #passive perception
         self.attack = 3
         self.DC = 11
+
     def get_keys(self):
         self.rot_speed = 0
         self.vel = vec(0, 0)
@@ -305,7 +306,7 @@ class DiceEvent:
 class Spider(pg.sprite.Sprite):
     def __init__(self, game, x, y):
         self._layer = MOB_LAYER
-        self.groups = game.all_sprites, game.spiders 
+        self.groups = game.all_sprites, game.spiders
         pg.sprite.Sprite.__init__(self, self.groups)
         self.game = game
         self.image = game.spider_img
@@ -363,3 +364,23 @@ class Spider(pg.sprite.Sprite):
         self.health_bar = pg.Rect(0, 0, width, 7)
         if self.health < MOB_HEALTH:
             pg.draw.rect(self.image, col, self.health_bar)
+
+
+class Text(pg.sprite.Sprite):
+    def __init__(self, game, text='text', pos=[WIDTH//2 - 50, HEIGHT//2 - 50], font='freesansbold.ttf', color=WHITE, size_font=50, life_time=DEFAULT_DISPLAY_TIME):
+        # Call the parent class (Sprite) constructor
+        self.game = game
+        self.groups = game.texts
+        pg.sprite.Sprite.__init__(self, self.groups)
+        self.spawn_time = pg.time.get_ticks()
+        self.life_time = life_time
+        self.font = pg.font.Font(font, size_font)
+        self.text = self.font.render(text, True, color)
+        self.pos = pos
+
+    def update(self):
+        if pg.time.get_ticks() - self.spawn_time >= self.life_time:
+            self.kill()
+
+    def print_text(self):
+        self.game.screen.blit(self.text, self.pos)

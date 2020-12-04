@@ -1,13 +1,13 @@
 import pygame as pg
 import sys
 from os import path
-
 from pygame.constants import K_g
 from settings.settings import *
 from sprites import *
 from tilemap import *
 from fonctions import *
 import time, math
+from combat import *
 # HUD functions
 
 
@@ -48,9 +48,9 @@ class Game:
         self.LANCER = False
         self.STOP = False
         self.MODIFY_HP = False
-        self.ACT_DAMAGE = False 
+        self.ACT_DAMAGE = False
         self.FIN_COMBAT = False
-        self.time = time.time() 
+        self.time = time.time()
 
 
     def load_data(self):
@@ -60,21 +60,15 @@ class Game:
         self.map = TiledMap(path.join(map_folder, 'level1.tmx'))
         self.map_img = self.map.make_map()
         self.map_rect = self.map_img.get_rect()
-        self.player_img = pg.image.load(
-            path.join(img_folder, PLAYER_IMG)).convert_alpha()
-        self.bullet_img = pg.image.load(
-            path.join(img_folder, BULLET_IMG)).convert_alpha()
-        self.mob_img = pg.image.load(
-            path.join(img_folder, MOB_IMG)).convert_alpha()
-        self.wall_img = pg.image.load(
-            path.join(img_folder, WALL_IMG)).convert_alpha()
-        self.spider_img = pg.image.load(
-            path.join(img_folder, SPIDER_IMG)).convert_alpha()
+        self.player_img = pg.image.load(path.join(img_folder, PLAYER_IMG)).convert_alpha()
+        self.bullet_img = pg.image.load(path.join(img_folder, BULLET_IMG)).convert_alpha()
+        self.mob_img = pg.image.load(path.join(img_folder, MOB_IMG)).convert_alpha()
+        self.wall_img = pg.image.load(path.join(img_folder, WALL_IMG)).convert_alpha()
+        self.spider_img = pg.image.load(path.join(img_folder, SPIDER_IMG)).convert_alpha()
         self.wall_img = pg.transform.scale(self.wall_img, (TILESIZE, TILESIZE))
         self.gun_flashes = []
         for img in MUZZLE_FLASHES:
-            self.gun_flashes.append(pg.image.load(
-                path.join(img_folder, img)).convert_alpha())
+            self.gun_flashes.append(pg.image.load(path.join(img_folder, img)).convert_alpha())
 
     def new(self):
         # initialize all variables and do all the setup for a new game
@@ -83,16 +77,16 @@ class Game:
         self.mobs = pg.sprite.Group()
         self.bullets = pg.sprite.Group()
         self.spiders = pg.sprite.Group()
+        self.texts = pg.sprite.Group()
         for tile_object in self.map.tmxdata.objects:
             if tile_object.name == 'player':
                 self.player = Player(self, tile_object.x, tile_object.y)
             if tile_object.name == 'zombie':
                 Mob(self, tile_object.x, tile_object.y)
             if tile_object.name == 'spider':
-                self.spider = Spider(self, tile_object.x, tile_object.y) 
+                self.spider = Spider(self, tile_object.x, tile_object.y)
             if tile_object.name == 'wall':
-                Obstacle(self, tile_object.x, tile_object.y,
-                         tile_object.width, tile_object.height)
+                Obstacle(self, tile_object.x, tile_object.y, tile_object.width, tile_object.height)
         self.camera = Camera(self.map.width, self.map.height)
         self.draw_debug = False
 
@@ -112,10 +106,10 @@ class Game:
     def update(self):
         # update portion of the game loop
         self.all_sprites.update()
+        self.texts.update()
         self.camera.update(self.player)
         # mobs hit player
-        hits = pg.sprite.spritecollide(
-            self.player, self.mobs, False, collide_hit_rect)
+        hits = pg.sprite.spritecollide(self.player, self.mobs, False, collide_hit_rect)
         for hit in hits:
             """
             self.player.health -= MOB_DAMAGE
@@ -132,14 +126,16 @@ class Game:
             hit.vel = vec(0, 0)
         hits = pg.sprite.spritecollide(self.player, self.spiders, False)
         for hit in hits:
+            Combat(self, hit)
             self.surprise_atk()
         self.angle += 10
 
-    def draw_grid(self):
-        for x in range(0, WIDTH, TILESIZE):
-            pg.draw.line(self.screen, LIGHTGREY, (x, 0), (x, HEIGHT))
-        for y in range(0, HEIGHT, TILESIZE):
-            pg.draw.line(self.screen, LIGHTGREY, (0, y), (WIDTH, y))
+    def draw_log(self):
+        #Christine :
+        affichage_box(self.screen,"Hitpoints: " + str(self.player.hp), (0,0,0),0,0,30)
+        affichage_box(self.screen,"Resultat du de: " + str(self.dice_evt.resultat), (0,0,0),0,30,30)
+        affichage_box(self.screen,"Damage: " + str(self.dice_evt.damage), (0,0,0),0,60,30)
+        affichage_box(self.screen,"Message: " + str(self.msg), (0,0,0),0,90,30)
 
     def draw(self):
         pg.display.set_caption("{:.2f}".format(self.clock.get_fps()))
@@ -151,8 +147,7 @@ class Game:
                 sprite.draw_health()
             self.screen.blit(sprite.image, self.camera.apply(sprite))
             if self.draw_debug:
-                pg.draw.rect(self.screen, CYAN,
-                             self.camera.apply_rect(sprite.hit_rect), 1)
+                pg.draw.rect(self.screen, CYAN, self.camera.apply_rect(sprite.hit_rect), 1)
         if self.draw_debug:
             for wall in self.walls:
                 pg.draw.rect(self.screen, CYAN,
@@ -160,14 +155,10 @@ class Game:
 
         # pg.draw.rect(self.screen, WHITE, self.player.hit_rect, 2)
         # HUD functions
-        draw_player_health(self.screen, 10, 10,
-                           self.player.health / PLAYER_HEALTH)
-        
-        #Christine :
-        affichage_box(self.screen,"Hitpoints: "+str(self.player.hp), (0,0,0),0,0,30)
-        affichage_box(self.screen,"Resultat du de: "+str(self.dice_evt.resultat), (0,0,0),0,30,30)
-        affichage_box(self.screen,"Damage: "+str(self.dice_evt.damage), (0,0,0),0,60,30)
-        affichage_box(self.screen,"Message: "+str(self.msg), (0,0,0),0,90,30)
+        draw_player_health(self.screen, 10, 10, self.player.health / PLAYER_HEALTH)
+        self.draw_log()
+        for text in self.texts:
+            text.print_text()
         pg.display.flip()
 
     def events(self):
@@ -184,15 +175,15 @@ class Game:
                     self.dice_evt.resume(0,20)
                     self.dice_evt.actdamage = False
                     self.dice_evt.reset_all()
-                    self.tourj = True
-                    self.tourm = False
+                    self.tour_jouer = True
+                    self.tour_monster = False
 
     def show_start_screen(self):
         pass
 
     def show_go_screen(self):
         pass
-    
+
     def surprise_atk(self):
         if not self.FIN_COMBAT:
             global n, resultat
@@ -209,7 +200,6 @@ class Game:
                     self.dice_evt.compter()
                     self.dice_evt.check()
                     n = dice.numero
-
                 else:
                     self.dice_evt.pause()
                     self.dice_evt.all_dices.draw(self.screen)
