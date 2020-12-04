@@ -224,7 +224,7 @@ class MuzzleFlash(pg.sprite.Sprite):
         if pg.time.get_ticks() - self.spawn_time > FLASH_DURATION:
             self.kill()
 
-
+""" 
 class Dice(pg.sprite.Sprite):
 
     def __init__(self, game, image, num):
@@ -288,11 +288,11 @@ class DiceEvent:
             self.game.STOP = True
             if self.actdamage:
                 self.game.ACT_DAMAGE = True
-            """self.i += 1
+                self.i += 1
             self.dice = Dice(msgs[self.i])
             print(self.all_dices)
             self.load_dice()
-            self.reset()"""
+            self.reset()
 
     def pause(self):
         if self.limit():
@@ -308,7 +308,7 @@ class DiceEvent:
         self.dice = Dice(self.game, MSGS[k], n)
         self.load_dice()
         self.reset()
-
+ """
 
 class Spider(pg.sprite.Sprite):
     def __init__(self, game, x, y):
