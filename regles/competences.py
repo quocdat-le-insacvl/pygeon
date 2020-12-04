@@ -12,12 +12,12 @@ class Competence():
         if self.classe=="rogue":
             print("selectionne la competence 1 sale rogue")
     def competence2(self):
-        print("selectionne la competence 2 sale fou")
+        print("selectionne la competence 2")
     def competence3(self):
-        print("selectionne la competence 3 sale fou")
+        print("selectionne la competence 3")
     def competence4(self):
-        print("selectionne la competence 4 sale fou")
+        print("selectionne la competence 4")
     def competence5(self):
-        print("selectionne la competence 5 sale fou")
+        print("selectionne la competence 5")
     
     

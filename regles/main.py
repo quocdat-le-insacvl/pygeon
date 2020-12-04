@@ -1,15 +1,20 @@
 import pygame
-from fighter import Fighter
+from interface import fighter
+from interface import Interface
+from random import randrange
 pygame.init()
-fighter=Fighter()
+interface=Interface()
 running=True
+interface.generer()
 while running:
-    fighter.xp+=1000
-    pygame.display.set_caption("test")
-    pygame.display.set_mode((1500, 1000))
+    fighter.xp+=1
     fighter.levelupchange()
+    interface.basic_affichage()
+    n=pygame.time.get_ticks()
     pygame.display.flip()
     for event in pygame.event.get():
+        if event.type==pygame.MOUSEBUTTONUP:
+            interface.affichage_sort()
         if event.type==pygame.QUIT:
             running=False
             pygame.quit()

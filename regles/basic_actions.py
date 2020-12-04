@@ -1,11 +1,11 @@
-from personnage import Perso
+
 from random import randrange
-class Combat():
+class Actions():
     def __init__(self,attack):
         self.attack=attack
 
 
-    def dice(self,taille);
+    def dice(self,taille):
         return randrange(1,taille)
 
     def attack(self,disadv=False, adv=False):
@@ -20,11 +20,11 @@ class Combat():
     def disadvantage(self):
         lance1=self.dice(20)
         lance2=self.dice(20)
-        if lance1>=lance2: return lance=lance2 else: return lance=lance1
+        return (lance2 if lance1>=lance2 else lance1)
     
     def advantage(self):
         lance1=self.dice(20)
         lance2=self.dice(20)
-        if lance1<=lance2: return lance=lance2 else: return lance=lance1
+        return (lance2 if lance1<=lance2 else lance1)
 
     
