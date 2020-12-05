@@ -8,6 +8,7 @@ from tilemap import *
 #from fonctions import *
 import time, math
 from combat import *
+from level import *
 # HUD functions
 
 
@@ -73,7 +74,8 @@ class Game:
                 Obstacle(self, tile_object.x, tile_object.y, tile_object.width, tile_object.height)
         self.camera = Camera(self.map.width, self.map.height)
         self.draw_debug = False
-
+        self.level = Level(self)
+        
     def run(self):
         # game loop - set self.playing = False to end the game
         self.playing = True
@@ -93,13 +95,12 @@ class Game:
         self.texts.update()
         # self.dices.update()
         self.camera.update(self.player)
+        self.level.update()
         # mobs hit player
         hits = pg.sprite.spritecollide(self.player, self.mobs, False, collide_hit_rect)
         for hit in hits:
-            """
             self.player.health -= MOB_DAMAGE
             hit.vel = vec(0, 0)
-            """
             if self.player.health <= 0:
                 self.playing = False
         if hits:
@@ -109,19 +110,8 @@ class Game:
         for hit in hits:
             hit.health -= BULLET_DAMAGE
             hit.vel = vec(0, 0)
-        # hits = pg.sprite.spritecollide(self.player, self.spiders, False)
-        # for hit in hits:
-            # Combat(self, hit)
-            # self.surprise_atk()
-        # self.angle += 10
+        
 
-    """ def draw_log(self):
-        #Christine :
-        affichage_box(self.screen,"Hitpoints: " + str(self.player.hp), (0,0,0),0,0,30)
-        affichage_box(self.screen,"Resultat du de: " + str(self.dice_evt.resultat), (0,0,0),0,30,30)
-        affichage_box(self.screen,"Damage: " + str(self.dice_evt.damage), (0,0,0),0,60,30)
-        affichage_box(self.screen,"Message: " + str(self.msg), (0,0,0),0,90,30)
- """
     def draw(self):
         pg.display.set_caption("{:.2f}".format(self.clock.get_fps()))
         # self.screen.fill(BGCOLOR)
@@ -143,10 +133,7 @@ class Game:
         # self.draw_log()
         for text in self.texts:
             text.print_text()
-        
-        """ for dice in self.dices:
-            dice.rotate(self.angle)
-            dice.draw() """
+        self.draw_status()
         pg.display.flip()
 
     def events(self):
@@ -172,92 +159,17 @@ class Game:
     def show_go_screen(self):
         pass
 
-    """ def surprise_atk(self):
-        if not self.FIN_COMBAT:
-            global n, resultat
-            self.dice_evt.load_dice()
-            if self.dice_evt.start:
-                self.msg = "Surprise Attack"
-            self.dice_evt.start = False
-            # cet attribut est pour afficher Surprise Attack uniquement a la premiere entree a la fonction
-            # vu que la fonction s'execute plusieurs fois
-            done = False
-            for dice in self.dice_evt.all_dices:
-                if not self.pause:
-                    dice.rotate(dice.image, self.angle, self.screen)
-                    self.dice_evt.compter()
-                    self.dice_evt.check()
-                    n = dice.numero
-                else:
-                    self.dice_evt.pause()
-                    self.dice_evt.all_dices.draw(self.screen)
-                    done = True  # pour signaler que le de a termine de tourner
-            if self.STOP:  # pour generer un entier aleatoire quand le de finit de tourner
-                self.dice_evt.resultat = generate_randint(1, n)
-                print("::"+str(self.dice_evt.resultat))
-                self.STOP = False
-
-            if ((self.dice_evt.resultat + self.spider.stealth < self.player.ac) and
-                    done and not self.dice_evt.actdamage and self.tour_monster):
-                self.msg = "Miss. What will be your next step?"
-                self.dice_evt.damage = 0
-
-            elif ((self.dice_evt.resultat + self.spider.stealth >= self.player.ac) and done
-                  and self.tour_monster):
-                self.msg = "Hit. Generating damage..."
-                self.dice_evt.damage = 0
-                for i in range(100):
-                    # pour laisser un temps entre l'affichage du premier resultat du de et le second
-                    self.dice_evt.pause()
-                self.dice_evt.resume(1, 6)
-                self.dice_evt.check()
-            elif self.ACT_DAMAGE and self.tour_monster:  # a changer
-                self.dice_evt.damage = self.dice_evt.resultat
-                self.player.hp = self.player.hp - self.dice_evt.damage  # 100
-                self.ACT_DAMAGE = False
-                self.msg = "Your next step?"
-                #print("self.player.hp: "+str(self.player.hp))
-
-            # tour du joueur
-            if((self.dice_evt.resultat + self.player.dex < self.spider.ac) and done
-                    and self.tour_jouer and not self.dice_evt.actdamage):
-                self.msg = "You missed."
-                self.dice_evt.damage = 0
-                for i in range(200):
-                    # pour laisser un temps entre l'affichage du premier resultat du de et le second
-                    self.dice_evt.pause()
-                self.tour_monster, self.tour_jouer = True, False
-                self.dice_evt.resume(0, 20)
-                self.dice_evt.check()
-
-            elif((self.dice_evt.resultat + self.player.dex >= self.spider.ac) and done
-                 and self.tour_jouer and not self.dice_evt.actdamage):  # modifier la condition
-                self.msg = "You hitted the monster.Generating damage..."
-                for i in range(100):
-                    # pour laisser un temps entre l'affichage du premier resultat du de et le second
-                    self.dice_evt.pause()
-                self.dice_evt.resume(1, 6)
-                self.dice_evt.check()
-
-            elif self.ACT_DAMAGE and self.tour_jouer:  # a changer
-                self.dice_evt.damage = self.dice_evt.resultat
-                self.spider.hp = self.spider.hp - self.dice_evt.damage  # 100
-                self.ACT_DAMAGE = False
-                self.dice_evt.actdamage = False
-                if self.spider.hp <= 0:
-                    self.objects.remove(self.spider)
-                    self.msg = "Monster beaten"
-                    self.FIN_COMBAT = True
-                else:
-                    self.tour_monster, self.tour_jouer = True, False
-                    self.msg = "-"
-                    for i in range(100):
-                        # pour laisser un temps entre l'affichage du premier resultat du de et le second
-                        self.dice_evt.pause()
-                    self.dice_evt.resume(0, 20)
-                    self.dice_evt.check()
-                print("Spider hp: "+str(self.spider.hp))
- """
+    def draw_status(self):
+        color=WHITE
+        size_font=20
+        level_pos=[WIDTH - 200, 50]
+        monster_pos = [WIDTH - 200, 70]
+        _font='freesansbold.ttf'
+        font = pg.font.Font(_font, size_font)
+        level_text = font.render("Level : {}".format(self.level.level), True, color)
+        monster_text = font.render("Monster left : {}".format(self.level.num_monster), True, color)
+        self.screen.blit(level_text,  level_pos)
+        self.screen.blit(monster_text, monster_pos)
 # create the game object
 g = Game()
 g.show_start_screen()

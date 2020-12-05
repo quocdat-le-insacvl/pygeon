@@ -374,7 +374,7 @@ class Spider(pg.sprite.Sprite):
 
 
 class Text(pg.sprite.Sprite):
-    def __init__(self, game, text='text', pos=[WIDTH//2 - 50, HEIGHT//2 - 50], font='freesansbold.ttf', color=WHITE, size_font=50, life_time=DEFAULT_DISPLAY_TIME):
+    def __init__(self, game, text='text', color=WHITE, size_font=50, pos=[WIDTH//2 - 50, HEIGHT//2 - 50], font='freesansbold.ttf', life_time=DEFAULT_DISPLAY_TIME):
         # Call the parent class (Sprite) constructor
         self.game = game
         self.groups = game.texts
