@@ -4,7 +4,6 @@ import math
 import random
 from pygame import mixer
 from script import pack,player,Wikitem,playerbis,pack_bis
-from trash import game
 from pygame.locals import *
 from settings.screen import *
 from settings.police import Drifftype,ColderWeather,Rumbletumble,coeff,coeff1,coeff2,ColderWeather_small
@@ -89,7 +88,6 @@ class Menu():
             if self.perso.name != None and self.perso.classe != None:
                 if self.creation_img_text_click(img_next,"Suivant",ColderWeather,WHITE,display,right=1):
                     self.shop_print(self.perso,self.perso)
-                    game.Credit()
                     
             if self.creation_img_text_click(img_next,"Reprendre",ColderWeather,WHITE,display,left=1):
                 self.click = False
