@@ -391,3 +391,18 @@ class Text(pg.sprite.Sprite):
 
     def print_text(self):
         self.game.screen.blit(self.text, self.pos)
+
+
+
+# class Minimap(pg.sprite.Sprite):
+#     def __init__(self, game):
+#         self.game = game
+#         self.groups = game.all_sprites
+#         pg.sprite.Sprite.__init__(self, self.groups)
+        
+
+#     def update(self):
+#         pass
+
+#     def print_text(self):
+#         pass

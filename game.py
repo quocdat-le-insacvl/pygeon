@@ -9,26 +9,6 @@ from tilemap import *
 import time, math
 from combat import *
 from level import *
-# HUD functions
-
-
-def draw_player_health(surf, x, y, pct):
-    if pct < 0:
-        pct = 0
-    BAR_LENGTH = 100
-    BAR_HEIGHT = 20
-    fill = pct * BAR_LENGTH
-    outline_rect = pg.Rect(x, y, BAR_LENGTH, BAR_HEIGHT)
-    fill_rect = pg.Rect(x, y, fill, BAR_HEIGHT)
-    if pct > 0.6:
-        col = GREEN
-    elif pct > 0.3:
-        col = YELLOW
-    else:
-        col = RED
-    pg.draw.rect(surf, col, fill_rect)
-    pg.draw.rect(surf, WHITE, outline_rect, 2)
-
 
 class Game:
     def __init__(self):
@@ -111,7 +91,6 @@ class Game:
             hit.health -= BULLET_DAMAGE
             hit.vel = vec(0, 0)
         
-
     def draw(self):
         pg.display.set_caption("{:.2f}".format(self.clock.get_fps()))
         # self.screen.fill(BGCOLOR)
@@ -128,12 +107,11 @@ class Game:
                 pg.draw.rect(self.screen, CYAN, self.camera.apply_rect(wall.rect), 1)
 
         # pg.draw.rect(self.screen, WHITE, self.player.hit_rect, 2)
-        # HUD functions
-        draw_player_health(self.screen, 10, 10, self.player.health / PLAYER_HEALTH)
         # self.draw_log()
         for text in self.texts:
             text.print_text()
         self.draw_status()
+        self.draw_minimap()
         pg.display.flip()
 
     def events(self):
@@ -170,6 +148,25 @@ class Game:
         monster_text = font.render("Monster left : {}".format(self.level.num_monster), True, color)
         self.screen.blit(level_text,  level_pos)
         self.screen.blit(monster_text, monster_pos)
+
+    def draw_minimap(self):
+        TOP_LEFT_X = WIDTH - MINIMAP_SCALE
+        TOP_LEFT_Y = HEIGHT - MINIMAP_SCALE
+        s = pg.Surface((MINIMAP_SCALE,  MINIMAP_SCALE))
+        s.set_alpha(50)                # alpha level
+        s.fill(BLUE)          # this fills the entire surface
+        # (0,0) are the top-left coordinates
+        self.screen.blit(s, (WIDTH- MINIMAP_SCALE, HEIGHT - MINIMAP_SCALE))
+        SQUARE_X = TOP_LEFT_X + -self.camera.camera.left / self.map.width * MINIMAP_SCALE 
+        SQUARE_Y = TOP_LEFT_Y + -self.camera.camera.top / self.map.height * MINIMAP_SCALE
+        SQUARE_WIDTH_X = WIDTH / self.map.width * MINIMAP_SCALE
+        SQUARE_WIDTH_Y = HEIGHT / self.map.height * MINIMAP_SCALE
+        minimap_rect = pg.Rect(SQUARE_X, SQUARE_Y, SQUARE_WIDTH_X, SQUARE_WIDTH_Y)
+        pg.draw.rect(self.screen, WHITE, minimap_rect, width=1)
+        PERSO_X = TOP_LEFT_X + self.player.pos[0] / self.map.width * MINIMAP_SCALE
+        PERSO_Y = TOP_LEFT_Y + self.player.pos[1] / self.map.height * MINIMAP_SCALE
+        pg.draw.circle(self.screen, RED, (PERSO_X, PERSO_Y), radius=6, width=0)
+
 # create the game object
 g = Game()
 g.show_start_screen()

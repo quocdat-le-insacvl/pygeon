@@ -48,7 +48,7 @@ class Camera:
         self.camera = pg.Rect(0, 0, width, height)
         self.width = width
         self.height = height
-
+        
     def apply(self, entity):
         return entity.rect.move(self.camera.topleft)
 

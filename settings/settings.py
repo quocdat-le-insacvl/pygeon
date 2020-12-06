@@ -11,6 +11,7 @@ RED = (255, 0, 0)
 YELLOW = (255, 255, 0)
 BROWN = (106, 55, 5)
 CYAN = (0, 255, 255)
+BLUE = (0, 0, 255)
 
 # game settings
 WIDTH = 1024   # 16 * 64 or 32 * 32 or 64 * 16
@@ -80,3 +81,6 @@ TEXT_HEIGHT = 40
 
 # Level settings :
 TIME_SPAWN_MONSTER = 4000
+
+#Minimap settings:
+MINIMAP_SCALE = 3 * TILESIZE
