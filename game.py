@@ -4,7 +4,7 @@ from os import path
 from pygame.constants import K_g
 from settings.settings import *
 from sprites import *
-from tilemap import *
+import tilemap
 #from fonctions import *
 import time, math
 from combat import *
@@ -25,7 +25,7 @@ class Game:
         game_folder = path.dirname(__file__)
         img_folder = path.join(game_folder, 'img')
         map_folder = path.join(game_folder, 'maps')
-        self.map = Map(self, path.join(map_folder, 'level1.txt'))
+        self.map = tilemap.Map(self, path.join(map_folder, 'level1.txt'))
         self.map_img = self.map.make_map()
         self.map_rect = self.map_img.get_rect()
         self.player_img = pg.image.load(path.join(img_folder, PLAYER_IMG)).convert_alpha()
@@ -46,31 +46,11 @@ class Game:
         self.bullets = pg.sprite.Group()
         self.texts = pg.sprite.Group()
         self.spiders = pg.sprite.Group()
-        
-        
-        # for row, tiles in enumerate(self.map.data):
-        #     for col, tile in enumerate(tiles):
-        #         if tile == '1':
-        #             Wall(self, col, row)
-        #         if tile == 'M':
-        #             Mob(self, col, row)
-        #         if tile == 'P':
-        #             self.player = Player(self, col, row)
-        """
-        for tile_object in self.map.tmxdata.objects:
-            if tile_object.name == 'player':
-                self.player = Player(self, tile_object.x, tile_object.y)
-            if tile_object.name == 'zombie':
-                Mob(self, tile_object.x, tile_object.y)
-            if tile_object.name == 'spider':
-               self.spider = Spider(self, tile_object.x, tile_object.y)
-               print(tile_object.x, tile_object.y, tile_object.width)
-            if tile_object.name == 'wall':
-                Obstacle(self, tile_object.x, tile_object.y, tile_object.width, tile_object.height)
-                """
+        self.player = Player(self)
         self.camera = Camera(self.map.width, self.map.height)
         self.draw_debug = False
         self.level = Level(self)
+        self.minimap = Minimap(self)
         
     def run(self):
         # game loop - set self.playing = False to end the game
@@ -127,7 +107,7 @@ class Game:
         for text in self.texts:
             text.print_text()
         self.draw_status()
-        self.draw_minimap()
+        self.minimap.draw_minimap()
         pg.display.flip()
 
     def events(self):
@@ -159,23 +139,6 @@ class Game:
         self.screen.blit(level_text,  level_pos)
         self.screen.blit(monster_text, monster_pos)
 
-    def draw_minimap(self):
-        TOP_LEFT_X = WIDTH - MINIMAP_SCALE
-        TOP_LEFT_Y = HEIGHT - MINIMAP_SCALE
-        s = pg.Surface((MINIMAP_SCALE,  MINIMAP_SCALE))
-        s.set_alpha(50)                # alpha level
-        s.fill(BLUE)          # this fills the entire surface
-        # (0,0) are the top-left coordinates
-        self.screen.blit(s, (WIDTH- MINIMAP_SCALE, HEIGHT - MINIMAP_SCALE))
-        SQUARE_X = TOP_LEFT_X + -self.camera.camera.left / self.map.width * MINIMAP_SCALE 
-        SQUARE_Y = TOP_LEFT_Y + -self.camera.camera.top / self.map.height * MINIMAP_SCALE
-        SQUARE_WIDTH_X = WIDTH / self.map.width * MINIMAP_SCALE
-        SQUARE_WIDTH_Y = HEIGHT / self.map.height * MINIMAP_SCALE
-        minimap_rect = pg.Rect(SQUARE_X, SQUARE_Y, SQUARE_WIDTH_X, SQUARE_WIDTH_Y)
-        pg.draw.rect(self.screen, WHITE, minimap_rect, width=1)
-        PERSO_X = TOP_LEFT_X + self.player.pos[0] / self.map.width * MINIMAP_SCALE
-        PERSO_Y = TOP_LEFT_Y + self.player.pos[1] / self.map.height * MINIMAP_SCALE
-        pg.draw.circle(self.screen, RED, (PERSO_X, PERSO_Y), radius=6, width=0)
 
 # create the game object
 g = Game()

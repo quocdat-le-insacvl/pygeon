@@ -26,7 +26,7 @@ def collide_with_walls(sprite, group, dir):
 
 
 class Player(pg.sprite.Sprite):
-    def __init__(self, game, x, y):
+    def __init__(self, game, x=100, y=100):
         self._layer = PLAYER_LAYER
         self.groups = game.all_sprites
         pg.sprite.Sprite.__init__(self, self.groups)
@@ -42,6 +42,7 @@ class Player(pg.sprite.Sprite):
         self.last_shot = 0
         self.health = PLAYER_HEALTH
 
+        # Attributs just for example
         self.hp_max = 100
         self.mana_max = 100
         self.hp = 100
@@ -95,6 +96,15 @@ class Player(pg.sprite.Sprite):
         self.hit_rect.centery = self.pos.y
         collide_with_walls(self, self.game.walls, 'y')
         self.rect.center = self.hit_rect.center
+        # Check if the perso go away the screen
+        if self.pos[0] < 0:
+            self.pos[0] = 0
+        elif self.pos[0] > self.game.map.width:
+            self.pos[0] = self.game.map.width
+        if self.pos[1] < 0:
+            self.pos[1] = 0
+        elif self.pos[1] > self.game.map.height:
+            self.pos[1] = self.game.map.height 
 
 
 class Mob(pg.sprite.Sprite):
@@ -391,17 +401,3 @@ class Text(pg.sprite.Sprite):
     def print_text(self):
         self.game.screen.blit(self.text, self.pos)
 
-
-
-# class Minimap(pg.sprite.Sprite):
-#     def __init__(self, game):
-#         self.game = game
-#         self.groups = game.all_sprites
-#         pg.sprite.Sprite.__init__(self, self.groups)
-        
-
-#     def update(self):
-#         pass
-
-#     def print_text(self):
-#         pass

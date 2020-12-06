@@ -1,9 +1,7 @@
 import pygame as pg
 from settings.settings import *
 from sprites import *
-import sys
 from os import path
-from game import Game
 
 def collide_hit_rect(one, two):
     return one.hit_rect.colliderect(two.rect)
@@ -25,50 +23,17 @@ class Map:
     def render(self, surface):
         for row, tiles in enumerate(self.data):
             for col, tile in enumerate(tiles):
-                # check object
                 # Load image
                 tile += ".png"
-                print(tile)
                 image = pg.image.load(path.join(self.img_folder, tile)).convert_alpha()
                 # Scale image 
                 image = pg.transform.scale(image, (TILESIZE, TILESIZE))
                 surface.blit(image, (col * TILESIZE, row * TILESIZE))
-                    
-        # ti = self.tmxdata.get_tile_image_by_gid
-        # for layer in self.tmxdata.visible_layers:
-        #     if isinstance(layer, pytmx.TiledTileLayer):
-        #         for x, y, gid, in layer:
-        #             tile = ti(gid)
-        #             if tile:
-        #                 surface.blit(tile, (x * self.tmxdata.tilewidth,
-        #                                     y * self.tmxdata.tileheight))
 
     def make_map(self):
         temp_surface = pg.Surface((self.width, self.height))
         self.render(temp_surface)
         return temp_surface
-    
-# class TiledMap:
-#     def __init__(self, filename):
-#         tm = pytmx.load_pygame(filename, pixelalpha=True)
-#         self.width = tm.width * tm.tilewidth
-#         self.height = tm.height * tm.tileheight
-#         self.tmxdata = tm
-
-#     def render(self, surface):
-#         ti = self.tmxdata.get_tile_image_by_gid
-#         for layer in self.tmxdata.visible_layers:
-#             if isinstance(layer, pytmx.TiledTileLayer):
-#                 for x, y, gid, in layer:
-#                     tile = ti(gid)
-#                     if tile:
-#                         surface.blit(tile, (x * self.tmxdata.tilewidth,
-#                                             y * self.tmxdata.tileheight))
-
-#     def make_map(self):
-#         temp_surface = pg.Surface((self.width, self.height))
-#         self.render(temp_surface)
-#         return temp_surface
 
 
 class Camera:
@@ -93,3 +58,37 @@ class Camera:
         x = max(-(self.width - WIDTH), x)  # right
         y = max(-(self.height - HEIGHT), y)  # bottom
         self.camera = pg.Rect(x, y, self.width, self.height)
+
+
+class Minimap:
+    def __init__(self, game):
+        self.game = game
+        self.TOP_LEFT_X = WIDTH - MINIMAP_SCALE
+        self.TOP_LEFT_Y = HEIGHT - MINIMAP_SCALE
+        self.surface = pg.Surface((MINIMAP_SCALE,  MINIMAP_SCALE))
+        self.surface.set_alpha(50)                # alpha level
+        self.surface.fill(BLUE)
+        
+    def draw_minimap(self):
+        self.draw_surface()
+        self.draw_white_square()
+        self.draw_dot_pos(self.game.player.pos, RED)
+        for mob in self.game.mobs:
+            self.draw_dot_pos(mob.pos, GREEN)
+            
+    def draw_surface(self):
+        self.game.screen.blit(self.surface, (WIDTH - MINIMAP_SCALE, HEIGHT - MINIMAP_SCALE))
+
+    def draw_white_square(self):
+        SQUARE_X = self.TOP_LEFT_X + -self.game.camera.camera.left / self.game.map.width * MINIMAP_SCALE
+        SQUARE_Y = self.TOP_LEFT_Y + -self.game.camera.camera.top / self.game.map.height * MINIMAP_SCALE
+        SQUARE_WIDTH_X = WIDTH / self.game.map.width * MINIMAP_SCALE
+        SQUARE_WIDTH_Y = HEIGHT / self.game.map.height * MINIMAP_SCALE
+        minimap_rect = pg.Rect(SQUARE_X, SQUARE_Y, SQUARE_WIDTH_X, SQUARE_WIDTH_Y)
+        pg.draw.rect(self.game.screen, WHITE, minimap_rect, width=1)
+    
+    # draw position of player , or monster
+    def draw_dot_pos(self, pos, color):
+        X = self.TOP_LEFT_X + pos[0] / self.game.map.width * MINIMAP_SCALE
+        Y = self.TOP_LEFT_Y + pos[1] / self.game.map.height * MINIMAP_SCALE
+        pg.draw.circle(self.game.screen, color, (X, Y), radius=6, width=0)
