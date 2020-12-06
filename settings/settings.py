@@ -24,7 +24,7 @@ TILESIZE = 64
 GRIDWIDTH = WIDTH / TILESIZE
 GRIDHEIGHT = HEIGHT / TILESIZE
 
-WALL_IMG = 'tileGreen_39.png'
+WALL_IMG = 'W.png'
 
 # Player settings
 PLAYER_HEALTH = 100
@@ -44,7 +44,7 @@ GUN_SPREAD = 5
 BULLET_DAMAGE = 10
 
 # Mob settings
-MOB_IMG = 'zombie1_hold.png'
+MOB_IMG = 'M.png'
 MOB_SPEEDS = [150, 100, 75, 125]
 MOB_HIT_RECT = pg.Rect(0, 0, 30, 30)
 MOB_HEALTH = 100

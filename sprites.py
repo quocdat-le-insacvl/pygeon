@@ -4,7 +4,6 @@ from settings.settings import *
 from tilemap import collide_hit_rect
 vec = pg.math.Vector2
 
-
 def collide_with_walls(sprite, group, dir):
     if dir == 'x':
         hits = pg.sprite.spritecollide(sprite, group, False, collide_hit_rect)

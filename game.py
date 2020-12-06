@@ -10,6 +10,9 @@ import time, math
 from combat import *
 from level import *
 
+# Voici le tutorial qui m'inspire, regardez si jamais vous avez du mal a comprendre le code! Tous sont bien expliques et bien ecrits
+# https://www.youtube.com/watch?v=3UxnelT9aCo&list=PLsk-HSGFjnaGQq7ybM8Lgkh5EMxUWPm2i&ab_channel=KidsCanCode
+
 class Game:
     def __init__(self):
         pg.init()
@@ -22,7 +25,7 @@ class Game:
         game_folder = path.dirname(__file__)
         img_folder = path.join(game_folder, 'img')
         map_folder = path.join(game_folder, 'maps')
-        self.map = TiledMap(path.join(map_folder, 'level1.tmx'))
+        self.map = Map(self, path.join(map_folder, 'level1.txt'))
         self.map_img = self.map.make_map()
         self.map_rect = self.map_img.get_rect()
         self.player_img = pg.image.load(path.join(img_folder, PLAYER_IMG)).convert_alpha()
@@ -43,6 +46,17 @@ class Game:
         self.bullets = pg.sprite.Group()
         self.texts = pg.sprite.Group()
         self.spiders = pg.sprite.Group()
+        
+        
+        # for row, tiles in enumerate(self.map.data):
+        #     for col, tile in enumerate(tiles):
+        #         if tile == '1':
+        #             Wall(self, col, row)
+        #         if tile == 'M':
+        #             Mob(self, col, row)
+        #         if tile == 'P':
+        #             self.player = Player(self, col, row)
+        """
         for tile_object in self.map.tmxdata.objects:
             if tile_object.name == 'player':
                 self.player = Player(self, tile_object.x, tile_object.y)
@@ -50,8 +64,10 @@ class Game:
                 Mob(self, tile_object.x, tile_object.y)
             if tile_object.name == 'spider':
                self.spider = Spider(self, tile_object.x, tile_object.y)
+               print(tile_object.x, tile_object.y, tile_object.width)
             if tile_object.name == 'wall':
                 Obstacle(self, tile_object.x, tile_object.y, tile_object.width, tile_object.height)
+                """
         self.camera = Camera(self.map.width, self.map.height)
         self.draw_debug = False
         self.level = Level(self)
@@ -124,12 +140,6 @@ class Game:
                     self.quit()
                 if event.key == pg.K_h:
                     self.draw_debug = not self.draw_debug
-                """ if event.key == K_g:
-                    self.dice_evt.resume(0,20)
-                    self.dice_evt.actdamage = False
-                    self.dice_evt.reset_all()
-                    self.tour_jouer = True
-                    self.tour_monster = False """
 
     def show_start_screen(self):
         pass
