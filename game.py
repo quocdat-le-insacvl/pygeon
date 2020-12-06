@@ -20,14 +20,21 @@ class Game:
         pg.display.set_caption(TITLE)
         self.clock = pg.time.Clock()
         self.load_data()
-
+        
     def load_data(self):
         game_folder = path.dirname(__file__)
         img_folder = path.join(game_folder, 'img')
         map_folder = path.join(game_folder, 'maps')
+        
         self.map = tilemap.Map(self, path.join(map_folder, 'level1.txt'))
         self.map_img = self.map.make_map()
         self.map_rect = self.map_img.get_rect()
+        
+        # self.map = tilemap.Map(self, path.join(map_folder, 'combat.txt'))
+        self.map_combat = tilemap.Map(self, path.join(map_folder, 'combat.txt'))
+        self.map_combat_img = self.map_combat.make_map()
+        self.map_combat_rect = self.map_combat_img.get_rect()
+
         self.player_img = pg.image.load(path.join(img_folder, PLAYER_IMG)).convert_alpha()
         self.bullet_img = pg.image.load(path.join(img_folder, BULLET_IMG)).convert_alpha()
         self.mob_img = pg.image.load(path.join(img_folder, MOB_IMG)).convert_alpha()
@@ -39,8 +46,12 @@ class Game:
             self.gun_flashes.append(pg.image.load(path.join(img_folder, img)).convert_alpha())
 
     def new(self):
+        # Combat settings
+        self.combat_mode = False
+        self.game_pause = False
+        self.walls_combat = pg.sprite.Group()
         # initialize all variables and do all the setup for a new game
-        self.all_sprites = pg.sprite.LayeredUpdates()
+        self.all_sprites = pg.sprite.Group()
         self.walls = pg.sprite.Group()
         self.mobs = pg.sprite.Group()
         self.bullets = pg.sprite.Group()
@@ -51,6 +62,12 @@ class Game:
         self.draw_debug = False
         self.level = Level(self)
         self.minimap = Minimap(self)
+        # Adding wall
+        for x, y in self.map.data_wall:
+            Wall(self, x, y)
+        
+        for x, y in self.map_combat.data_wall:
+            Wall(self, x, y, True)
         
     def run(self):
         # game loop - set self.playing = False to end the game
@@ -66,48 +83,69 @@ class Game:
         sys.exit()
 
     def update(self):
-        # update portion of the game loop
-        self.all_sprites.update()
-        self.texts.update()
-        # self.dices.update()
-        self.camera.update(self.player)
-        self.level.update()
-        # mobs hit player
-        hits = pg.sprite.spritecollide(self.player, self.mobs, False, collide_hit_rect)
-        for hit in hits:
-            self.player.health -= MOB_DAMAGE
-            hit.vel = vec(0, 0)
-            if self.player.health <= 0:
-                self.playing = False
-        if hits:
-            self.player.pos += vec(MOB_KNOCKBACK, 0).rotate(-hits[0].rot)
-        # bullets hit mobs
-        hits = pg.sprite.groupcollide(self.mobs, self.bullets, False, True)
-        for hit in hits:
-            hit.health -= BULLET_DAMAGE
-            hit.vel = vec(0, 0)
+        if self.game_pause:
+            self.texts.update()
+            self.camera.update(self.player)
+            # self.camera.update(self.player)
+            # self.level.update()
+            self.player.update()
+            
+        else:
+            # update portion of the game loop
+            self.all_sprites.update()
+            self.texts.update()
+            # self.dices.update()
+            self.camera.update(self.player)
+            self.level.update()
+            # mobs hit player
+            hits = pg.sprite.spritecollide(self.player, self.mobs, False, collide_hit_rect)
+            for hit in hits:
+                self.player.health -= MOB_DAMAGE
+                hit.vel = vec(0, 0)
+                if self.player.health <= 0:
+                    self.playing = False
+                ###
+                Combat(self)
+                self.game_pause = True    
+                ###
+            if hits:
+                self.player.pos += vec(MOB_KNOCKBACK, 0).rotate(-hits[0].rot)
+            # bullets hit mobs
+            hits = pg.sprite.groupcollide(self.mobs, self.bullets, False, True)
+            for hit in hits:
+                hit.health -= BULLET_DAMAGE
+                hit.vel = vec(0, 0)
         
     def draw(self):
         pg.display.set_caption("{:.2f}".format(self.clock.get_fps()))
-        # self.screen.fill(BGCOLOR)
-        self.screen.blit(self.map_img, self.camera.apply_rect(self.map_rect))
-        # self.draw_grid()
-        for sprite in self.all_sprites:
-            if isinstance(sprite, Mob):
-                sprite.draw_health()
-            self.screen.blit(sprite.image, self.camera.apply(sprite))
+        
+        if not self.game_pause:
+            # self.screen.fill(BGCOLOR)
+            self.screen.blit(self.map_img, self.camera.apply_rect(self.map_rect))
+            for sprite in self.all_sprites:
+                if isinstance(sprite, Mob):
+                    sprite.draw_health()
+                self.screen.blit(sprite.image, self.camera.apply(sprite))
+                if self.draw_debug:
+                    pg.draw.rect(self.screen, CYAN, self.camera.apply_rect(sprite.hit_rect), 1)
             if self.draw_debug:
-                pg.draw.rect(self.screen, CYAN, self.camera.apply_rect(sprite.hit_rect), 1)
-        if self.draw_debug:
-            for wall in self.walls:
-                pg.draw.rect(self.screen, CYAN, self.camera.apply_rect(wall.rect), 1)
-
-        # pg.draw.rect(self.screen, WHITE, self.player.hit_rect, 2)
-        # self.draw_log()
+                for wall in self.walls:
+                    pg.draw.rect(self.screen, CYAN, self.camera.apply_rect(wall.rect), 1)
+            # pg.draw.rect(self.screen, WHITE, self.player.hit_rect, 2)
+            # self.draw_log()
+            self.minimap.draw_minimap()
+            
+        else:
+            self.screen.blit(self.map_combat_img, self.camera.apply_rect(self.map_combat_rect))
+            self.draw_grid()
+            for sprite in self.walls_combat:
+                self.screen.blit(sprite.image, self.camera.apply(sprite))
+            self.screen.blit(self.player.image, self.camera.apply(self.player))
+        
         for text in self.texts:
             text.print_text()
         self.draw_status()
-        self.minimap.draw_minimap()
+
         pg.display.flip()
 
     def events(self):
@@ -120,6 +158,10 @@ class Game:
                     self.quit()
                 if event.key == pg.K_h:
                     self.draw_debug = not self.draw_debug
+                if event.key == pg.K_c:
+                    self.combat_mode = not self.combat_mode
+                    self.game_pause = not self.game_pause
+                    Combat(self)
 
     def show_start_screen(self):
         pass
@@ -139,7 +181,12 @@ class Game:
         self.screen.blit(level_text,  level_pos)
         self.screen.blit(monster_text, monster_pos)
 
-
+    def draw_grid(self):
+        for x in range(0, WIDTH, TILESIZE):
+            pg.draw.line(self.screen, LIGHTGREY, (x, 0), (x, HEIGHT))
+        for y in range(0, HEIGHT, TILESIZE):
+            pg.draw.line(self.screen, LIGHTGREY, (0, y), (WIDTH, y))
+            
 # create the game object
 g = Game()
 g.show_start_screen()

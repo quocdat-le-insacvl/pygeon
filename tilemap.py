@@ -19,16 +19,20 @@ class Map:
         self.height = self.tileheight * TILESIZE
         game_folder = path.dirname(__file__)
         self.img_folder = path.join(game_folder, 'img')
+        self.data_wall = []
         
     def render(self, surface):
         for row, tiles in enumerate(self.data):
             for col, tile in enumerate(tiles):
+                if tile == 'W':
+                    self.data_wall.append([col, row])
                 # Load image
                 tile += ".png"
                 image = pg.image.load(path.join(self.img_folder, tile)).convert_alpha()
                 # Scale image 
                 image = pg.transform.scale(image, (TILESIZE, TILESIZE))
                 surface.blit(image, (col * TILESIZE, row * TILESIZE))
+
 
     def make_map(self):
         temp_surface = pg.Surface((self.width, self.height))

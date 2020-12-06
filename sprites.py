@@ -26,7 +26,7 @@ def collide_with_walls(sprite, group, dir):
 
 
 class Player(pg.sprite.Sprite):
-    def __init__(self, game, x=100, y=100):
+    def __init__(self, game, x=64*2, y=64*6):
         self._layer = PLAYER_LAYER
         self.groups = game.all_sprites
         pg.sprite.Sprite.__init__(self, self.groups)
@@ -92,9 +92,13 @@ class Player(pg.sprite.Sprite):
         self.rect.center = self.pos
         self.pos += self.vel * self.game.dt
         self.hit_rect.centerx = self.pos.x
-        collide_with_walls(self, self.game.walls, 'x')
         self.hit_rect.centery = self.pos.y
-        collide_with_walls(self, self.game.walls, 'y')
+        if self.game.game_pause:
+            collide_with_walls(self, self.game.walls_combat, 'x')
+            collide_with_walls(self, self.game.walls_combat, 'y')
+        else:
+            collide_with_walls(self, self.game.walls, 'x')
+            collide_with_walls(self, self.game.walls, 'y')
         self.rect.center = self.hit_rect.center
         # Check if the perso go away the screen
         if self.pos[0] < 0:
@@ -106,6 +110,8 @@ class Player(pg.sprite.Sprite):
         elif self.pos[1] > self.game.map.height:
             self.pos[1] = self.game.map.height 
 
+    def reset(self):
+        self.pos[0], self.pos[1] = 64*2, 64*6
 
 class Mob(pg.sprite.Sprite):
     def __init__(self, game, x, y):
@@ -190,9 +196,12 @@ class Bullet(pg.sprite.Sprite):
 
 
 class Wall(pg.sprite.Sprite):
-    def __init__(self, game, x, y):
+    def __init__(self, game,  x, y, combat=False,):
         self._layer = WALL_LAYER
-        self.groups = game.all_sprites, game.walls
+        if combat:
+            self.groups = game.walls_combat
+        else:
+            self.groups = game.all_sprites, game.walls
         pg.sprite.Sprite.__init__(self, self.groups)
         self.game = game
         self.image = game.wall_img

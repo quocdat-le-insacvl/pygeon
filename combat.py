@@ -4,7 +4,8 @@ from settings.settings import *
 from sprites import *
 
 class Combat:
-    def __init__(self, game, monster):
+    def __init__(self, game):
         self.game = game
-        self.message = "Warning!"
-        Text(game, self.message)
+        self.game.player.reset()
+        self.message = "Combat started!!!!"
+        Text(game, self.message, RED, 100, [100, HEIGHT // 2 ])
