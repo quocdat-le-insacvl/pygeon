@@ -51,6 +51,7 @@ class Menu():
         mixer.music.stop()
         screen = pygame.display.set_mode((LONGUEUR,LARGEUR),pygame.RESIZABLE)
         self.main_menu()
+    
     def main_menu(self):
         running = True
         display = pygame.Surface((1980,1000))

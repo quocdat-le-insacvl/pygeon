@@ -1,6 +1,6 @@
 import pygame as pg
 from settings.settings import *
-from fonctions import *
+# from fonctions import *
 from sprites import *
 
 class Combat:
