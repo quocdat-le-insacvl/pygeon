@@ -9,7 +9,7 @@ class Object():
 
 
   
-class Perso(pygame.sprite.Sprite):
+class Perso():
     def __init__(self,STR=10,DEX=10,CON=10,INT=10,WIS=10,CHA=10,hp=10,hp_max=10,inventaire=10,name=None,classe=None,level=0,xp=0):
         super().__init__()
         self.name=name
@@ -50,7 +50,7 @@ class Perso(pygame.sprite.Sprite):
             self.competence.competence1()
             self.nb_hit_dice=1
             self.hp_max=8+self.ability_score(3) 
-            self.hp=self.hp_max           
+            self.hp=self.hp_max
         elif self.xp>=lvl_XP[self.level-1]:
             self.level+=1
             print("level up")

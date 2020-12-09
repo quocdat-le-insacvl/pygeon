@@ -6,15 +6,15 @@ pygame.init()
 interface=Interface()
 running=True
 interface.generer()
+interface.basic_affichage()
 while running:
     fighter.xp+=1
     fighter.levelupchange()
-    interface.basic_affichage()
     n=pygame.time.get_ticks()
     pygame.display.flip()
     for event in pygame.event.get():
-        if event.type==pygame.MOUSEBUTTONUP:
-            interface.affichage_sort()
+        #if event.type==pygame.MOUSEBUTTONUP:
+        #    interface.affichage_sort()
         if event.type==pygame.QUIT:
             running=False
             pygame.quit()
