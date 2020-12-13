@@ -1,20 +1,22 @@
 import os
 import pygame
-from fighter import Fighter
+from wizard import Wizard
+#it will be from game import perso
 from math import trunc
 from settings import *
-fighter=Fighter()
+
 os.environ['SDL_VIDEO_WINDOW_POS'] = "%d,%d" % (20,20)
 
 class Interface():
     def __init__(self):
         super().__init__()
         self.resolution=resolution
-        self.screen = pygame.display.set_mode((self.resolution[0],self.resolution[1]))
+        self.screen=screen
         self.backgroung=pygame.transform.scale(pygame.image.load(r".\backgroung_combat.png"),self.resolution)
         self.case=0
         self.listCase=[]
         self.ini_state=0
+        self.perso=Wizard()
         # self.background = pygame.image.load('assets/grass.jpg')
 
 
@@ -28,6 +30,8 @@ class Interface():
         if self.case==0:
             self.case=pygame.transform.scale(pygame.image.load("./case.png"),(round(self.resolution[0]/len(l)-1),round(self.resolution[0]/len(l)-1)))
         num_ligne=0
+        rect=screen.blit(self.case,(self.resolution[0]/2,self.resolution[1]/2))
+        """
         for n in l:
             if self.ini_state==0:
                 self.listCase.append([])
@@ -37,19 +41,19 @@ class Interface():
                 x=round((num_case-num_ligne)*self.case.get_width()/2+self.resolution[0]/2-self.case.get_width()/2)
                 y=round((num_case+num_ligne)*self.case.get_height()/4+self.resolution[1]/2-self.case.get_height()*(len(l)+1)/4)
                 if i=='W' and self.ini_state==0:
-                    self.listCase[num_ligne].append(self.screen.blit(self.case,(x,y)))
-
-                elif i=='W':
+                    self.listCase[num_ligne].append(pygame.Rect(self.case,(x,y)))
+                if i=='W':
                     self.screen.blit(self.case,(x,y))
                 num_case+=1
             num_ligne+=1
-        self.ini_state=1
-        # print(self.listCase)
-        #place le joueur sur la nouvelle map
+         self.ini_state=1
+        print(self.listCase)
+
+        place le joueur sur la nouvelle map
         fighter.x=self.listCase[1][1].centerx 
         fighter.y=self.listCase[1][1].centery
         f.close()
-    """
+
     def coord_block(self,xy):
         # xy[0]=x et xy[1]=y transforme les positions en positions dans la liste de rec
         print((trunc((((xy[0]-self.case.get_width()/2*(len(self.listCase)-xy[0]/self.case.get_width()*2))/self.case.get_width()/2)+(xy[1]-self.case.get_height()/2)/self.case.get_height()*2)),trunc(-((xy[0]-self.case.get_width()/2*(len(self.listCase)-xy[0]/self.case.get_width()*2))/self.case.get_width()/2)+(xy[1]-self.case.get_height()/2)/self.case.get_height()*2)))
@@ -75,7 +79,7 @@ class Interface():
                 if event.type==pygame.QUIT:
                     running=False
                     pygame.quit()
-    """
+   
     def affichage(self):
         rec=pygame.Rect(pygame.mouse.get_pos()[0],pygame.mouse.get_pos()[1],1,1)
         r=pygame.transform.scale(pygame.image.load("./case_sort.png"),(self.case.get_width(),self.case.get_height()))
@@ -93,3 +97,4 @@ class Interface():
                 if event.type==pygame.QUIT:
                     running=False
                     pygame.quit()
+    """

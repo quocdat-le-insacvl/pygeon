@@ -1,5 +1,4 @@
 import pygame
-from interface import fighter
 from interface import Interface
 from random import randrange
 pygame.init()
@@ -8,8 +7,8 @@ running=True
 interface.generer()
 interface.basic_affichage()
 while running:
-    fighter.xp+=1
-    fighter.levelupchange()
+    interface.perso.xp+=1
+    interface.perso.levelupchange()
     n=pygame.time.get_ticks()
     pygame.display.flip()
     for event in pygame.event.get():

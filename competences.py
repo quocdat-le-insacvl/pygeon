@@ -8,7 +8,7 @@ class Competence():
         if self.classe=="fighter":
             print("selectionne la competence 1 fighter")
         if self.classe=="wizard":
-            print("selectionne la competence 1 sale wizard")
+            print("you earn magic missile")
         if self.classe=="rogue":
             print("selectionne la competence 1 sale rogue")
     def competence2(self):
@@ -19,5 +19,8 @@ class Competence():
         print("selectionne la competence 4")
     def competence5(self):
         print("selectionne la competence 5")
+
+
+
     
     
