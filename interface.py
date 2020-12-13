@@ -12,7 +12,7 @@ class Interface():
         super().__init__()
         self.resolution=resolution
         self.screen=screen
-        self.backgroung=pygame.transform.scale(pygame.image.load(r".\backgroung_combat.png"),self.resolution)
+        self.backgroung=pygame.transform.scale(pygame.image.load(r"Image\backgroung_combat.png"),self.resolution)
         self.case=0
         self.listCase=[]
         self.ini_state=0
@@ -22,13 +22,14 @@ class Interface():
 
     def basic_affichage(self):
         pygame.display.set_caption("projet fighter")
+        screen.blit(self.perso.im_pers,(self.perso.x,self.perso.y))
         # self.screen.blit(self.background, (0,-200))
     
     def generer(self):#génère la map et les positions des personnagese en fonction de la taille de l'écran
         f=open("./map.txt","r")
         l=[[i for i in ligne] for ligne in f]
         if self.case==0:
-            self.case=pygame.transform.scale(pygame.image.load("./case.png"),(round(self.resolution[0]/len(l)-1),round(self.resolution[0]/len(l)-1)))
+            self.case=pygame.transform.scale(pygame.image.load(r"Image\case.png"),(round(self.resolution[0]/len(l)-1),round(self.resolution[0]/len(l)-1)))
         num_ligne=0
         rect=screen.blit(self.case,(self.resolution[0]/2,self.resolution[1]/2))
         """

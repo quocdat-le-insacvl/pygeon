@@ -15,7 +15,6 @@ class Perso():
         self.name=name
         self.classe = classe
         self.level = level
-        self.lvl_up=pygame.transform.scale(pygame.image.load("lvl_up.png"),(round(resolution[0]/20),round(resolution[1]/20)))
         self.hp = hp
         self.hp_max = hp_max
         self.attack=0
@@ -43,11 +42,14 @@ class Perso():
         self.armor = dict()
         for i in range(0,6):     # 0 : HEAD 1 : TORSE 2 : COUE  3 BOTTE 4 : MAIN GAUCHE : 5 MAIN DROITE
             self.armor[i] = None
-    
+        ### Pictures ###
+        self.im_pers=pygame.transform.scale(pygame.image.load(r"Image\perso.png"),(96,147))
+        self.lvl_up=pygame.transform.scale(pygame.image.load(r"Image\lvl_up.png"),(round(resolution[0]/20),round(resolution[1]/20)))
 
     ####### Def lvl ########
 
     def levelupchange(self):
+        #manage the level up of the caracter
         #lvl max=5, change position of float("inf") to change the max lvl
 
         lvl_XP = (400,600,800,1200,1600,float("inf"),2400,3200,4800,6400,9600,12800,19200,25600,38400,51200,76800,102400,153600,204800)
@@ -79,9 +81,10 @@ class Perso():
             self.hp=self.hp_max
 
     def __affichage_lvlup(self):
+        #manage the display of the lvl up (private)
         temp=pygame.Surface(resolution)
         temp.blit(screen,(0,0))
-        screen.blit(self.lvl_up,(resolution[0]/2,resolution[1]/2))
+        screen.blit(self.lvl_up,(self.x+100,self.y))
         time=pygame.time.get_ticks()
         pygame.display.flip()
         while(pygame.time.get_ticks()<time+1000):
@@ -128,7 +131,3 @@ class Perso():
         barmax_position=(self.x,self.y,hp_max_pourcent/2,10)
         pygame.draw.rect(surface, barmax_color, barmax_position)
         pygame.draw.rect(surface, bar_color, bar_position)
-
-
-
-
