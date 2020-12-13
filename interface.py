@@ -1,16 +1,15 @@
-import os
 import pygame
 from wizard import Wizard
 #it will be from game import perso
 from math import trunc
-import settings.screen
+from settings.screen import screen,WINDOWS_SIZE
 
-os.environ['SDL_VIDEO_WINDOW_POS'] = "%d,%d" % (20,20)
+
 
 class Interface():
     def __init__(self):
         super().__init__()
-        self.resolution=resolution
+        self.resolution=WINDOWS_SIZE
         self.screen=screen
         self.backgroung=pygame.transform.scale(pygame.image.load(r"Image\backgroung_combat.png"),self.resolution)
         self.case=0
@@ -29,7 +28,7 @@ class Interface():
         f=open("./map.txt","r")
         l=[[i for i in ligne] for ligne in f]
         if self.case==0:
-            self.case=pygame.transform.scale(pygame.image.load(r"Image\case.png"),(round(self.resolution[0]/len(l)-1),round(self.resolution[0]/len(l)-1)))
+            self.case=pygame.transform.scale(pygame.image.load(r"Image\case.png"),(self.resolution[0]//len(l)-1,self.resolution[0]//len(l)-1))
         num_ligne=0
         rect=screen.blit(self.case,(self.resolution[0]/2,self.resolution[1]/2))
         """

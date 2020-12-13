@@ -1,7 +1,8 @@
 from competences import Competence
 from basic_actions import Actions
 from feats import Feat
-import settings.screen
+from settings.screen import screen,WINDOWS_SIZE
+from lvl_up_mecanic import Lvl_up_mecanic
 import pygame
 class Object():
     def __init__(self,name,value=None):
@@ -37,6 +38,7 @@ class Perso():
         self.x=100
         self.y=400
         ### extern elements ###
+        self.lvl_up=Lvl_up_mecanic()
         self.difficulty = 10
         self.inventaire = inventaire
         self.armor = dict()
@@ -44,7 +46,7 @@ class Perso():
             self.armor[i] = None
         ### Pictures ###
         self.im_pers=pygame.transform.scale(pygame.image.load(r"Image\perso.png"),(96,147))
-        self.lvl_up=pygame.transform.scale(pygame.image.load(r"Image\lvl_up.png"),(round(resolution[0]/20),round(resolution[1]/20)))
+        self.lvl_up_img=pygame.transform.scale(pygame.image.load(r"Image\lvl_up.png"),(WINDOWS_SIZE[0]//20,WINDOWS_SIZE[1]//20))
 
     ####### Def lvl ########
 
@@ -70,9 +72,10 @@ class Perso():
             
             elif self.level==3: self.competence.competence3()
             ######Global bonus for the level 4######
-            elif self.level==4: self.competence.competence4()
+            elif self.level==4: 
+                self.competence.competence4()
                 #choice
-
+                self.lvl_up.choice()
             elif self.level==5: self.competence.competence5()
             #fin des competence initialisation des statistiques de base
             self.nb_hit_dice=self.level
@@ -82,9 +85,9 @@ class Perso():
 
     def __affichage_lvlup(self):
         #manage the display of the lvl up (private)
-        temp=pygame.Surface(resolution)
+        temp=pygame.Surface(WINDOWS_SIZE)
         temp.blit(screen,(0,0))
-        screen.blit(self.lvl_up,(self.x+100,self.y))
+        screen.blit(self.lvl_up_img,(self.x+100,self.y))
         time=pygame.time.get_ticks()
         pygame.display.flip()
         while(pygame.time.get_ticks()<time+1000):
