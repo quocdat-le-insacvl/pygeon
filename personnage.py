@@ -1,7 +1,7 @@
 from competences import Competence
 from basic_actions import Actions
 from feats import Feat
-from settings import screen,resolution
+import settings.screen
 import pygame
 class Object():
     def __init__(self,name,value=None):
@@ -72,7 +72,7 @@ class Perso():
             ######Global bonus for the level 4######
             elif self.level==4: self.competence.competence4()
                 #choice
-            
+
             elif self.level==5: self.competence.competence5()
             #fin des competence initialisation des statistiques de base
             self.nb_hit_dice=self.level

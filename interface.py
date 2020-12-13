@@ -3,7 +3,7 @@ import pygame
 from wizard import Wizard
 #it will be from game import perso
 from math import trunc
-from settings import *
+import settings.screen
 
 os.environ['SDL_VIDEO_WINDOW_POS'] = "%d,%d" % (20,20)
 
