@@ -1,15 +1,17 @@
 
+
 import pygame,os
 
 Wikitem = {}
 # https://stackoverflow.com/questions/54503270/how-to-load-a-large-number-of-images-in-pygame-by-a-simple-way
 class Items():
-    def __init__(self,value,wheight,wpn_type,wpn_name,wpn_img):
+    def __init__(self,value,wheight,wpn_type,wpn_name,wpn_img,info=""):
         self.value = value
         self.wpn_img = wpn_img
         self.wpn_name = wpn_name
         self.wpn_type = wpn_type
         self.wheight= wheight
+        self.info = info
         if (self not in Wikitem):
             Wikitem[self] = len(Wikitem)
 
@@ -21,13 +23,13 @@ class Consomable(Items):
 
 
 class Weapon(Items):
-    def __init__(self,prix,wheight,dmg,wpn_name,wpn_type,wpn_img):
-        Items.__init__(self,prix,wheight,wpn_type,wpn_name,wpn_img)
+    def __init__(self,prix,wheight,dmg,wpn_name,wpn_type,wpn_img,info=""):
+        Items.__init__(self,prix,wheight,wpn_type,wpn_name,wpn_img,info)
         self.dmg = dmg
 
 class Armor(Items):
-    def __init__(self,value,defense,wheight,armor_name,wpn_type,armor_img):
-        Items.__init__(self,value,wheight,wpn_type,armor_name,armor_img)
+    def __init__(self,value,defense,wheight,armor_name,wpn_type,armor_img,info=""):
+        Items.__init__(self,value,wheight,wpn_type,armor_name,armor_img,info)
         self.defense = defense
         
 

@@ -23,6 +23,8 @@ class Perso():
 
         for i in range(0,6):     # 0 : HEAD 1 : TORSE 2 : COUE  3 BOTTE 4 : MAIN GAUCHE : 5 MAIN DROITE
             self.armor[i] = None   
+        self.pos_x = 9000
+        self.pos_y = 2000
     def levelupchange(self):
         #SOURCE https://www.d20pfsrd.com/Gamemastering/#Table-Experience-Point-Awards
         
