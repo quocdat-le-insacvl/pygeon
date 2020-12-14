@@ -249,12 +249,12 @@ class Game():
                 j +=1
             i+=1
         i=0
-        for x in list_monstre:
+        """for x in list_monstre:
             list_case[i].in_case = x
-            i+=1
-        #list_case[0].in_case = list_mooving_entity[0]
-        #list_case[1].in_case = list_mooving_entity[3]
-        #list_case[2].in_case = list_mooving_entity[4]
+            i+=1"""
+        list_case[0].in_case = list_mooving_entity[0]
+        list_case[1].in_case = list_mooving_entity[1]
+        list_case[2].in_case = list_mooving_entity[2]
         while running:
             mx,my = pygame.mouse.get_pos()
             screen.fill(LIGHT_GREY)
@@ -267,7 +267,7 @@ class Game():
                 if x.in_case != None and not x.is_select:
                     x.in_case.type_animation = "idle"
                 if x.in_case != None and x.is_select:
-                    x.in_case.type_animation = "attack"
+                    x.in_case.type_animation = "idle"
                 if x.in_case != None:
                     x.in_case.animate()
                 
@@ -412,4 +412,4 @@ class Game():
 
 game = Game(player)
 #game.main_game()# Pour lancer la carte
-#game.print_combat_screen() pour lancer le plateau combat
+game.print_combat_screen([])# pour lancer le plateau combat

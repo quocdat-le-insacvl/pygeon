@@ -58,6 +58,17 @@ wizard_animation = dict()
 wizard_animation["idle"] = wizard_hide
 wizard_animation["attack"] = wizard_attack
 
+squelton_idle = dict(image_loader('Addon/squeleton_idle/'))
+transform_image(squelton_idle,5)
+squelton_animation = dict()
+squelton_animation["idle"] = squelton_idle
+
+dark_wizard_idle = dict(image_loader('Addon/dark_wizard_idle/'))
+transform_image(dark_wizard_idle,0,2*wizard_hide["wizard_idle_1.png"].get_width(),2*wizard_hide["wizard_idle_1.png"].get_height())
+dark_wizard_animation = dict()
+dark_wizard_animation["idle"] = dark_wizard_idle
+
+
 fence_1 = pygame.image.load(r'Addon\fence_1.png')
 fence_1 = pygame.transform.scale(fence_1,(200,200))
 fence_2 = pygame.image.load(r'Addon\fence_2.png')
@@ -76,3 +87,5 @@ case_select.set_alpha(100)
 rune = pygame.image.load(r"Addon\rune_1.png").convert_alpha()
 rune_1 = pygame.image.load(r"Addon\rune_2.png").convert_alpha()
 
+sheep = pygame.image.load(r'Addon\sheep.PNG').convert()
+sheep.set_colorkey((255,255,255))

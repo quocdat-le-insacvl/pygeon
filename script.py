@@ -51,6 +51,9 @@ entity_7 = Entity(11060-tavern_img.get_width()//2,1080-tavern_img.get_height()//
 entity_8 = Entity(10540,1790-tavern_img.get_height()//2,tavern2_img,"Tavern","Building")
 wizard = Entity(100,100,wizard_hide["wizard_idle_1.png"],"wizard","Monster",wizard_animation,size=(300,300))
 wizard_2 = Entity(100,100,wizard_hide["wizard_idle_1.png"],"wizard","Monster",wizard_animation,size=(300,300))
+mouton = Entity(12000,3000,sheep,'Pierre',"Monster")
+squelton_1 = Entity(12000,4000,squelton_idle["squeleton_idle_1.png"],"squeleton","Monster",squelton_animation,size=(300,300))
+dark_wizard = Entity(100,100,dark_wizard_idle["dark_wizard_idle_1.png"],"dark_wizard","Monster",dark_wizard_animation)
 
 list_static_entity = []
 list_mooving_entity = []
@@ -63,8 +66,14 @@ list_static_entity.append(entity_7)
 list_static_entity.append(entity_8)
 list_static_entity.append(entity_3)
 
+list_static_entity.append(mouton)
+list_mooving_entity.append(squelton_1)
+list_mooving_entity.append(dark_wizard)
+list_mooving_entity.append(wizard)
+
 list_mooving_entity.append(entity_4)
 list_mooving_entity.append(entity_5)
 list_mooving_entity.append(entity_2)
 list_mooving_entity.append(wizard)
 list_mooving_entity.append(wizard_2)
+
