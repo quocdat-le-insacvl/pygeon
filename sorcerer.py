@@ -1,10 +1,10 @@
 import pygame
 from personnage import Perso
 from settings import screen
-class Wizard(Perso):
+class Sorcerer(Perso):
 
     def __init__(self):
-        super().__init__(self,classe="wizard",hit_dice=6)
+        super().__init__(self,classe="sorcerer",hit_dice=6)
         self.attack=1
         
         # self.image = pygame.image.load('projet pygame/assets/Fighter.png')
