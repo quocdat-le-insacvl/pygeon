@@ -1,5 +1,4 @@
 
-import personnage,pickle
 from pygame.locals import *
 from personnage import Perso
 from inventory import *
@@ -28,16 +27,24 @@ pack.ajouteritems(Sword6)
 pack.ajouteritems(Sword7)
 pack.ajouteritems(Sword8)
 
+### Fixing PATH
+path_pygeon = path.dirname(__file__)
+path_addon = path.join(path_pygeon, 'Addon')
+path_police = path.join(path_addon, 'Police')
+path_menu = path.join(path_addon, 'Menu')
+path_demon_walk = path.join(path_addon, 'demon_walk')
+path_seller = path.join(path_addon, 'seller')
+###
 
-tavern_img = pygame.image.load(r'Addon\tavern_1.png').convert_alpha()
+tavern_img = pygame.image.load(path.join(path_addon, 'tavern_1.png')).convert_alpha()
 tavern_img = pygame.transform.scale(tavern_img,(int(1.8*tavern_img.get_width()),int(1.8*tavern_img.get_height())))
-tavern_2_img = pygame.image.load(r'Addon\tavern_2.png').convert_alpha()
+tavern_2_img = pygame.image.load(path.join(path_addon, 'tavern_2.png')).convert_alpha()
 tavern_2_img = pygame.transform.scale(tavern_2_img,(int(1.7*tavern_2_img.get_width()),int(1.7*tavern_2_img.get_height())))
-demon = pygame.image.load(r'Addon\demon_walk\walk_1.png').convert_alpha()
+demon = pygame.image.load(path.join(path_demon_walk, 'walk_1.png')).convert_alpha()
 demon = pygame.transform.scale(demon,(10*demon.get_width(),10*demon.get_height()))
-vendeur_1 = pygame.image.load(r'Addon\seller\seller_1_idle_1.png').convert_alpha()
+vendeur_1 = pygame.image.load(path.join(path_seller, 'seller_1_idle_1.png')).convert_alpha()
 
-tavern2_img = pygame.image.load(r'Addon\medieval-tavern_00000.png').convert_alpha()
+tavern2_img = pygame.image.load(path.join(path_addon, 'medieval-tavern_00000.png')).convert_alpha()
 tavern2_img = pygame.transform.scale(tavern2_img,(2*tavern2_img.get_width(),2*tavern2_img.get_height()))
 
 vendeur_1 = pygame.transform.scale(vendeur_1,(3*vendeur_1.get_width(),3*vendeur_1.get_height()))

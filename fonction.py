@@ -5,14 +5,28 @@ from settings.police import Drifftype,ColderWeather,Rumbletumble,coeff,coeff1,co
 from settings.load_img import *
 from settings.color import *
 import random
+
+
+### Fixing path
+path_pygeon = os.path.dirname(__file__)
+path_save = os.path.join(path_pygeon, 'Save')
+# path_addon = os.path.join(path_pygeon, 'Addon')
+# path_son = os.path.join(path_addon, 'Son')
+# path_police = os.path.join(path_addon, 'Police')
+# path_menu = os.path.join(path_addon, 'Menu')
+# path_demon_walk = os.path.join(path_addon, 'demon_walk')
+# path_seller = os.path.join(path_addon, 'seller')
+###------------------------
+
+
 """def draw_text
     Affiche un text avec la police (font) avec la couleur (color) sur un pygame surface (surface) a la position x , y"""
 def draw_text(text, font, color, surface, x, y):
     textobj = font.render(text, 1, color)
     textrect = textobj.get_rect()
     textrect.topleft = (x, y)
-    surface.blit(textobj, textrect) 
-"""def create_text_click   
+    surface.blit(textobj, textrect)
+"""def create_text_click
     Crée un bouton par rapport un a un text passer en paramettre
     return True si l'utilisateur click sur le bouton"""
 def create_text_click(text,font,color,display,click,x=0,y=0):
@@ -24,7 +38,7 @@ def create_text_click(text,font,color,display,click,x=0,y=0):
 """def creation img_text_click
     Crée un bouton (pygame Rect) par rapport a une image passez en paramettre et l'affiche a l'endroit demandé
     return True si l'utilisateur click sur le bouton"""
-def creation_img_text_click(img,text,font,color,display,click,x=0,y=0,button=1,left=0,right=0,Click = True): 
+def creation_img_text_click(img,text,font,color,display,click,x=0,y=0,button=1,left=0,right=0,Click = True):
         text_width, text_height = font.size(text)
         if img.get_width() < text_width:
             img = pygame.transform.scale(img,(text_width+50,img.get_height()))
@@ -47,13 +61,13 @@ def creation_img_text_click(img,text,font,color,display,click,x=0,y=0,button=1,l
             mx,my = pygame.mouse.get_pos()
             return button_crea.collidepoint((mx,my))
 """def validation_screen
-    Affiche un message (text) pour valider une action / lancer une autre 
+    Affiche un message (text) pour valider une action / lancer une autre
     return True si click sur bouton suivant"""
 def Validation_screen(text,display,click):
         running = True
         while running:
             # Backgrounds :
-            global img_backgrounds_warning 
+            global img_backgrounds_warning
             #printbackgrounds(display)
             #display.fill(LIGHT_GREY)
             img_backgrounds_warning = pygame.transform.scale(img_backgrounds_warning,(display.get_width()//2,display.get_height()//4))
@@ -65,13 +79,13 @@ def Validation_screen(text,display,click):
             if creation_img_text_click(validation_button,"Valider",ColderWeather,WHITE,display,click,display.get_width()//2,display.get_height()//2):
                 return True
             screen.blit(pygame.transform.scale(display,WINDOWS_SIZE),(0,0))
-            running,click = basic_checkevent(click) 
+            running,click = basic_checkevent(click)
             pygame.display.update()
 """def printbackgrounds
     Afficher le backgrounds des menus sur display"""
 def printbackgrounds(display):
         display.fill(LIGHT_GREY)
-        global menu_background 
+        global menu_background
         menu_background = pygame.transform.scale(menu_background,(display.get_width(),display.get_height()))
         display.blit(menu_background,(0,0))
 """def bouton_click
@@ -101,7 +115,7 @@ def basic_checkevent(click):
                 return False,click
         if event.type == MOUSEBUTTONDOWN:
             if event.button == 1:
-                click = True     
+                click = True
     return True,click
 """def load_game
     Affiche le menu de Sauvegarde et permet de sauvegarder "perso" dans un fichier choisit par l'utilisateur ou à l'inverse de charger un perso provenant de sauvegarde
@@ -134,8 +148,8 @@ def load_game(click,perso):
 
             text_width, text_height = ColderWeather.size("Sauvegarde 1")
             path = r"Save\\"
-            if os.path.getsize(r'Save\sauvegarde') > 0 :
-                with open(r'Save\sauvegarde','rb') as fichier:
+            if os.path.getsize(os.path.join(path_save, 'sauvegarde')) > 0 :
+                with open(os.path.join(path_save, 'sauvegarde'),'rb') as fichier:
                     mon_depickler = pickle.Unpickler(fichier)
                     inter = mon_depickler.load()
                     draw_text("Sauvegarde 1",ColderWeather,LIGHT_GREY,display,button_save_1.width//2-text_width//4,100+text_height//4)
@@ -146,8 +160,8 @@ def load_game(click,perso):
                         choose_path = path + 'sauvegarde'
             else : draw_text("VIDE",ColderWeather,LIGHT_GREY,display,button_save_1.width//2-text_width//4,100+text_height//4)
 
-            if os.path.getsize(r'Save\sauvegarde2') > 0 :
-                with open(r'Save\sauvegarde2','rb') as fichier:
+            if os.path.getsize(os.path.join(path_save, 'sauvegarde2')) > 0 :
+                with open(os.path.join(path_save, 'sauvegarde2'),'rb') as fichier:
                     mon_depickler = pickle.Unpickler(fichier)
                     inter = mon_depickler.load()
                     draw_text("Sauvegarde 2",ColderWeather,LIGHT_GREY,display,(100-text_width//2+(display.get_width()//2-100)//2)+display.get_width()//2-100,100+text_height//4)
@@ -158,8 +172,8 @@ def load_game(click,perso):
                         choose_path = path + 'sauvegarde2'
             else : draw_text("VIDE",ColderWeather,LIGHT_GREY,display,button_save_1.width//2-text_width//4,100+text_height//4)
 
-            if os.path.getsize(r'Save\sauvegarde3') > 0 :
-                with open(r'Save\sauvegarde3','rb') as fichier:
+            if os.path.getsize(os.path.join(path_save, 'sauvegarde3')) > 0 :
+                with open(os.path.join(path_save, 'sauvegarde3'),'rb') as fichier:
                     mon_depickler = pickle.Unpickler(fichier)
                     inter = mon_depickler.load()
                     draw_text("Sauvegarde 3",ColderWeather,LIGHT_GREY,display,100-text_width//2+(display.get_width()//2-100)//2,text_height//4+display.get_height()//2)
@@ -169,9 +183,9 @@ def load_game(click,perso):
                         num = 3
                         choose_path = path + 'sauvegarde3'
             else : draw_text("VIDE",ColderWeather,LIGHT_GREY,display,button_save_1.width//2-text_width//4,100+text_height//4)
-        
-            if os.path.getsize(r'Save\sauvegarde4') > 0 :
-                with open(r'Save\sauvegarde4','rb') as fichier:
+
+            if os.path.getsize(os.path.join(path_save, 'sauvegarde4')) > 0 :
+                with open(os.path.join(path_save, 'sauvegarde4'),'rb') as fichier:
                     mon_depickler = pickle.Unpickler(fichier)
                     inter = mon_depickler.load()
                     draw_text("Sauvegarde 4",ColderWeather,LIGHT_GREY,display,(100-text_width//2+(display.get_width()//2-100)//2)+display.get_width()//2-100,text_height//4+display.get_height()//2)
@@ -181,7 +195,7 @@ def load_game(click,perso):
                         num = 4
                         choose_path = path + 'sauvegarde4'
             else : draw_text("VIDE",ColderWeather,LIGHT_GREY,display,button_save_1.width//2-text_width//4,100+text_height//4)
-            
+
 
             if (Choose):
                 if creation_img_text_click(img_next,"Sauvegarder",ColderWeather,WHITE,display,click,0,0,right=1):
@@ -218,14 +232,14 @@ def load_map(path):
     map = []
     for row in data:
         map.append(list(row))
-    return map   
+    return map
 """ def print_map(self,Map,display):
         Affichage de la carte sur un Display,Chaque numéro contenue dans Map correspond a une case précise du sol et à une propriété
         Return Display Pygame Surface qui contient le sol de la carte
         Return collision Liste de position pour pixel_red (bloc de collision) permet de faire les collision
         Return collision_change_camera List de position pour pixel (bloc de collision) permet de changer l'affichage
         Return tree_position List de postion des Arbres
-        Return collision_entity List de position pour pixel_red (bloc de collision) permet l'interaction avec les entitées fixes"""   
+        Return collision_entity List de position pour pixel_red (bloc de collision) permet l'interaction avec les entitées fixes"""
 def print_map(Map,display):
 
     cubesize=190
@@ -275,7 +289,7 @@ def print_map(Map,display):
                     display.blit(grass['grass_' + str(1) + '.png'],(x,y))
                 if Map[i][j] == 'a':
                     display.blit(pixel_red,(x,y))
-            j+=1    
+            j+=1
         i+=1
     i=0
     return display,collision,collision_change_camera,tree_position,collision_entity
@@ -301,8 +315,8 @@ def print_nature(Map,display,tree_position,all = True):
                         display.blit(fence_1,(x,y-50))
                     if Map[i][j] == '9':
                         display.blit(fence_2,(x,y-50))
-                j+=1    
-                    
+                j+=1
+
             i+=1
         i=0
     else:

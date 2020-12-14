@@ -1,5 +1,4 @@
 import pygame, sys,pickle,os
-
 import math
 import random
 from pygame import mixer
@@ -20,6 +19,16 @@ pygame.display.set_caption('Projet Pygeon')
 pygame.mouse.set_cursor(*pygame.cursors.broken_x)
 fullscreen = False
 
+### Fixing path
+path_pygeon = path.dirname(__file__)
+path_addon = path.join(path_pygeon, 'Addon')
+path_son = path.join(path_addon, 'Son')
+path_police = path.join(path_addon, 'Police')
+path_menu = path.join(path_addon, 'Menu')
+path_demon_walk = path.join(path_addon, 'demon_walk')
+path_seller = path.join(path_addon, 'seller')
+###------------------------
+
 class Menu():
     def __init__(self,player):
         self.perso = player
@@ -32,8 +41,8 @@ class Menu():
         LARGEUR_1 = 600
         global screen
         display = pygame.Surface((LONGUEUR_1,LARGEUR_1))
-        mixer.music.load(r'Addon\Son\background.wav')
-        mixer.music.play(-1) 
+        mixer.music.load(path.join(path_son, 'background.wav'))
+        mixer.music.play(-1)
         while running:
             Xdd, Ydd, Xdragon, Ydragon = Xdd + 1, Ydd + 1, Xdragon - 1.5, Ydragon + 1.5
             display.fill(BURGUNDY)
@@ -48,7 +57,7 @@ class Menu():
             screen.blit(pygame.transform.scale(display,(LONGUEUR,LARGEUR)),(0,0))
             running = self.checkevent()
             pygame.display.update()
-    
+
         mixer.music.stop()
         screen = pygame.display.set_mode((LONGUEUR,LARGEUR),pygame.RESIZABLE)
         self.main_menu()
@@ -58,7 +67,7 @@ class Menu():
         while running:
             # SETUP BACKGROUNDS POLICE
             printbackgrounds(display)
-            # CHOISIR UN MENU : CREATION BOUTON / AFFICHAGE 
+            # CHOISIR UN MENU : CREATION BOUTON / AFFICHAGE
             text_width, text_height = Drifftype.size("Projet Pygeon")
             draw_text('Projet Pygeon', Drifftype, GREY, display, display.get_width()//2 - text_width // 2, display.get_height()//6)
 
@@ -78,16 +87,16 @@ class Menu():
         running = True
         display = pygame.Surface((1980,1024))
         while running:
-            # SETUP BACKGROUNDS POLICE 
+            # SETUP BACKGROUNDS POLICE
             printbackgrounds(display)
-            # BOUTON img_next 
+            # BOUTON img_next
             if self.perso == None:
                 self.perso = player
             if self.perso.name != None and self.perso.classe != None:
                 if creation_img_text_click(img_next,"Suivant",ColderWeather,WHITE,display,self.click,right=1):
                     game = Game(self.perso)
                     game.main_game()
-                
+
 
             #for x in Wikitem:
             #    screen.blit(x.im)
@@ -95,13 +104,13 @@ class Menu():
 
             text_width, text_height = ColderWeather.size("Choisir une classe :")
             draw_text('Choisir une classe',ColderWeather,GREY,display,display.get_width()//4 - text_width // 2.5,display.get_height()//6 + 3 * text_height)
-            
+
             text_width, text_height = ColderWeather.size("Sorcerer")
             button_1 = pygame.Rect(display.get_width()//4 - text_width // 2.5, display.get_height()//6 + 4*text_height, text_width, text_height)
             button_2 = pygame.Rect(display.get_width()//4 - text_width // 2.5, display.get_height()//6 + 5*text_height, text_width, text_height)
             button_3 = pygame.Rect(display.get_width()//4 - text_width // 2.5, display.get_height()//6 + 6*text_height, text_width, text_height)
 
-            # CHOISIR UNE CLASSE : CHANGEMENT DE COULEUR QUAND SELECTIONNER 
+            # CHOISIR UNE CLASSE : CHANGEMENT DE COULEUR QUAND SELECTIONNER
 
             if bouton_click(button_1,display,self.click) or self.perso.classe == 'Fighter':
                 draw_text('Fighter', ColderWeather, RED, display, display.get_width()//4 - text_width // 2.5,display.get_height()//6 + 4*text_height)
@@ -122,8 +131,8 @@ class Menu():
                 self.perso.classe = 'Rogue'
             else:
                 draw_text('Rogue',ColderWeather,WHITE,display,display.get_width()//4 - text_width // 2.5,display.get_height()//6 + 6*text_height)
-        
-            # CHANGEMENTS CAPACITES JOUEURS : AFFICHAGE 
+
+            # CHANGEMENTS CAPACITES JOUEURS : AFFICHAGE
 
             text_width, text_height = ColderWeather.size("Points Disponible")
             draw_text('Points Disponible : %d'%(self.perso.difficulty), ColderWeather, GREY, display, display.get_width() - display.get_width()//4 - text_width // 1.5,display.get_height()//6 )
@@ -135,7 +144,7 @@ class Menu():
             draw_text('WIS : %d'%(self.perso.WIS), ColderWeather, WHITE, display, display.get_width() - display.get_width()//4 - 2.5*text_width,display.get_height()//6 + 5*text_height)
             draw_text('CHA : %d'%(self.perso.CHA), ColderWeather, WHITE, display,display.get_width() - display.get_width()//4 - 2.5*text_width ,display.get_height()//6 + 6*text_height)
 
-            # CHANGEMENTS CAPACITES JOUEURS : MISE A JOUR 
+            # CHANGEMENTS CAPACITES JOUEURS : MISE A JOUR
 
             self.perso.STR = self.affichage_set_point(display.get_width() - display.get_width()//4 + 0.5*text_width,display.get_height()//6 + 1*text_height,self.perso.STR,display)
             self.perso.DEX = self.affichage_set_point(display.get_width() - display.get_width()//4 + 0.5*text_width,display.get_height()//6 + 2*text_height,self.perso.DEX,display)
@@ -144,7 +153,7 @@ class Menu():
             self.perso.WIS = self.affichage_set_point(display.get_width() - display.get_width()//4 + 0.5*text_width,display.get_height()//6 + 5*text_height,self.perso.WIS,display)
             self.perso.CHA = self.affichage_set_point(display.get_width() - display.get_width()//4 + 0.5*text_width,display.get_height()//6 + 6*text_height,self.perso.CHA,display)
 
-            # CHANGEMENTS NOM 
+            # CHANGEMENTS NOM
 
             text_width, text_height = ColderWeather.size("Choisir un Nom")
             draw_text('Choisir un Nom', ColderWeather, GREY, display, display.get_width()//4 - text_width // 2.5, display.get_height()//6)
@@ -163,7 +172,7 @@ class Menu():
             # REFRESH + END EVENT
             screen.blit(pygame.transform.scale(display,WINDOWS_SIZE),(0,0))
             running = self.checkevent()
-            pygame.display.update()  
+            pygame.display.update()
     def option(self):
         running = True
         display = pygame.Surface((1980,1020))
@@ -175,9 +184,9 @@ class Menu():
             display.fill(LIGHT_GREY)
             printbackgrounds(display)
             global fullscreen
-            # Partie Choisir résolution 
+            # Partie Choisir résolution
             if fullscreen:
-                color = RED 
+                color = RED
             else:
                 color = WHITE
             text_width, text_height = ColderWeather.size("Choisir la résolution")
@@ -210,13 +219,13 @@ class Menu():
                 fullscreen = not fullscreen
 
 
-           
-            # Partie son 
+
+            # Partie son
             screen.blit(pygame.transform.scale(display,WINDOWS_SIZE),(0,0))
             running = self.checkevent()
-            pygame.display.update()     
+            pygame.display.update()
     def affichage_set_point(self,x,y,cap,display):
-       
+
         # CREATION/AFFICHAGE : BOUTON + et -
 
         t_width, t_height = Rumbletumble.size("+")
@@ -235,8 +244,8 @@ class Menu():
                 return cap
             else:
                 self.perso.difficulty = self.perso.difficulty - self.point_attrib[cap - 7]
-                return cap + 1    
-        if bouton_click(button_2,display,self.click):         
+                return cap + 1
+        if bouton_click(button_2,display,self.click):
             if cap <= 7 or cap >= 19  :
                 return cap
             else:
@@ -260,8 +269,8 @@ class Menu():
                     screen = pygame.display.set_mode(WINDOWS_SIZE,pygame.RESIZABLE,32)
             if event.type == MOUSEBUTTONDOWN:
                 if event.button == 1:
-                    self.click = True     
-                
+                    self.click = True
+
         return True
     def checkclavier(self,x,y,display,rect):
         running = True
@@ -271,7 +280,7 @@ class Menu():
             display.fill(LIGHT_GREY,rect)
 
             draw_text(mot,ColderWeather,WHITE,display,x,y)
-            
+
             for event in pygame.event.get():
                 if event.type == QUIT:
                     sys.exit()
@@ -297,7 +306,7 @@ class Menu():
         while running:
             display.fill(LIGHT_GREY,rect)
             draw_text(mot,ColderWeather,WHITE,display,x,y)
-            
+
             for event in pygame.event.get():
                 if event.type == QUIT:
                     sys.exit()

@@ -36,7 +36,14 @@ class Armor(Items):
 #  REFERENCE : https://www.d20pfsrd.com/equipmenT/weapons/#weapons-simple
 #  REFERENCE : WEAPON(PRIX,POID,DOMMAGE,TYPE,NOM)
 # PATH RESOLUTION : 
-first_path = "Addon/Sprite/Items/" # INSERER PATH VERS LE DOSSIER ITEMS
+
+# ERROR WITH PATH , so I will fix it like this
+path_pygeon = os.path.dirname(__file__)
+path_addon = os.path.join(path_pygeon, 'Addon')
+path_sprite = os.path.join(path_addon, 'Sprite')
+path_items = os.path.join(path_sprite, 'Items/')
+first_path = path_items
+# first_path = "Addon/Sprite/Items/" # INSERER PATH VERS LE DOSSIER ITEMS
 
 def image_loader(path) -> str:
     for i in os.listdir(path):
