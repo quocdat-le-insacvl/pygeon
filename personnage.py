@@ -2,7 +2,7 @@ from competences import Competence
 from basic_actions import Actions
 from feats import Feat
 from settings.screen import screen,WINDOWS_SIZE
-from lvl_up_mecanic import Lvl_up_mecanic
+from settings import police,color
 import pygame
 class Object():
     def __init__(self,name,value=None):
@@ -18,6 +18,7 @@ class Perso():
         self.level = level
         self.hp = hp
         self.hp_max = hp_max
+        self.proficiency=2
         self.attack=0
         self.STR = STR
         self.DEX = DEX
@@ -32,13 +33,13 @@ class Perso():
         self.nb_hit_dice=0
         self.competence=Competence(self.classe)
         self.competencesList=[]
+        self.skills=[0,0,0,0,0,0,0]
         ### Actions during the game ###
         self.action=Actions(self.attack)
         self.feats=[]
         self.x=100
         self.y=400
         ### extern elements ###
-        self.lvl_up=Lvl_up_mecanic()
         self.difficulty = 10
         self.inventaire = inventaire
         self.armor = dict()
@@ -68,14 +69,14 @@ class Perso():
             print("level up")
             print(self.level)
             ######Global bonus for the level 2######
-            if self.level==2: self.competence.competence2()
-            
+            if self.level==2:
+                self.attack+=1
             elif self.level==3: self.competence.competence3()
             ######Global bonus for the level 4######
             elif self.level==4: 
                 self.competence.competence4()
                 #choice
-                self.lvl_up.choice()
+                self.__choice()
             elif self.level==5: self.competence.competence5()
             #fin des competence initialisation des statistiques de base
             self.nb_hit_dice=self.level
@@ -134,3 +135,39 @@ class Perso():
         barmax_position=(self.x,self.y,hp_max_pourcent/2,10)
         pygame.draw.rect(surface, barmax_color, barmax_position)
         pygame.draw.rect(surface, bar_color, bar_position)
+
+    def score(self,comp):
+        #basic version of the skills effect just to provide proficiency
+        #this fonction must be call for all the calculs wich need ability modifier
+        select={"str" : 1,"dex" : 2, "con" : 3, "int" : 4, "wis" : 5, "cha" : 6}
+        assert(comp in select), "wrong argument for score()" 
+        if self.skills[select[comp]]:
+            return ability_score(self.skills[select[comp]])+self.proficiency
+    
+    def __choice(self):
+        screen_S=self.__screenSave()
+        text=police.Outrun_future.render("Level up !",True,color.RED)
+        text2=police.Outrun_future.render("Choose skill or points",True,color.RED)
+        board=pygame.transform.scale(pygame.image.load(r"Addon\Menu\UI board Small  parchment.png"),(text2.get_width()+50,text.get_height()*4))
+        excl=pygame.transform.scale(pygame.image.load(r"Addon\Menu\Exclamation_Red.png"),(board.get_width()//5,board.get_height()//5))
+        board.blit(text,(board.get_width()//2-text.get_width()//2,10))
+        board.blit(text2,(board.get_width()//2-text2.get_width()//2,text.get_height()+20))
+        excl_rect=board.blit(excl,(board.get_width()//2-excl.get_width()*2,text.get_height()*2+30))
+        screen.blit(board,(WINDOWS_SIZE[0]//2-board.get_width()//2,WINDOWS_SIZE[1]//2-board.get_height()//2))
+        pygame.display.flip()
+        running=True
+        while running:
+            for events in pygame.event.get():
+                if all([events.type==pygame.MOUSEBUTTONUP,excl_rect.collidepoint((pygame.mouse.get_pos()[0]-WINDOWS_SIZE[0]//2+board.get_width()//2,pygame.mouse.get_pos()[1]-WINDOWS_SIZE[1]//2+board.get_height()//2))]):
+                    screen.blit(screen_S,(0,0))
+                    pygame.display.flip()
+                    running=False
+                elif events.type==pygame.QUIT:
+                    pygame.quit()
+                    running=False
+
+
+    def __screenSave(self):
+        screensave=pygame.Surface(WINDOWS_SIZE)
+        screensave.blit(screen,(0,0))
+        return screensave

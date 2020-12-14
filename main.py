@@ -7,7 +7,7 @@ running=True
 interface.generer()
 interface.basic_affichage()
 while running:
-    interface.perso.xp+=1
+    interface.perso.xp+=10
     interface.perso.levelupchange()
     n=pygame.time.get_ticks()
     pygame.display.flip()

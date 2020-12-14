@@ -2,14 +2,12 @@ import pygame
 from personnage import Perso
 from settings import screen
 class Sorcerer(Perso):
-
+    #proficient with all simple weapons but cannot wear armor
     def __init__(self):
         super().__init__(self,classe="sorcerer",hit_dice=6)
-        self.attack=1
+        self.attack=0
+        self.sPoints=0
         
-        # self.image = pygame.image.load('projet pygame/assets/Fighter.png')
-
-        # self.trans=pygame.image.load('projet pygame/assets/transformation.png')
 
 
     def get_class(self):
