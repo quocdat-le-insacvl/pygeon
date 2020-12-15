@@ -1,5 +1,5 @@
 from personnage import Perso
-from entity import Minimap
+from entity import Fog, Minimap
 import pygame
 import sys
 import pickle
@@ -71,6 +71,8 @@ class Game():
         self.x = 0
         self.player = player
         self.click = False  # Click souris
+        self.fog = Fog(self)
+        self.zoom_map = False
 
     def main_game(self):
         '''Choisis la postion de player, crée un rect / display joueur'''
@@ -109,7 +111,6 @@ class Game():
         pixel_mask = pygame.mask.from_surface(pixel_red)
 
         center_x, center_y = 0, 0
-        case_connue = []
 
         '''Set de toute les variables d'actions'''
         swap = False
@@ -131,6 +132,7 @@ class Game():
             mx, my = pygame.mouse.get_pos()
             screen.fill(LIGHT_GREY)
 
+                
             """Changer l'affichage pour respecter vue joueurs"""
             if pause_menu:
                 self.print_pause_menu()
@@ -207,7 +209,10 @@ class Game():
             n += 0.1
             '''Set caméra / player pos pour sauvegarde'''
             center_x -= (player_rect.x + center_x - 900)//20
+            # Dat rajoute self.center_x pour pouvoir y acceder facilement
+            self.center_x = center_x
             center_y -= (player_rect.y + center_y - 400) // 20
+            self.center_y = center_y
             self.player.pos_x = player_rect.x
             self.player.pos_y = player_rect.y
             """ Déplacement joueurs"""
@@ -241,8 +246,14 @@ class Game():
                     walk_bottom['walk_bottom_' + str(1) + '.png'], (0,  
                                                                     0))
 
-            """ Draw minimap"""
+            """ Draw minimap + Fog"""
             self.minimap.draw_minimap()
+            # self.fog.draw_fog()
+
+            """ If Press M : Zoom map"""
+            if self.zoom_map:
+                self.minimap.zoom_minimap()
+            
             """Check event classique"""
             for event in pygame.event.get():
                 if event.type == QUIT:
@@ -260,6 +271,9 @@ class Game():
                         interact = True
                     if event.key == K_ESCAPE:
                         pause_menu = True
+                    if event.key == K_m:
+                        self.zoom_map = True
+                        
                 if event.type == KEYUP:
                     if event.key == K_UP:
                         mouvement[0] = False
@@ -269,6 +283,8 @@ class Game():
                         mouvement[2] = False
                     if event.key == K_LEFT:
                         mouvement[3] = False
+                    if event.key == K_m:
+                        self.zoom_map = False
             pygame.display.update()
             clock.tick(64)
 

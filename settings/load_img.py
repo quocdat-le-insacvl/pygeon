@@ -8,6 +8,11 @@ path_pygeon = path.dirname(path_settings)
 path_addon = path.join(path_pygeon, 'Addon')
 path_police = path.join(path_addon, 'Police')
 path_menu = path.join(path_addon, 'Menu')
+path_ava = path.join(path_addon, 'avata')
+
+# LOAD avata for minimap 
+ava_perso = pygame.image.load(path.join(path_ava, 'ava_perso.png'))
+ava_perso = pygame.transform.scale(ava_perso, (50, 50))
 
 img_next = pygame.image.load(path.join(path_menu,'TextBTN_Big.png'))
 menu_background = pygame.image.load(path.join(path_menu, 'UI board Large Set.png'))
