@@ -9,7 +9,7 @@ from settings.screen import *
 from settings.police import Drifftype,ColderWeather,Rumbletumble,coeff,coeff1,coeff2,ColderWeather_small
 from settings.load_img import *
 from settings.color import *
-from script import list_mooving_entity,list_static_entity
+from script import list_mooving_entity,list_static_entity,entity_2
 from fonction import *
 from personnage import Perso_game
 pygame.init()
@@ -268,26 +268,29 @@ class Game():
             i+=1
         i=0
         for x in list_monstre:
-            list_case[i].in_case = x
+            list_case[10].in_case = x
             i+=1
-        list_case[0].in_case = list_mooving_entity[0]
+        self.player.transform_display_for_combat()
+        list_case[59].in_case = self.player
+
+        #VOIR TOUT LES MONSTRES
+        """list_case[0].in_case = list_mooving_entity[0]
         list_case[1].in_case = list_mooving_entity[1]
         list_case[2].in_case = list_mooving_entity[2]
         list_case[3].in_case = list_mooving_entity[3]
-        list_case[4].in_case = list_mooving_entity[4]
+        list_case[4].in_case = list_mooving_entity[4]"""
         while running:
             mx,my = pygame.mouse.get_pos()
             screen.fill(LIGHT_GREY)
             screen.blit(fond,(0,0))
             screen.blit(souris_surf,(mx,my))
             i=0
-            
             for x in list_case:
                 screen.blit(x.display,x.cordo())
                 if x.in_case != None and not x.is_select:
-                    x.in_case.type_animation = "attack"
+                    x.in_case.type_animation = "idle"
                 if x.in_case != None and x.is_select:
-                    x.in_case.type_animation = "walk"
+                    x.in_case.type_animation = "idle"
                 if x.in_case != None:
                     x.in_case.animate()
                 
@@ -390,8 +393,8 @@ class Game():
 map_1 = Map("map.txt",list_static_entity)
 map_1.init_map()
 game = Game(player,map_1)
-game.main_game()
-game.print_combat_screen([])
+#game.main_game()
+game.print_combat_screen([entity_2])
 #game.main_game()
 #running = True
 #click = False

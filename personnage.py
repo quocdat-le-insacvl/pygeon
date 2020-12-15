@@ -41,7 +41,6 @@ class Perso_game(Perso,Entity):
         Entity.__init__(self,pos_x,pos_y,img,name,"Player",player_animation)
         Perso.__init__(self,STR,DEX,CON,INT,WIS,CHA,hp,hp_max,inventaire,argent,level,xp)
         self.case_connue = []
-        self.display = pygame.Surface((img.get_width(),img.get_height()))
         self.mask_surface = pygame.Surface((img.get_width()-40,10))
         self.mask_surface.fill((255,0,0))
         self.masks = pygame.mask.from_surface(self.mask_surface)
@@ -64,9 +63,7 @@ class Perso_game(Perso,Entity):
             self.type_animation = "walk_left"
         else:
             self.deplacement = [0,0]
-            self.type_animation = "idle"
-            
-            
+            self.type_animation = "idle"     
     def move_player(self,map):
         self.refresh_animation_and_mouvement()
         self.swap = False
@@ -86,7 +83,6 @@ class Perso_game(Perso,Entity):
             self.pos_y += self.deplacement[1]
         """def move_player():
         Permet de déplcer le player_rect de mouvement check si le joeurs ne collide pas avec un chamgement de caméra ou une entité"""
-
     def check_user(self,event):
         if event.type == KEYDOWN:
             if event.key == K_UP:
@@ -111,3 +107,9 @@ class Perso_game(Perso,Entity):
     
         '''def interact_with_entity(self,entity):
         Effectue les actions en fonctions du type de l'entité la fonction est à compléter elle ne traite pas tout les types entités''' 
+    def transform_display_for_combat(self):
+        self.display = pygame.Surface((300,300))
+        self.display.set_colorkey((0,0,0))
+    def transform_display_for_map(self):
+        self.display = pygame.Surface((self.img.get_width(),self.img.get_height()))
+        self.display.set_colorkey((0,0,0))
