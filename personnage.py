@@ -66,8 +66,7 @@ class Perso():
         elif self.xp>=lvl_XP[self.level-1]:
             self.level+=1
             self.__affichage_lvlup()
-            print("level up")
-            print(self.level)
+            self.av_points+=2+self.ability_score(4)
             ######Global bonus for the level 2######
             if self.level==2:
                 self.attack+=1
