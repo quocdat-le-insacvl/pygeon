@@ -66,6 +66,16 @@ wizard_animation = dict()
 wizard_animation["idle"] = wizard_hide
 wizard_animation["attack"] = wizard_attack
 
+squelton_idle = dict(image_loader('Addon/squeleton_idle/'))
+transform_image(squelton_idle,5)
+squelton_animation = dict()
+squelton_animation["idle"] = squelton_idle
+
+dark_wizard_idle = dict(image_loader('Addon/dark_wizard_idle/'))
+transform_image(dark_wizard_idle,3)
+dark_wizard_animation = dict()
+dark_wizard_animation["idle"] = dark_wizard_idle
+
 fence_1 = pygame.image.load(path.join(path_addon, 'fence_1.png'))
 fence_1 = pygame.transform.scale(fence_1,(200,200))
 fence_2 = pygame.image.load(path.join(path_addon, 'fence_2.png'))

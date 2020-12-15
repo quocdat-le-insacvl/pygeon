@@ -27,7 +27,7 @@ class Case():
     def print_contains(self):
         if self.in_case != None:
             #screen.blit(self.in_case.display,(self.cordo()[0]+self.in_case.display.get_width()//2,self.cordo()[1]-self.in_case.display.get_height()//2))
-            screen.blit(self.in_case.display,(self.cordo()[0]-self.in_case.img.get_width()//2,self.cordo()[1]-self.in_case.display.get_height()+self.in_case.img.get_height()//2))
+            screen.blit(self.in_case.display,(self.cordo()[0]-self.in_case.img.get_width()//2,self.cordo()[1]-self.in_case.display.get_height()+self.in_case.img.get_height()//2+self.in_case.decalage_display[1]))
     def cordo(self):
         return ((self.j-self.i)*(pixel_red.get_width()+45)//2+screen.get_width()//2-pixel_red.get_width()//2,(self.j+self.i)*(pixel_red.get_width()+45)//4-100)
     def select(self,is_select):
@@ -239,6 +239,9 @@ class Game():
         l=load_map('map2.txt')
         case_select.set_alpha(100)
         list_case = []
+        transition = pygame.Surface((screen.get_width(),screen.get_height()))
+        transition.fill((0,0,0))
+        f=0
         current_selec = None
         i,j= 0,0
         for h in l:
@@ -252,9 +255,10 @@ class Game():
         for x in list_monstre:
             list_case[i].in_case = x
             i+=1
-        #list_case[0].in_case = list_mooving_entity[0]
-        #list_case[1].in_case = list_mooving_entity[3]
-        #list_case[2].in_case = list_mooving_entity[4]
+
+        list_case[0].in_case = list_mooving_entity[0]
+        list_case[1].in_case = list_mooving_entity[1]
+        list_case[2].in_case = list_mooving_entity[2]
         while running:
             mx,my = pygame.mouse.get_pos()
             screen.fill(LIGHT_GREY)
@@ -302,6 +306,11 @@ class Game():
                 #current_selec.print_contains()
                 current_selec.select(True)
                 current_selec.select_neighbour(list_case)
+            if f != 255:
+                for x in range(255):
+                    f+=0.008
+                    transition.set_alpha(int(255-f))
+                screen.blit(transition,(0,0))
             pygame.display.update()
             running,self.click = basic_checkevent(self.click)
         """Affichage plateau + action souris
@@ -412,4 +421,4 @@ class Game():
 
 game = Game(player)
 #game.main_game()# Pour lancer la carte
-#game.print_combat_screen() pour lancer le plateau combat
+game.print_combat_screen([]) #pour lancer le plateau combat
