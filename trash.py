@@ -144,7 +144,7 @@ class Map():
         for i in range(len(self.static_entity)):
             self.display.blit(self.static_entity[i].display,(self.static_entity[i].pos_x,self.static_entity[i].pos_y))
        
-class Game(Map,Perso_game):
+class Game():
     def __init__(self,player,map):
         self.x = 0
         self.player = player
@@ -153,11 +153,14 @@ class Game(Map,Perso_game):
     def main_game(self):
         center_x,center_y=0,0
         '''Set de toute les variables d'actions'''
+        transition = pygame.Surface((screen.get_width(),screen.get_height()))
+        transition.fill((0,0,0))
         interact = False
         pause_menu = False
         running = True
         n= 1
         f=0
+        g=0
         while running:
             screen.fill(LIGHT_GREY)
 
@@ -227,6 +230,14 @@ class Game(Map,Perso_game):
                         pause_menu = True
             self.player.move_player(self.map)
 
+            if g != 255:
+                for x in range(255):
+                    f+=0.008
+                    transition.set_alpha(int(255-f))
+                screen.blit(transition,(0,0))
+
+
+
             pygame.display.update()
             clock.tick(64)
     def print_combat_screen(self,list_monstre):
@@ -259,7 +270,6 @@ class Game(Map,Perso_game):
         for x in list_monstre:
             list_case[i].in_case = x
             i+=1
-
         list_case[0].in_case = list_mooving_entity[0]
         list_case[1].in_case = list_mooving_entity[1]
         list_case[2].in_case = list_mooving_entity[2]
@@ -313,11 +323,15 @@ class Game(Map,Perso_game):
                 #current_selec.print_contains()
                 current_selec.select(True)
                 current_selec.select_neighbour(list_case)
+
+
             if f != 255:
                 for x in range(255):
                     f+=0.008
                     transition.set_alpha(int(255-f))
                 screen.blit(transition,(0,0))
+
+
             pygame.display.update()
             running,self.click = basic_checkevent(self.click)
         """Affichage plateau + action souris
@@ -376,7 +390,7 @@ class Game(Map,Perso_game):
 map_1 = Map("map.txt",list_static_entity)
 map_1.init_map()
 game = Game(player,map_1)
-#game.main_game()
+game.main_game()
 game.print_combat_screen([])
 #game.main_game()
 #running = True
