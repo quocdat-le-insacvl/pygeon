@@ -305,7 +305,7 @@ def print_nature(Map,display,tree_position,all = True):
             j=0
             for tile in layer:
                 x = (j-i)*cubesize//2+9000
-                y = (j+i)*cubesize//4
+                y = (j+i)*cubesize//4 
                 if Map[i][j] != None:
                     if Map[i][j] == '2' :
                         n = random.randint(1,4)

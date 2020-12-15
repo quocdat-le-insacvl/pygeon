@@ -1,5 +1,7 @@
 import pygame
 from settings.load_img import pixel_red
+from settings.screen import *
+from settings.color import *
 class Entity():
 
     def __init__(self,pos_x,pos_y,img,name,which_type,animation_dict = None,talking=None,size=(0,0)):
@@ -45,3 +47,65 @@ class Entity():
             #self.display = pygame.Surface((animation[ self.nom + "_" + self.type_animation + "_" + str(int(self.frame)) + ".png"].get_width(),animation[ self.nom + "_" + self.type_animation + "_" + str(int(self.frame)) + ".png"].get_height()))
             self.display.fill((0,0,0))
             self.display.blit(animation[ self.nom + "_" + self.type_animation + "_" + str(int(self.frame)) + ".png"],(0,0))
+            
+
+WIDTH = screen.get_width()     
+HEIGHT = screen.get_height()
+MINIMAP_SCALE = 300
+class Minimap:
+    def __init__(self, game, display_with_nature):
+        self.game = game
+        self.player = self.game.player
+        self.display_with_nature = display_with_nature
+        self.screen = screen
+        self.map = self.game.map
+        self.map_height = len(self.map)
+        self.map_width = len(self.map[0])
+        self.TOP_LEFT_X = WIDTH - MINIMAP_SCALE
+        self.TOP_LEFT_Y = HEIGHT - MINIMAP_SCALE
+        self.surface = pygame.Surface((MINIMAP_SCALE,  MINIMAP_SCALE))
+        self.surface.set_alpha(50)                # alpha level
+        self.surface.fill(BLUE)
+        SCALE = 10*MINIMAP_SCALE
+        self.rect = pygame.Rect(0, 0, SCALE, SCALE)
+
+    def draw_minimap(self):
+        self.draw_surface()
+        # self.draw_white_square()
+        #self.draw_dot_pos(self.game.player.pos_x, self.game.player.pos_y, RED)
+        # for mob in self.game.mobs:
+        #     self.draw_dot_pos(mob.pos, GREEN)
+        """
+         screen.blit(pygame.transform.scale(display_with_nature,(300,100)),(LONGUEUR-300,LARGEUR-200))
+            screen.blit(pygame.transform.scale(display_with_nature,(300,100)),(LONGUEUR-300,LARGEUR-200))
+            """
+    def draw_surface(self):
+        ## Set center of Rect 
+        #self.rect.center = (self.player.pos_x, self.player.pos_x)
+        self.rect.center = (self.player.pos_x , self.player.pos_y)
+        try: 
+            self.map_sp = self.display_with_nature.subsurface(self.rect)
+        except:
+            pass
+        minimap = pygame.transform.scale(self.map_sp, (MINIMAP_SCALE, MINIMAP_SCALE))
+        #self.screen.blit(self.surface, (WIDTH - MINIMAP_SCALE, HEIGHT - MINIMAP_SCALE))
+        # rect = self.surface.get_rect() 
+        # print(rect, bounding)
+        self.screen.blit(minimap , (self.TOP_LEFT_X, self.TOP_LEFT_Y))
+
+    # def draw_white_square(self):
+    #     SQUARE_X = self.TOP_LEFT_X + -self.game.camera.camera.left / \
+    #         self.game.map.width * MINIMAP_SCALE
+    #     SQUARE_Y = self.TOP_LEFT_Y + -self.game.camera.camera.top / \
+    #         self.game.map.height * MINIMAP_SCALE
+    #     SQUARE_WIDTH_X = WIDTH / self.game.map.width * MINIMAP_SCALE
+    #     SQUARE_WIDTH_Y = HEIGHT / self.game.map.height * MINIMAP_SCALE
+    #     minimap_rect = pygame.Rect(
+    #         SQUARE_X, SQUARE_Y, SQUARE_WIDTH_X, SQUARE_WIDTH_Y)
+    #     pygame.draw.rect(self.screen, WHITE, minimap_rect, width=1)
+
+    # draw position of player , or monster
+    def draw_dot_pos(self, pos_x, pos_y, color):
+        X = self.TOP_LEFT_X + pos_x / (self.map_width * 190) * MINIMAP_SCALE
+        Y = self.TOP_LEFT_Y + pos_y / (self.map_height * 190) * MINIMAP_SCALE
+        pygame.draw.circle(self.screen, color, (X, Y), radius=6, width=0)
