@@ -1,7 +1,7 @@
 import pygame
 from fonction_load_image import image_loader,transform_image
 from settings.screen import WINDOWS_SIZE
-"""
+
 img_next = pygame.image.load(r'Addon\Menu\TextBTN_Big.png')
 menu_background = pygame.image.load(r'Addon\Menu\UI board Large Set.png')
 title = pygame.image.load(r'Addon\Menu\IRONY TITLE  empty.png')
@@ -79,7 +79,7 @@ fond = pygame.image.load(r'Addon\Background\wine-wang-sunshineforest-1.jpg')
 fond = pygame.transform.scale(fond,WINDOWS_SIZE)
 case = pygame.image.load(r'Addon\case.png')
 case = pygame.transform.scale(case,(pixel_red.get_width(),pixel_red.get_height()))
-"""
+
 case_select = pygame.image.load(r'Addon\case_select.png')
 case_select = pygame.transform.scale(case_select,(pixel_red.get_width(),pixel_red.get_height()))
 case_select.set_colorkey((255,255,255))

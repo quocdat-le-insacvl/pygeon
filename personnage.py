@@ -3,6 +3,7 @@ from basic_actions import Actions
 from feats import Feat
 from settings.screen import screen,WINDOWS_SIZE
 from settings import police,color
+from entity import Entity
 import pygame
 class Object():
     def __init__(self,name,value=None):
@@ -10,12 +11,13 @@ class Object():
         self.value = value
 
 
-class Perso():
+class Perso(Entity):
     def __init__(self,STR=8,DEX=8,CON=8,INT=8,WIS=8,CHA=8,hp=10,hp_max=10,inventaire=10,name=None,classe=None,level=0,xp=0,hit_dice=0):
+        super().__init__(100,400,pygame.transform.scale(pygame.image.load(r"Image\perso.png"),(96,147)),"perso","perso")
         ### Stats ###
-        self.name=name
         self.classe = classe
         self.level = level
+        self.xp=0
         self.hp = hp
         self.hp_max = hp_max
         self.proficiency=2
@@ -28,7 +30,7 @@ class Perso():
         self.CHA = CHA
         self.stats=[self.STR,self.DEX,self.CON,self.INT,self.WIS,self.CHA]
         self.av_points=27
-        self.xp = xp
+        self.pos_xp = xp
         self.hit_dice=hit_dice
         self.nb_hit_dice=0
         self.competence=Competence(self.classe)
@@ -37,8 +39,6 @@ class Perso():
         ### Actions during the game ###
         self.action=Actions(self.attack)
         self.feats=[]
-        self.x=100
-        self.y=400
         ### extern elements ###
         self.difficulty = 10
         self.inventaire = inventaire
@@ -46,7 +46,6 @@ class Perso():
         for i in range(0,6):     # 0 : HEAD 1 : TORSE 2 : COUE  3 BOTTE 4 : MAIN GAUCHE : 5 MAIN DROITE
             self.armor[i] = None
         ### Pictures ###
-        self.im_pers=pygame.transform.scale(pygame.image.load(r"Image\perso.png"),(96,147))
         self.lvl_up_img=pygame.transform.scale(pygame.image.load(r"Image\lvl_up.png"),(WINDOWS_SIZE[0]//20,WINDOWS_SIZE[1]//20))
 
     ####### Def lvl ########
@@ -87,7 +86,7 @@ class Perso():
         #manage the display of the lvl up (private)
         temp=pygame.Surface(WINDOWS_SIZE)
         temp.blit(screen,(0,0))
-        screen.blit(self.lvl_up_img,(self.x+100,self.y))
+        screen.blit(self.lvl_up_img,(self.pos_x+100,self.pos_y))
         time=pygame.time.get_ticks()
         pygame.display.flip()
         while(pygame.time.get_ticks()<time+1000):
@@ -128,10 +127,10 @@ class Perso():
     def update_hp_bar(self,surface):
         bar_color=(113,255,51)
         hp_pourcent=(self.hp/self.hp_max)*100
-        bar_position=(self.x,self.y,(hp_pourcent/2 if hp_pourcent>0 else 0),10)
+        bar_position=(self.pos_x,self.pos_y,(hp_pourcent/2 if hp_pourcent>0 else 0),10)
         barmax_color=(255,60,51)
         hp_max_pourcent=self.hp_max/self.hp_max*100
-        barmax_position=(self.x,self.y,hp_max_pourcent/2,10)
+        barmax_position=(self.pos_x,self.pos_y,hp_max_pourcent/2,10)
         pygame.draw.rect(surface, barmax_color, barmax_position)
         pygame.draw.rect(surface, bar_color, bar_position)
 

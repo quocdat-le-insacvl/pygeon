@@ -21,7 +21,7 @@ class Interface():
 
     def basic_affichage(self):
         pygame.display.set_caption("projet fighter")
-        screen.blit(self.perso.im_pers,(self.perso.x,self.perso.y))
+        screen.blit(self.perso.img,(self.perso.pos_x,self.perso.pos_y))
         # self.screen.blit(self.background, (0,-200))
     
     def generer(self):#génère la map et les positions des personnagese en fonction de la taille de l'écran
