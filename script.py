@@ -40,7 +40,7 @@ tavern_img = pygame.image.load(path.join(path_addon, 'tavern_1.png')).convert_al
 tavern_img = pygame.transform.scale(tavern_img,(int(1.8*tavern_img.get_width()),int(1.8*tavern_img.get_height())))
 tavern_2_img = pygame.image.load(path.join(path_addon, 'tavern_2.png')).convert_alpha()
 tavern_2_img = pygame.transform.scale(tavern_2_img,(int(1.7*tavern_2_img.get_width()),int(1.7*tavern_2_img.get_height())))
-demon = pygame.image.load(path.join(path_demon_walk, 'walk_1.png')).convert_alpha()
+demon = pygame.image.load(path.join(path_demon_walk, 'demon_walk_1.png')).convert_alpha()
 demon = pygame.transform.scale(demon,(10*demon.get_width(),10*demon.get_height()))
 vendeur_1 = pygame.image.load(path.join(path_seller, 'seller_1_idle_1.png')).convert_alpha()
 
@@ -50,7 +50,8 @@ tavern2_img = pygame.transform.scale(tavern2_img,(2*tavern2_img.get_width(),2*ta
 
 vendeur_1 = pygame.transform.scale(vendeur_1,(3*vendeur_1.get_width(),3*vendeur_1.get_height()))
 entity_1 = Entity(9250-tavern_img.get_width()//2,175-tavern_img.get_height()//2,tavern_img,'Tavern','Building')
-entity_2 = Entity(10000,1000,demon,'Demon','Monster')
+entity_2 = Entity(10000,1000,demon,'demon_1','Monster',demon_1_animation,size=(500,400),decalage=[60,0])
+entity_2bis = Entity(10000,1000,demon,'demon','Monster',demon_animation,size=(500,400),decalage=[60,0])
 entity_3 = Entity(8830,1505-tavern_img.get_height()//2,tavern2_img,'Tavern','Building')
 entity_4 = Shop(pack,8660,790,seller_1_hide["seller_1_idle_1.png"],"seller_1","Seller",seller_1_animation,"Bonjour !")
 entity_5 = Shop(pack,9260,490,seller_1_hide["seller_1_idle_2.png"],"seller_1","Seller",seller_1_animation,"Bonjour Aventurier ! Vous voulez voir mes produits ?")
@@ -60,7 +61,7 @@ entity_8 = Entity(10540,1790-tavern_img.get_height()//2,tavern2_img,"Tavern","Bu
 wizard = Entity(100,100,wizard_hide["wizard_idle_1.png"],"wizard","Monster",wizard_animation,size=(300,300))
 wizard_2 = Entity(100,100,wizard_hide["wizard_idle_1.png"],"wizard","Monster",wizard_animation,size=(300,300))
 squelton_1 = Entity(12000,4000,squelton_idle["squeleton_idle_1.png"],"squeleton","Monster",squelton_animation,size=(300,300))
-dark_wizard = Entity(100,100,dark_wizard_idle["dark_wizard_idle_1.png"],"dark_wizard","Monster",dark_wizard_animation,decalage=[60,-40])
+dark_wizard = Entity(100,100,dark_wizard_idle["dark_wizard_idle_1.png"],"dark_wizard","Monster",dark_wizard_animation,size=(500,500),decalage=[70,60])
 
 list_static_entity = []
 list_mooving_entity = []
@@ -77,8 +78,8 @@ list_mooving_entity.append(squelton_1)
 list_mooving_entity.append(dark_wizard)
 list_mooving_entity.append(wizard)
 
-list_mooving_entity.append(entity_4)
-list_mooving_entity.append(entity_5)
+list_mooving_entity.append(entity_2)
+list_mooving_entity.append(entity_2bis)
 list_mooving_entity.append(entity_2)
 list_mooving_entity.append(wizard)
 list_mooving_entity.append(wizard_2)

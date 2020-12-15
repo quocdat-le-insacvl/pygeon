@@ -30,7 +30,7 @@ class Entity():
             self.frame += 0.05
             if self.frame > len(animation)+1:
                 self.frame=1
-            self.display = pygame.Surface((300,300))
+            #self.display = pygame.Surface((300,300))
             self.display.set_colorkey((0,0,0))
             self.display.fill((0,0,0))
             self.display.blit(animation[ self.nom + "_" + self.type_animation + "_" + str(int(self.frame)) + ".png"],(self.img.get_width()//2-animation[ self.nom + "_" + self.type_animation + "_" + str(int(self.frame)) + ".png"].get_width()//2+150-int(self.img.get_width()//2)+self.decalage_display[0],self.img.get_height()-animation[ self.nom + "_" + self.type_animation + "_" + str(int(self.frame)) + ".png"].get_height()+300-self.img.get_height()+self.decalage_display[1]))

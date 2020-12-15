@@ -46,8 +46,9 @@ walk_left = dict(image_loader(path.join(path_addon, 'walk_left/')))
 transform_image(walk_left)
 walk_top = dict(image_loader(path.join(path_addon, 'walk_top/')))
 transform_image(walk_top)
-demon_walk = dict(image_loader(path.join(path_addon, 'demon_walk/')))
-transform_image(demon_walk,3)
+
+
+
 grass = dict(image_loader(path.join(path_addon, 'Grass/')))
 transform_image(grass,0,200,200)
 tree = dict(image_loader(path.join(path_addon, 'Tree/')))
@@ -62,19 +63,77 @@ wizard_hide = dict(image_loader('Addon/Wizard Pack/idle/'))
 transform_image(wizard_hide,2)
 wizard_attack = dict(image_loader('Addon/Wizard Pack/attack/'))
 transform_image(wizard_attack,2)
+wizard_walk = dict(image_loader('Addon/Wizard Pack/walk/'))
+transform_image(wizard_walk,2.3)
 wizard_animation = dict()
 wizard_animation["idle"] = wizard_hide
 wizard_animation["attack"] = wizard_attack
+wizard_animation["walk"] = wizard_walk
+
+
 
 squelton_idle = dict(image_loader('Addon/squeleton_idle/'))
 transform_image(squelton_idle,5)
 squelton_animation = dict()
 squelton_animation["idle"] = squelton_idle
 
+squelton_walk = dict(image_loader('Addon/squeleton_walk/'))
+transform_image(squelton_walk,5)
+squelton_animation["walk"] = squelton_walk
+
+squelton_attack = dict(image_loader('Addon/squeleton_attack/'))
+transform_image(squelton_attack,5)
+squelton_animation["attack"] = squelton_attack
+
 dark_wizard_idle = dict(image_loader('Addon/dark_wizard_idle/'))
 transform_image(dark_wizard_idle,3)
 dark_wizard_animation = dict()
+dark_wizard_walk = dict(image_loader('Addon/dark_wizard_walk/'))
+transform_image(dark_wizard_walk,3)
+
+dark_wizard_attack = dict(image_loader('Addon/dark_wizard_attack/'))
+transform_image(dark_wizard_attack,3)
+
 dark_wizard_animation["idle"] = dark_wizard_idle
+dark_wizard_animation["walk"] = dark_wizard_walk
+dark_wizard_animation["attack"] = dark_wizard_attack
+
+
+
+demon_walk = dict(image_loader(path.join(path_addon, 'demon_walk/')))
+transform_image(demon_walk,4.5)
+demon_animation = dict()
+demon_animation["walk"] = demon_walk
+
+demon_idle = dict(image_loader(path.join(path_addon, 'demon_idle/')))
+transform_image(demon_idle,4.5)
+demon_animation["idle"] = demon_idle
+
+demon_attack = dict(image_loader(path.join(path_addon, 'demon_attack/')))
+transform_image(demon_attack,4.5)
+demon_animation["attack"] = demon_attack
+
+demon_1_walk = dict(image_loader(path.join(path_addon, 'demon_1_walk/')))
+transform_image(demon_1_walk,4.5)
+demon_1_animation = dict()
+demon_1_animation["walk"] = demon_1_walk
+
+demon_1_idle = dict(image_loader(path.join(path_addon, 'demon_1_idle/')))
+transform_image(demon_1_idle,4.5)
+demon_1_animation["idle"] = demon_1_idle
+
+demon_1_attack = dict(image_loader(path.join(path_addon, 'demon_1_attack/')))
+transform_image(demon_1_attack,4.5)
+demon_1_animation["attack"] = demon_1_attack
+
+
+
+
+
+
+
+
+
 
 fence_1 = pygame.image.load(path.join(path_addon, 'fence_1.png'))
 fence_1 = pygame.transform.scale(fence_1,(200,200))
