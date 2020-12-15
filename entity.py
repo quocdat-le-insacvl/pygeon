@@ -67,7 +67,9 @@ class Minimap:
         self.surface.set_alpha(50)                # alpha level
         self.surface.fill(BLUE)
         SCALE = 10*MINIMAP_SCALE
+        self.scale = SCALE / 2
         self.rect = pygame.Rect(0, 0, SCALE, SCALE)
+        self.size_big_map = self.display_with_nature.get_size()
 
     def draw_minimap(self):
         self.draw_surface()
@@ -75,34 +77,37 @@ class Minimap:
         #self.draw_dot_pos(self.game.player.pos_x, self.game.player.pos_y, RED)
         # for mob in self.game.mobs:
         #     self.draw_dot_pos(mob.pos, GREEN)
-        """
-         screen.blit(pygame.transform.scale(display_with_nature,(300,100)),(LONGUEUR-300,LARGEUR-200))
-            screen.blit(pygame.transform.scale(display_with_nature,(300,100)),(LONGUEUR-300,LARGEUR-200))
-            """
+
     def draw_surface(self):
+        """ 
+        L'algo de cette partie est le suivant : utiliser pygame.transform.scale pour minimiser 
+        la grande carte a une petite carte (minimap) puis blit sur screen 
+        # Il reste des problemes a regler : self.map_sp est parfois dehors le surface display_with_nature
+        # a cause de method  subsurface() 
+        === > Probleme resolu!
+        """
         ## Set center of Rect 
-        #self.rect.center = (self.player.pos_x, self.player.pos_x)
-        self.rect.center = (self.player.pos_x , self.player.pos_y)
+        """ Create les regles pour le Rectangle est toujours dans le surface"""
+        if self.player.pos_x - self.scale < 0 :
+            self.rect.right = 0
+        elif self.player.pos_x + self.scale > self.size_big_map[0] : #width
+            self.rect.left = self.size_big_map[0]
+        else:
+            self.rect.centerx = self.player.pos_x
+        
+        if self.player.pos_y - self.scale < 0:
+            self.rect.top = 0
+        elif self.player.pos_y + self.scale > self.size_big_map[1]:
+            self.rect.bottom = self.size_big_map[1]
+        else:
+            self.rect.centery = self.player.pos_y 
+            
         try: 
             self.map_sp = self.display_with_nature.subsurface(self.rect)
         except:
             pass
         minimap = pygame.transform.scale(self.map_sp, (MINIMAP_SCALE, MINIMAP_SCALE))
-        #self.screen.blit(self.surface, (WIDTH - MINIMAP_SCALE, HEIGHT - MINIMAP_SCALE))
-        # rect = self.surface.get_rect() 
-        # print(rect, bounding)
         self.screen.blit(minimap , (self.TOP_LEFT_X, self.TOP_LEFT_Y))
-
-    # def draw_white_square(self):
-    #     SQUARE_X = self.TOP_LEFT_X + -self.game.camera.camera.left / \
-    #         self.game.map.width * MINIMAP_SCALE
-    #     SQUARE_Y = self.TOP_LEFT_Y + -self.game.camera.camera.top / \
-    #         self.game.map.height * MINIMAP_SCALE
-    #     SQUARE_WIDTH_X = WIDTH / self.game.map.width * MINIMAP_SCALE
-    #     SQUARE_WIDTH_Y = HEIGHT / self.game.map.height * MINIMAP_SCALE
-    #     minimap_rect = pygame.Rect(
-    #         SQUARE_X, SQUARE_Y, SQUARE_WIDTH_X, SQUARE_WIDTH_Y)
-    #     pygame.draw.rect(self.screen, WHITE, minimap_rect, width=1)
 
     # draw position of player , or monster
     def draw_dot_pos(self, pos_x, pos_y, color):
