@@ -38,6 +38,9 @@ road = pygame.image.load(path.join(path_addon, 'floor.PNG')).convert_alpha()
 road = pygame.transform.scale(road,(200,110))
 road.set_colorkey((255,255,255))
 
+
+idle =dict(image_loader(path.join(path_addon, 'idle/')))
+transform_image(idle)
 walk_bottom =dict(image_loader(path.join(path_addon, 'walk_bottom/')))
 transform_image(walk_bottom)
 walk_right = dict(image_loader(path.join(path_addon, 'walk_right/')))
@@ -46,6 +49,12 @@ walk_left = dict(image_loader(path.join(path_addon, 'walk_left/')))
 transform_image(walk_left)
 walk_top = dict(image_loader(path.join(path_addon, 'walk_top/')))
 transform_image(walk_top)
+player_animation = dict()
+player_animation["idle"] = idle
+player_animation["walk_bottom"] = walk_bottom
+player_animation["walk_right"] = walk_right
+player_animation["walk_left"] = walk_left
+player_animation["walk_top"] = walk_top
 
 
 
@@ -58,6 +67,8 @@ seller_1_hide = dict(image_loader(path.join(path_addon, 'seller/')))
 transform_image(seller_1_hide,3)
 seller_1_animation = dict()
 seller_1_animation["idle"] = seller_1_hide
+
+
 
 wizard_hide = dict(image_loader('Addon/Wizard Pack/idle/'))
 transform_image(wizard_hide,2)

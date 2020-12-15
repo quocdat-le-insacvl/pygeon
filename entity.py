@@ -30,9 +30,7 @@ class Entity():
             self.frame += 0.05
             if self.frame > len(animation)+1:
                 self.frame=1
-            #self.display = pygame.Surface((300,300))
-            self.display.set_colorkey((0,0,0))
-            self.display.fill((0,0,0))
+            self.refresh_display()
             self.display.blit(animation[ self.nom + "_" + self.type_animation + "_" + str(int(self.frame)) + ".png"],(self.img.get_width()//2-animation[ self.nom + "_" + self.type_animation + "_" + str(int(self.frame)) + ".png"].get_width()//2+150-int(self.img.get_width()//2)+self.decalage_display[0],self.img.get_height()-animation[ self.nom + "_" + self.type_animation + "_" + str(int(self.frame)) + ".png"].get_height()+300-self.img.get_height()+self.decalage_display[1]))
     def update_interact(self):
         self.interaction[0] = [ self.pos_x + 95 - pixel_red.get_width()//2 + self.img.get_width()//2 , 47+self.pos_y+self.img.get_height()-pixel_red.get_height()//1.5]
@@ -44,6 +42,43 @@ class Entity():
             self.frame += 0.05
             if self.frame > len(animation)+1:
                 self.frame=1
-            #self.display = pygame.Surface((animation[ self.nom + "_" + self.type_animation + "_" + str(int(self.frame)) + ".png"].get_width(),animation[ self.nom + "_" + self.type_animation + "_" + str(int(self.frame)) + ".png"].get_height()))
-            self.display.fill((0,0,0))
-            self.display.blit(animation[ self.nom + "_" + self.type_animation + "_" + str(int(self.frame)) + ".png"],(0,0))
+            self.refresh_display()
+            if self.nom != None:
+                self.display.blit(animation[ self.nom + "_" + self.type_animation + "_" + str(int(self.frame)) + ".png"],(0,0))
+            else:
+                self.display.blit(animation[ self.type_animation + "_" + str(int(self.frame)) + ".png"],(0,0))
+    def refresh_display(self):
+        self.display.fill((0,0,0))
+        self.display.set_colorkey((0,0,0))
+    def move_entity(self,mouvement,map,player):
+        pixel_mask = pygame.mask.from_surface(pixel_red) 
+        if map.collision.__contains__((self.pos_x- pixel_red.get_width()//2+self.img.get_width()//2,self.pos_y-int(pixel_red.get_height()//1.5)+self.img.get_height())):
+            map.collision.remove((self.pos_x- pixel_red.get_width()//2+self.img.get_width()//2,self.pos_y-int(pixel_red.get_height()//1.5)+self.img.get_height()))
+        if not player.masks.overlap(pixel_mask,((self.pos_x- pixel_red.get_width()//2+self.img.get_width()//2 + mouvement[0])-player.pos_x,self.pos_y-int(pixel_red.get_height()//1.5)+self.img.get_height()+ mouvement[1]-(player.pos_y+130))):
+            for x in self.interaction:
+                if map.collision_entity.__contains__((int(x[0]),int(x[1]))):
+                    map.collision_entity.remove((int(x[0]),int(x[1])))
+                map.collision_entity.append((int(x[0])+mouvement[0],int(x[1])+mouvement[1]))
+            map.collision.append((self.pos_x- pixel_red.get_width()//2+self.img.get_width()//2+ mouvement[0],self.pos_y-int(pixel_red.get_height()//1.5)+self.img.get_height()+ mouvement[1]))
+            self.pos_x += mouvement[0]
+            self.pos_y += mouvement[1]
+            
+        else:
+            #collision.remove((self.pos_x+mouvement[0]+20,self.pos_y+mouvement[1]+130))
+            map.collision.append((self.pos_x- pixel_red.get_width()//2+self.img.get_width()//2,self.pos_y-int(pixel_red.get_height()//1.5)+self.img.get_height()))
+            
+        """def move_entity(self,entity,mouvement,collision_entity,collision,pieds_mask,joueurs):
+        Permet de décplacer une entité, gère les cases d'intéraction de l'entité + collision avec joueurs, retourne soit l'entité modifié soit l'entité non modifié de mouvement"""
+    def find_nearest_entity(self,list_entity):
+        distance = abs(self.pos_x - list_entity[0].pos_x) + abs(self.pos_y - list_entity[0].pos_y)
+        entity = list_entity[0]
+        for i in range(len(list_entity)):
+            if abs(self.pos_x - list_entity[i].pos_x) + abs(self.pos_y - list_entity[i].pos_y) < distance:
+                distance = abs(self.pos_x - list_entity[i].pos_x) + abs(self.pos_y - list_entity[i].pos_y)
+                entity = list_entity[i]
+        return entity
+        """def find_nearest_entity(self,player_rect,list_entity):
+        Permet de trouver l'entité dans list_entity la plus proche de player_rect
+        return Entity la plus proche de player_rect"""
+    
+    

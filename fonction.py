@@ -240,89 +240,12 @@ def load_map(path):
         Return collision_change_camera List de position pour pixel (bloc de collision) permet de changer l'affichage
         Return tree_position List de postion des Arbres
         Return collision_entity List de position pour pixel_red (bloc de collision) permet l'interaction avec les entitées fixes"""
-def print_map(Map,display):
 
-    cubesize=190
-    collision=[]
-    collision_change_camera = []
-    collision_entity = []
-    tree_position = []
-    i=0
-    for layer in Map:
-        j=0
-        for tile in layer:
-            x = (j-i)*cubesize//2+9000
-            y = (j+i)*cubesize//4
-            if Map[i][j] != None:
-                if Map[i][j] == '1' or Map[i][j] == '2' :
-                    n = random.randint(1,5)
-                    display.blit(grass['grass_' + str(n) + '.png'],(x,y))
-                if Map[i][j] == '2' :
-                    collision_change_camera.append(((j-i+1)*cubesize//2+9000,(j+i-1)*cubesize//4))
-                    collision_change_camera.append(((j-i)*cubesize//2+9000,(j+i-2)*cubesize//4))
-                    collision_change_camera.append(((j-i-1)*cubesize//2+9000,(j+i-1)*cubesize//4))
-                    collision_change_camera.append(((j-i+1)*cubesize//2+9000,(j+i-3)*cubesize//4))
-                    collision_change_camera.append(((j-i-1)*cubesize//2+9000,(j+i-3)*cubesize//4))
-                    collision_change_camera.append(((j-i)*cubesize//2+9000,(j+i-4)*cubesize//4))
-                    collision.append((x,y))
-                    tree_position.append((x,y))
-                    display.blit(pixel_red,(((j-i-1)*cubesize//2+9000,(j+i+1)*cubesize//4)))
-                if Map[i][j] == '5' :
-                    display.blit(end_game,(x,y))
-                    collision.append((x,y))
-                    #display.blit(pixel_red,(x,y))
-                if Map[i][j] == '3':
-                    display.blit(grass['grass_' + str(1) + '.png'],(x,y))
-                    collision.append((x,y))
-                if Map[i][j] == '4':
-                    display.blit(road,(x,y))
-                if Map[i][j] == '6':
-                    display.blit(grass['grass_' + str(1) + '.png'],(x,y))
-                    collision_entity.append((x,y))
-                if Map[i][j] == '7':
-                    collision.append((x,y))
-                    display.blit(grass['grass_' + str(1) + '.png'],(x,y))
-                if Map[i][j] == '8':
-                    display.blit(grass["grass_blue_1.png"],(x,y))
-                if Map[i][j] == '9':
-                    collision.append((x,y))
-                    display.blit(grass['grass_' + str(1) + '.png'],(x,y))
-                if Map[i][j] == 'a':
-                    display.blit(pixel_red,(x,y))
-            j+=1
-        i+=1
-    i=0
-    return display,collision,collision_change_camera,tree_position,collision_entity
 
 """Def print_nature
     Affiche les arbre sur le display
     return Display avec les arbres"""
-def print_nature(Map,display,tree_position,all = True):
-    cubesize=190
-    i=0
-    if all:
-        for layer in Map:
-            j=0
-            for tile in layer:
-                x = (j-i)*cubesize//2+9000
-                y = (j+i)*cubesize//4
-                if Map[i][j] != None:
-                    if Map[i][j] == '2' :
-                        n = random.randint(1,4)
-                        display.blit(tree["tree_" + str(2) + ".png"],(x,y-200))
-                    if Map[i][j] == '7':
-                        #collision.append((x,y))
-                        display.blit(fence_1,(x,y-50))
-                    if Map[i][j] == '9':
-                        display.blit(fence_2,(x,y-50))
-                j+=1
 
-            i+=1
-        i=0
-    else:
-        for x in tree_position:
-            display.blit(test_arbre,(x[0],x[1]-200))
-    return display
 """def print_static_entity
     Affiche les entités static sur le display"""
 def print_static_entity(display,list_entity):

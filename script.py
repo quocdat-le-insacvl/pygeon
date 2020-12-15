@@ -1,13 +1,14 @@
 
 from pygame.locals import *
-from personnage import Perso
+from personnage import Perso,Perso_game
 from inventory import *
 from entity import Entity
 from items import *
 
 pack = Inventaire(4,6)
 pack_bis = Inventaire(5,5)
-player = Perso(10,10,10,10,10,10,100,150,pack_bis)
+#player = Perso_game(10,10,10,10,10,10,100,150,pack_bis,walk_bottom['walk_bottom_' + str(1) +'.png'],9000,1000)
+player = Perso_game(10,10,10,10,10,10,100,100,pack,walk_bottom['walk_bottom_' + str(1) +'.png'],9000,1000,player_animation)
 player.xp = 500
 playerbis = Perso(20,20,20,20,20,20,20,20,pack)
 
@@ -53,8 +54,8 @@ entity_1 = Entity(9250-tavern_img.get_width()//2,175-tavern_img.get_height()//2,
 entity_2 = Entity(10000,1000,demon,'demon_1','Monster',demon_1_animation,size=(500,400),decalage=[60,0])
 entity_2bis = Entity(10000,1000,demon,'demon','Monster',demon_animation,size=(500,400),decalage=[60,0])
 entity_3 = Entity(8830,1505-tavern_img.get_height()//2,tavern2_img,'Tavern','Building')
-entity_4 = Shop(pack,8660,790,seller_1_hide["seller_1_idle_1.png"],"seller_1","Seller",seller_1_animation,"Bonjour !")
-entity_5 = Shop(pack,9260,490,seller_1_hide["seller_1_idle_2.png"],"seller_1","Seller",seller_1_animation,"Bonjour Aventurier ! Vous voulez voir mes produits ?")
+entity_4 = Shop(pack_bis,8660,790,seller_1_hide["seller_1_idle_1.png"],"seller_1","Seller",seller_1_animation,"Bonjour !")
+entity_5 = Shop(pack_bis,9260,490,seller_1_hide["seller_1_idle_2.png"],"seller_1","Seller",seller_1_animation,"Bonjour Aventurier ! Vous voulez voir mes produits ?")
 entity_6 = Entity(7350-tavern_img.get_width()//2,1125-tavern_img.get_height()//2,tavern_img,"Tavern","Building")
 entity_7 = Entity(11060-tavern_img.get_width()//2,1080-tavern_img.get_height()//2,tavern_img,"Tavern","Building")
 entity_8 = Entity(10540,1790-tavern_img.get_height()//2,tavern2_img,"Tavern","Building")
