@@ -5,7 +5,7 @@ from settings.color import *
 from settings.load_img import ava_perso
 class Entity():
 
-    def __init__(self,pos_x,pos_y,img,name,which_type,animation_dict = None,talking=None,size=(0,0)):
+    def __init__(self,pos_x,pos_y,img,name,which_type,animation_dict = None,talking=None,size=(0,0),decalage = [0,0]):
         if size == (0,0):
             size = (img.get_width(),img.get_height())
         self.pos_x = pos_x
@@ -24,6 +24,7 @@ class Entity():
         self.talking = talking
         self.interaction = [[self.pos_x,self.pos_y],[self.pos_x,self.pos_y],[self.pos_x,self.pos_y]]
         self.type_animation = "idle"
+        self.decalage_display = decalage
     def update_center(self):
         self.center = [self.pos_x + self.img.get_width()//2,self.pos_y + self.img.get_height()//2]
     def animate(self):
@@ -32,9 +33,12 @@ class Entity():
             self.frame += 0.05
             if self.frame > len(animation)+1:
                 self.frame=1
-            #self.display = pygame.Surface((animation[ self.nom + "_" + self.type_animation + "_" + str(int(self.frame)) + ".png"].get_width(),animation[ self.nom + "_" + self.type_animation + "_" + str(int(self.frame)) + ".png"].get_height()))
-            self.display.fill((0,0,0))
-            self.display.blit(animation[ self.nom + "_" + self.type_animation + "_" + str(int(self.frame)) + ".png"],(self.img.get_width()//2-animation[ self.nom + "_" + self.type_animation + "_" + str(int(self.frame)) + ".png"].get_width()//2+150-int(self.img.get_width()//2),self.img.get_height()-animation[ self.nom + "_" + self.type_animation + "_" + str(int(self.frame)) + ".png"].get_height()+300-self.img.get_height()))
+            self.refresh_display()
+            if self.nom != None:
+                self.display.blit(animation[ self.nom + "_" + self.type_animation + "_" + str(int(self.frame)) + ".png"],(self.img.get_width()//2-animation[ self.nom + "_" + self.type_animation + "_" + str(int(self.frame)) + ".png"].get_width()//2+150-int(self.img.get_width()//2)+self.decalage_display[0],self.img.get_height()-animation[ self.nom + "_" + self.type_animation + "_" + str(int(self.frame)) + ".png"].get_height()+300-self.img.get_height()+self.decalage_display[1]))
+            else:
+                self.display.blit(animation[ self.type_animation + "_" + str(int(self.frame)) + ".png"],(self.img.get_width()//2-animation[ self.type_animation + "_" + str(int(self.frame)) + ".png"].get_width()//2+150-int(self.img.get_width()//2)+self.decalage_display[0],self.img.get_height()-animation[ self.type_animation + "_" + str(int(self.frame)) + ".png"].get_height()+300-self.img.get_height()+self.decalage_display[1]))
+
     def update_interact(self):
         self.interaction[0] = [ self.pos_x + 95 - pixel_red.get_width()//2 + self.img.get_width()//2 , 47+self.pos_y+self.img.get_height()-pixel_red.get_height()//1.5]
         self.interaction[1] = [ self.pos_x - pixel_red.get_width()//2 + self.img.get_width()//2 , 47*2+self.pos_y+self.img.get_height()-pixel_red.get_height()//1.5]
@@ -48,9 +52,9 @@ class Entity():
             #self.display = pygame.Surface((animation[ self.nom + "_" + self.type_animation + "_" + str(int(self.frame)) + ".png"].get_width(),animation[ self.nom + "_" + self.type_animation + "_" + str(int(self.frame)) + ".png"].get_height()))
             self.display.fill((0,0,0))
             self.display.blit(animation[ self.nom + "_" + self.type_animation + "_" + str(int(self.frame)) + ".png"],(0,0))
-            
 
-WIDTH = screen.get_width()     
+
+WIDTH = screen.get_width()
 HEIGHT = screen.get_height()
 MINIMAP_SCALE = 300
 class Minimap:
@@ -83,25 +87,25 @@ class Minimap:
         #self.draw_dot_pos(self.game.player.pos_x, self.game.player.pos_y, RED)
         # for mob in self.game.mobs:
         #     self.draw_dot_pos(mob.pos, GREEN)
-        
+
     def draw_white_square(self):
         minimap_rect = pygame.Rect(self.TOP_LEFT_X, self.TOP_LEFT_Y, MINIMAP_SCALE, MINIMAP_SCALE)
         pygame.draw.rect(self.screen, WHITE, minimap_rect, width=3)
-        
+
     def draw_white_square_zoom(self):
         minimap_rect = pygame.Rect(
             MINIMAP_SCALE, MINIMAP_SCALE, self.zoom_x - MINIMAP_SCALE, self.zoom_y - MINIMAP_SCALE)
         pygame.draw.rect(self.screen, WHITE, minimap_rect, width=3)
-        
+
     def draw_surface(self):
-        """ 
-        L'algo de cette partie est le suivant : utiliser pygame.transform.scale pour minimiser 
-        la grande carte a une petite carte (minimap) puis blit sur screen 
+        """
+        L'algo de cette partie est le suivant : utiliser pygame.transform.scale pour minimiser
+        la grande carte a une petite carte (minimap) puis blit sur screen
         # Il reste des problemes a regler : self.map_sp est parfois dehors le surface display_with_nature
-        # a cause de method  subsurface() 
+        # a cause de method  subsurface()
         === > Probleme resolu!
         """
-        
+
         """ Create les regles pour le Rectangle est toujours dans le surface"""
         if self.player.pos_x - self.scale < 0 :
             self.rect.right = 0
@@ -109,16 +113,16 @@ class Minimap:
             self.rect.left = self.size_big_map[0]
         else:
             self.rect.centerx = self.player.pos_x
-        
+
         if self.player.pos_y - self.scale < 0:
             self.rect.top = 0
         elif self.player.pos_y + self.scale > self.size_big_map[1]:
             self.rect.bottom = self.size_big_map[1]
         else:
-            self.rect.centery = self.player.pos_y 
-        
+            self.rect.centery = self.player.pos_y
+
         # try pour etre sur que le programme marche toujours bien
-        try: 
+        try:
             self.map_sp = self.display_with_nature.subsurface(self.rect)
         except:
             pass
@@ -127,26 +131,26 @@ class Minimap:
         minimap = pygame.transform.scale(self.map_sp, (MINIMAP_SCALE, MINIMAP_SCALE))
         self.screen.blit(minimap , (self.TOP_LEFT_X, self.TOP_LEFT_Y))
 
-            
+
     def zoom_minimap(self):
         # CARRY_SCALE = self.scale
-        # self.scale = 
-        
+        # self.scale =
+
         if self.player.pos_x - self.zoom_x < 0:
             self.rect_zoom.right = 0
         elif self.player.pos_x + self.zoom_x > self.size_big_map[0] : #width
             self.rect_zoom.left = self.size_big_map[0]
         else:
             self.rect_zoom.centerx = self.player.pos_x
-        
+
         if self.player.pos_y - self.zoom_y < 0:
             self.rect_zoom.top = 0
         elif self.player.pos_y + self.zoom_y > self.size_big_map[1]:
             self.rect_zoom.bottom = self.size_big_map[1]
         else:
-            self.rect_zoom.centery = self.player.pos_y 
+            self.rect_zoom.centery = self.player.pos_y
         # try pour etre sur que le programme marche toujours bien
-        try: 
+        try:
             self.zoom_map = self.display_with_nature.subsurface(self.rect_zoom)
         except:
             pass
@@ -156,7 +160,7 @@ class Minimap:
             self.zoom_map, (self.zoom_x - 300, self.zoom_y - 300))
         self.screen.blit(minimap, (300, 300))
         self.draw_white_square_zoom()
-    
+
     # draw position of player , or monster
     def draw_perso(self):
         # draw the perso au milieu de minimap si pos.rect === pos.perso
@@ -177,15 +181,15 @@ class Minimap:
 
 class Fog:
     def __init__(self, game):
-        self.game = game 
-        self.player = self.game.player 
+        self.game = game
+        self.player = self.game.player
         self.screen = screen
         self.fog = pygame.Surface((18000, 10000))
         self.fog.set_alpha(50)                # alpha level
         self.fog.fill(BLACK)
-        
+
     def update(self):
         pass
-    
+
     def draw_fog(self):
         self.screen.blit(self.fog, (self.game.center_x, self.game.center_y))
