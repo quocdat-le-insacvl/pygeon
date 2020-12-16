@@ -74,13 +74,16 @@ class Minimap:
         self.size_big_map = self.display_with_nature.get_size()
         self.zoom_x, self.zoom_y = self.screen.get_size()
         self.rect_zoom = pygame.Rect(0, 0, self.zoom_x * 3, self.zoom_y * 3)
+        self.zoom_map = self.display_with_nature.subsurface(self.rect_zoom)
 
     def draw_minimap(self):
         self.draw_surface()
         self.draw_white_square()
+        self.draw_perso()
         #self.draw_dot_pos(self.game.player.pos_x, self.game.player.pos_y, RED)
         # for mob in self.game.mobs:
         #     self.draw_dot_pos(mob.pos, GREEN)
+        
     def draw_white_square(self):
         minimap_rect = pygame.Rect(self.TOP_LEFT_X, self.TOP_LEFT_Y, MINIMAP_SCALE, MINIMAP_SCALE)
         pygame.draw.rect(self.screen, WHITE, minimap_rect, width=3)
@@ -113,6 +116,7 @@ class Minimap:
             self.rect.bottom = self.size_big_map[1]
         else:
             self.rect.centery = self.player.pos_y 
+        
         # try pour etre sur que le programme marche toujours bien
         try: 
             self.map_sp = self.display_with_nature.subsurface(self.rect)
@@ -123,6 +127,7 @@ class Minimap:
         minimap = pygame.transform.scale(self.map_sp, (MINIMAP_SCALE, MINIMAP_SCALE))
         self.screen.blit(minimap , (self.TOP_LEFT_X, self.TOP_LEFT_Y))
 
+            
     def zoom_minimap(self):
         # CARRY_SCALE = self.scale
         # self.scale = 
@@ -151,12 +156,28 @@ class Minimap:
             self.zoom_map, (self.zoom_x - 300, self.zoom_y - 300))
         self.screen.blit(minimap, (300, 300))
         self.draw_white_square_zoom()
-        
+    
     # draw position of player , or monster
-    # def draw_dot_pos(self, pos_x, pos_y, color):
-    #     X = self.TOP_LEFT_X + pos_x / (self.map_width * 190) * MINIMAP_SCALE
-    #     Y = self.TOP_LEFT_Y + pos_y / (self.map_height * 190) * MINIMAP_SCALE
-    #     pygame.draw.circle(self.screen, color, (X, Y), radius=6, width=0)
+    def draw_perso(self):
+        # draw the perso au milieu de minimap si pos.rect === pos.perso
+        if self.rect.centerx == self.player.pos_x and self.rect.centery == self.player.pos_y:
+            self.screen.blit(
+                ava_perso, (self.TOP_LEFT_X + MINIMAP_SCALE/2, self.TOP_LEFT_Y + MINIMAP_SCALE / 2))
+        # si c'est pas le cas, je calcule pos_player_real par rapport aux le self.rect
+        # puis je vais utiliser Theoreme Talet pour trouver la position finale de perso sur le minimap
+        else:
+            x_real = self.player.pos_x - self.rect.left
+            y_real = self.player.pos_y - self.rect.top
+            # ==> Talet
+            x_mini = x_real / self.rect.width * MINIMAP_SCALE
+            y_mini = y_real / self.rect.height * MINIMAP_SCALE
+            self.screen.blit(
+                ava_perso, (self.TOP_LEFT_X + x_mini, self.TOP_LEFT_Y + y_mini))
+        # self.screen.blit(
+        #    ava_perso, (self.TOP_LEFT_X + MINIMAP_SCALE/2, self.TOP_LEFT_Y + MINIMAP_SCALE / 2))
+        # X = self.TOP_LEFT_X + pos_x / (self.map_width * 190) * MINIMAP_SCALE
+        # Y = self.TOP_LEFT_Y + pos_y / (self.map_height * 190) * MINIMAP_SCALE
+        # pygame.draw.circle(self.screen, color, (X, Y), radius=6, width=0)
 
 class Fog:
     def __init__(self, game):

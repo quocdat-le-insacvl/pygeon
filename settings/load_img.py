@@ -1,3 +1,4 @@
+from settings.color import *
 import pygame
 from fonction_load_image import image_loader,transform_image
 from settings.screen import WINDOWS_SIZE
@@ -12,7 +13,11 @@ path_ava = path.join(path_addon, 'avata')
 
 # LOAD avata for minimap 
 ava_perso = pygame.image.load(path.join(path_ava, 'ava_perso.png'))
-ava_perso = pygame.transform.scale(ava_perso, (50, 50))
+ava_perso = pygame.transform.scale(ava_perso, (30, 30))
+rect_ava_perso = ava_perso.get_rect()
+pygame.draw.circle(ava_perso, HALF_RED,
+                   rect_ava_perso.center, radius=17, width=3)
+
 
 img_next = pygame.image.load(path.join(path_menu,'TextBTN_Big.png'))
 menu_background = pygame.image.load(path.join(path_menu, 'UI board Large Set.png'))
