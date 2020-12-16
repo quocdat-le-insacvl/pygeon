@@ -245,6 +245,25 @@ def load_map(path):
 """Def print_nature
     Affiche les arbre sur le display
     return Display avec les arbres"""
+def print_nature(Map,display,tree_position,all = True):
+    cubesize=190
+    i=0
+    if all:
+        for layer in Map:
+            j=0
+            for tile in layer:
+                x = (j-i)*cubesize//2+9000
+                y = (j+i)*cubesize//4
+                if Map[i][j] != None:
+                    if Map[i][j] == '2' :
+                        n = random.randint(1,4)
+                        display.blit(tree["tree_" + str(2) + ".png"],(x,y-200))
+                    if Map[i][j] == '7':
+                        #collision.append((x,y))
+                        display.blit(fence_1,(x,y-50))
+                    if Map[i][j] == '9':
+                        display.blit(fence_2,(x,y-50))
+                j+=1
 
 """def print_static_entity
     Affiche les entités static sur le display"""
