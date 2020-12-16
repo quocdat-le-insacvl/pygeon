@@ -95,12 +95,11 @@ WIDTH = screen.get_width()
 HEIGHT = screen.get_height()
 MINIMAP_SCALE = 300
 class Minimap:
-    def __init__(self, game, display_with_nature):
-        self.game = game
-        self.player = self.game.player
+    def __init__(self,player,map, display_with_nature):
+        self.player = player
         self.display_with_nature = display_with_nature
         self.screen = screen
-        self.map = self.game.map.map
+        self.map = map
         self.map_height = len(self.map)
         self.map_width = len(self.map[0])
         self.TOP_LEFT_X = WIDTH - MINIMAP_SCALE

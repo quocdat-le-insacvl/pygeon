@@ -5,7 +5,7 @@ from inventory import *
 from entity import Entity
 from items import *
 
-pack = Inventaire(4,6)
+pack = Inventaire(7,5)
 pack_bis = Inventaire(5,5)
 #player = Perso_game(10,10,10,10,10,10,100,150,pack_bis,walk_bottom['walk_bottom_' + str(1) +'.png'],9000,1000)
 player = Perso_game(10,10,10,10,10,10,100,100,pack,walk_bottom['walk_bottom_' + str(1) +'.png'],9000,1000,player_animation)
@@ -74,7 +74,7 @@ list_static_entity.append(entity_7)
 
 list_static_entity.append(entity_8)
 list_static_entity.append(entity_3)
-
+'''
 list_mooving_entity.append(squelton_1)
 list_mooving_entity.append(dark_wizard)
 list_mooving_entity.append(wizard)
@@ -83,4 +83,4 @@ list_mooving_entity.append(entity_2)
 list_mooving_entity.append(entity_2bis)
 list_mooving_entity.append(entity_2)
 list_mooving_entity.append(wizard)
-list_mooving_entity.append(wizard_2)
+list_mooving_entity.append(wizard_2)'''

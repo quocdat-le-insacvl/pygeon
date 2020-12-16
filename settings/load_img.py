@@ -15,8 +15,7 @@ path_ava = path.join(path_addon, 'avata')
 ava_perso = pygame.image.load(path.join(path_ava, 'ava_perso.png'))
 ava_perso = pygame.transform.scale(ava_perso, (30, 30))
 rect_ava_perso = ava_perso.get_rect()
-pygame.draw.circle(ava_perso, HALF_RED,
-                   rect_ava_perso.center, radius=17, width=3)
+pygame.draw.circle(ava_perso, HALF_RED,rect_ava_perso.center, radius=17, width=3)
 
 
 img_next = pygame.image.load(path.join(path_menu,'TextBTN_Big.png'))
@@ -24,6 +23,7 @@ menu_background = pygame.image.load(path.join(path_menu, 'UI board Large Set.png
 title = pygame.image.load(path.join(path_menu,'IRONY TITLE  empty.png'))
 img_description = pygame.image.load(path.join(path_menu, 'UI board Large stone.png'))
 img_backgrounds_warning = pygame.image.load(path.join(path_menu, 'UI board Small  parchment.png'))
+img_inventaire  = pygame.image.load(path.join(path_menu, 'UI board Large  parchment.png'))
 exclamation = pygame.image.load(path.join(path_menu, 'Exclamation_Gray.png'))
 validation_button = pygame.image.load(path.join(path_menu, 'TextBTN_Medium.png'))
 img_support_warning = pygame.image.load(path.join(path_menu, 'UI board Small  stone.png'))

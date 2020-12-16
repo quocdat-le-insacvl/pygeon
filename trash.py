@@ -78,6 +78,7 @@ class Map():
         self.cubesize = 190
         self.static_entity = list_static_entity
         self.mooving_entity = list_mooving_entity
+        self.dict_collision = dict()
     def load_map(self):
         self.map = load_map(self.path)
         self.collision = []
@@ -92,6 +93,10 @@ class Map():
         self.print_ground()
         self.print_building()
         self.print_tree()
+        self.dict_collision["change_camera_entity"] = self.change_camera_entity
+        self.dict_collision["collision_entity"] = self.collision_entity
+        self.dict_collision["collision"] = self.collision
+        self.dict_collision["collision_change_camera"] = self.collision_change_camera
         #self.display.blit(self.display_tree,(0,0))
     def print_ground(self):
         i=0
@@ -183,13 +188,11 @@ class Game():
         g=0
 
         ### Minimap
-        self.minimap = Minimap(self, self.map.display)
+        self.minimap = Minimap(self.player, self.map.map,self.map.display)
         ###
-
+        show_inventory = False
         while running:
             screen.fill(LIGHT_GREY)
-
-
             """Changer l'affichage pour respecter vue joueurs"""
             if pause_menu:
                 self.print_pause_menu()
@@ -212,8 +215,8 @@ class Game():
             for x in list_mooving_entity:
                 x.animate_map()
                 x.update_interact()
-            draw_text("x : %i , y : %i"%(self.player.pos_x,self.player.pos_y),ColderWeather,WHITE,screen,100,100)
-
+            draw_text("x : %i , y : %i"%(clock.get_fps(),self.player.pos_y),ColderWeather,WHITE,screen,100,100)
+            '''
             f += 1
             if f < 150:
                 list_mooving_entity[0].move_entity([2,-1],self.map,self.player)
@@ -224,7 +227,7 @@ class Game():
             if f == 300:
                 f=0
             print_mooving_entity(screen,list_mooving_entity,center_x,center_y)
-
+            '''
 
             #self.print_frog(player_rect,screen,case_connue,center_x,center_y)
 
@@ -264,21 +267,25 @@ class Game():
                         interact = True
                     if event.key == K_m:
                         self.zoom_map = True
-                    if event.key == K_ESCAPE:
+                    if event.key == K_j:
+                        show_inventory = not show_inventory
+                    """if event.key == K_ESCAPE:
                         self.map.load_map()
-                        self.map.init_map()
+                        self.map.init_map()"""
 
                 if event.type == KEYUP:
                     if event.key == K_m:
                         self.zoom_map = False
-            self.player.move_player(self.map)
 
+            self.player.move_player(self.map.dict_collision)
+            """
             if g != 255:
                 for x in range(255):
                     f+=0.008
                     transition.set_alpha(int(255-f))
-                screen.blit(transition,(0,0))
-
+                screen.blit(transition,(0,0))"""
+            if show_inventory:
+                self.player.inventaire.print_inventory_bis()
 
 
             pygame.display.update()

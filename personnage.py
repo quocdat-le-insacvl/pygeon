@@ -2,6 +2,11 @@ import pygame
 from entity import Entity
 from settings.load_img import pixel_red
 from pygame.locals import *
+from items import Sword1,Sword10,Wikitem
+from inventory import Inventaire
+from settings.screen import screen
+from fonction import *
+key = list(Wikitem.keys())
 pixel_mask = pygame.mask.from_surface(pixel_red)
 class Perso():
     def __init__(self,STR,DEX,CON,INT,WIS,CHA,hp,hp_max,inventaire,argent = 0,name=None,classe=None,level=1,xp=0):
@@ -65,22 +70,22 @@ class Perso_game(Perso,Entity):
         else:
             self.deplacement = [0,0]
             self.type_animation = "idle"     
-    def move_player(self,map):
+    def move_player(self,dict_collision):
         self.refresh_animation_and_mouvement()
         self.swap = False
         self.entity_near = False
         self.swap_entity = False
         possible = True
-        for x in map.change_camera_entity:
+        for x in dict_collision['change_camera_entity']:
             if pixel_mask.overlap(self.masks,((self.pos_x+self.deplacement[0]+10)-x[0],(self.pos_y+self.deplacement[1]+self.img.get_height()-15)-x[1])):
                 self.swap_entity = True
-        for x in map.collision_entity:
+        for x in dict_collision['collision_entity']:
             if pixel_mask.overlap(self.masks,((self.pos_x+self.deplacement[0]+10)-x[0],(self.pos_y+self.deplacement[1]+self.img.get_height()-15)-x[1])):
                 self.entity_near = True
-        for x in map.collision_change_camera:
+        for x in dict_collision['collision_change_camera']:
             if pixel_mask.overlap(self.masks,((self.pos_x+self.deplacement[0]+10)-x[0],(self.pos_y+self.deplacement[1]+self.img.get_height()-15)-x[1])):
                 self.swap = True
-        for x in map.collision:
+        for x in dict_collision['collision']:
             if pixel_mask.overlap(self.masks,((self.pos_x+self.deplacement[0]+10)-x[0],(self.pos_y+self.deplacement[1]+self.img.get_height()-15)-x[1])):
                 possible = False
         if possible:
@@ -118,3 +123,18 @@ class Perso_game(Perso,Entity):
     def transform_display_for_map(self):
         self.display = pygame.Surface((self.img.get_width(),self.img.get_height()))
         self.display.set_colorkey((0,0,0))
+    def print_equipement(self):
+        bouton_arm = dict()
+        
+        for i in range(0,4):
+            bouton_arm[i] = pygame.Rect(pos_x//2-LONGUEUR//5+pack.nb_y*50*1.4, 1.05*(50*(i+1))+pos_y//2-LARGEUR//7,50,50)
+            # pygame.draw.rect(display,WHITE,bouton_arm[i])
+            pygame.draw.rect(display,LIGHT_GREY,bouton_arm[i],1)
+                        
+        for i in range(0,2):
+            bouton_arm[4+i] = pygame.Rect(pos_x//2-LONGUEUR//5+pack.nb_y*50*1.6+53*i,1.05*50+pos_y//2-LARGEUR//7,50,50)
+            pygame.draw.rect(display,LIGHT_GREY,bouton_arm[4+i],1)
+                    
+        for i in range(0,6):
+            if self.armor[i] != None:
+                display.blit(key[self.armor[i]].wpn_img,(bouton_arm[i].x,bouton_arm[i].y))

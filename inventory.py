@@ -8,6 +8,7 @@ from settings.load_img import *
 from settings.color import *
 from fonction import *
 from entity import Entity
+from items import Sword1,Sword10
 key = list(Wikitem.keys())
 
 class Inventaire():
@@ -182,7 +183,29 @@ class Inventaire():
             last_moove = -1
             #pygame.draw.rect(screen,RED,button_drag)
             have_object = False  
-
+    def print_inventory_bis(self):
+        display = pygame.Surface((500,400))
+        display_rect = pygame.Rect(screen.get_width()//2-display.get_width()//2,screen.get_height()//2-display.get_height()//2,750,500)
+        x=display.get_width()//2
+        y_=display.get_height()//2
+        display.blit(pygame.transform.scale(img_inventaire,(500,400)),(0,0))
+        display.set_colorkey(BLACK)
+        mx,my = pygame.mouse.get_pos()
+        bouton_test = dict()
+        h=0
+        for y in range(self.nb_x):
+            for i in range(self.nb_y):
+                bouton_test[h+i] = pygame.Rect(60*y+x-60*self.nb_x//2, 60*i+y_-60*self.nb_y//2, 50, 50)
+                if self.backpack[h+i] != None :
+                    display.blit(key[self.backpack[h+i]].wpn_img,(bouton_test[h+i].x, bouton_test[h+i].y))
+            h += self.nb_y
+        i=0
+        for i in range(0,self.nb_x*self.nb_y):
+            pygame.draw.rect(display,(255,255,254),bouton_test[i],1)
+            
+        if display_rect.collidepoint(mx,my):
+            draw_text("Ici",ColderWeather,WHITE,screen,100,100)
+        screen.blit(display,(screen.get_width()//2-display.get_width()//2,screen.get_height()//2-display.get_height()//2))
 class Shop(Entity):
     def __init__(self,inventory,pos_x,pos_y,img,name,which_type,animation_dict=None,talking=None,size=(0,0)):
         Entity.__init__(self,pos_x,pos_y,img,name,which_type,animation_dict,talking,size)
@@ -212,8 +235,14 @@ class Shop(Entity):
             pygame.display.update()
             running,click = basic_checkevent(click)
 
-
-
-
-
+inv = Inventaire(7,5)
+inv.ajouteritems(Sword1)
+inv.ajouteritems(Sword10)
+running = True
+click = False
+'''while running:
+    inv.print_inventory_bis()
+    pygame.display.update()
+    running,click = basic_checkevent(click)
+'''
 
