@@ -1,6 +1,6 @@
 import pygame
 from entity import Entity
-from settings.load_img import pixel_red
+from settings.load_img import pixel_red, ava_perso
 from pygame.locals import *
 from items import Sword1,Sword10,Wikitem
 from inventory import Inventaire
@@ -28,7 +28,8 @@ class Perso():
         self.poid_actuel = 0
         self.poid_max = 300
         self.armor = dict()
-
+        self.avata = ava_perso
+        
         for i in range(0,6):     # 0 : HEAD 1 : TORSE 2 : COUE  3 BOTTE 4 : MAIN GAUCHE : 5 MAIN DROITE
             self.armor[i] = None   
         self.pos_x = 9000

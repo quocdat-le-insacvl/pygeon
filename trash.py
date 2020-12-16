@@ -174,6 +174,8 @@ class Game():
         self.click = False #Click souris
         self.fog = Fog(self)
         self.zoom_map = False
+        self.center_x, self.center_y = 0, 0
+        self.list_mooving_entity = list_mooving_entity
 
     def main_game(self):
         center_x,center_y=0,0
@@ -188,7 +190,7 @@ class Game():
         g=0
 
         ### Minimap
-        self.minimap = Minimap(self.player, self.map.map,self.map.display)
+        self.minimap = Minimap(self, self.map.display)
         ###
         show_inventory = False
         while running:
@@ -215,7 +217,8 @@ class Game():
             for x in list_mooving_entity:
                 x.animate_map()
                 x.update_interact()
-            draw_text("x : %i , y : %i"%(clock.get_fps(),self.player.pos_y),ColderWeather,WHITE,screen,100,100)
+            draw_text("FPS: %i, x : %i , y : %i" % (clock.get_fps(), self.player.pos_x,
+                                           self.player.pos_y), ColderWeather, WHITE, screen, 100, 100)
             '''
             f += 1
             if f < 150:
@@ -249,7 +252,10 @@ class Game():
             '''Set caméra / player pos pour sauvegarde'''
             center_x -= (self.player.pos_x + center_x -900)//20
             center_y -= (self.player.pos_y + center_y- 400) //20
-
+            
+            self.center_x = center_x 
+            self.center_y = center_y
+            
             """ Draw minimap + Fog"""
             self.minimap.draw_minimap()
             # self.fog.draw_fog()
