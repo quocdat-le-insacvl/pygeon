@@ -173,11 +173,7 @@ class Minimap:
             y_mini = y_real / self.rect.height * MINIMAP_SCALE
             self.screen.blit(
                 ava_perso, (self.TOP_LEFT_X + x_mini, self.TOP_LEFT_Y + y_mini))
-        # self.screen.blit(
-        #    ava_perso, (self.TOP_LEFT_X + MINIMAP_SCALE/2, self.TOP_LEFT_Y + MINIMAP_SCALE / 2))
-        # X = self.TOP_LEFT_X + pos_x / (self.map_width * 190) * MINIMAP_SCALE
-        # Y = self.TOP_LEFT_Y + pos_y / (self.map_height * 190) * MINIMAP_SCALE
-        # pygame.draw.circle(self.screen, color, (X, Y), radius=6, width=0)
+
 
 class Fog:
     def __init__(self, game):
