@@ -49,9 +49,46 @@ class Entity():
             self.frame += 0.05
             if self.frame > len(animation)+1:
                 self.frame=1
-            #self.display = pygame.Surface((animation[ self.nom + "_" + self.type_animation + "_" + str(int(self.frame)) + ".png"].get_width(),animation[ self.nom + "_" + self.type_animation + "_" + str(int(self.frame)) + ".png"].get_height()))
-            self.display.fill((0,0,0))
-            self.display.blit(animation[ self.nom + "_" + self.type_animation + "_" + str(int(self.frame)) + ".png"],(0,0))
+            self.refresh_display()
+            if self.nom != None:
+                self.display.blit(animation[ self.nom + "_" + self.type_animation + "_" + str(int(self.frame)) + ".png"],(0,0))
+            else:
+                self.display.blit(animation[ self.type_animation + "_" + str(int(self.frame)) + ".png"],(0,0))
+    def refresh_display(self):
+        self.display.fill((0,0,0))
+        self.display.set_colorkey((0,0,0))
+    def move_entity(self,mouvement,map,player):
+        pixel_mask = pygame.mask.from_surface(pixel_red) 
+        if map.collision.__contains__((self.pos_x- pixel_red.get_width()//2+self.img.get_width()//2,self.pos_y-int(pixel_red.get_height()//1.5)+self.img.get_height())):
+            map.collision.remove((self.pos_x- pixel_red.get_width()//2+self.img.get_width()//2,self.pos_y-int(pixel_red.get_height()//1.5)+self.img.get_height()))
+        if not player.masks.overlap(pixel_mask,((self.pos_x- pixel_red.get_width()//2+self.img.get_width()//2 + mouvement[0])-player.pos_x,self.pos_y-int(pixel_red.get_height()//1.5)+self.img.get_height()+ mouvement[1]-(player.pos_y+130))):
+            for x in self.interaction:
+                if map.collision_entity.__contains__((int(x[0]),int(x[1]))):
+                    map.collision_entity.remove((int(x[0]),int(x[1])))
+                map.collision_entity.append((int(x[0])+mouvement[0],int(x[1])+mouvement[1]))
+            map.collision.append((self.pos_x- pixel_red.get_width()//2+self.img.get_width()//2+ mouvement[0],self.pos_y-int(pixel_red.get_height()//1.5)+self.img.get_height()+ mouvement[1]))
+            self.pos_x += mouvement[0]
+            self.pos_y += mouvement[1]
+            
+        else:
+            #collision.remove((self.pos_x+mouvement[0]+20,self.pos_y+mouvement[1]+130))
+            map.collision.append((self.pos_x- pixel_red.get_width()//2+self.img.get_width()//2,self.pos_y-int(pixel_red.get_height()//1.5)+self.img.get_height()))
+            
+        """def move_entity(self,entity,mouvement,collision_entity,collision,pieds_mask,joueurs):
+        Permet de décplacer une entité, gère les cases d'intéraction de l'entité + collision avec joueurs, retourne soit l'entité modifié soit l'entité non modifié de mouvement"""
+    def find_nearest_entity(self,list_entity):
+        distance = abs(self.pos_x - list_entity[0].center[0]) + abs(self.pos_y - list_entity[0].center[1])
+        entity = list_entity[0]
+        for i in range(len(list_entity)):
+            if abs(self.pos_x - list_entity[i].center[0]) + abs(self.pos_y - list_entity[i].center[1]) < distance:
+                distance = abs(self.pos_x - list_entity[i].center[0]) + abs(self.pos_y - list_entity[i].center[1])
+                entity = list_entity[i]
+        return entity
+        """def find_nearest_entity(self,player_rect,list_entity):
+        Permet de trouver l'entité dans list_entity la plus proche de player_rect
+        return Entity la plus proche de player_rect"""
+    
+    
 
 
 WIDTH = screen.get_width()
@@ -63,7 +100,7 @@ class Minimap:
         self.player = self.game.player
         self.display_with_nature = display_with_nature
         self.screen = screen
-        self.map = self.game.map
+        self.map = self.game.map.map
         self.map_height = len(self.map)
         self.map_width = len(self.map[0])
         self.TOP_LEFT_X = WIDTH - MINIMAP_SCALE

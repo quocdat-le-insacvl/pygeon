@@ -183,7 +183,7 @@ class Game():
         g=0
 
         ### Minimap
-        self.minimap = Minimap(self, display_with_nature)
+        self.minimap = Minimap(self, self.map.display)
         ###
 
         while running:
