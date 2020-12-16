@@ -46,6 +46,7 @@ class Perso_game(Perso,Entity):
         self.masks = pygame.mask.from_surface(self.mask_surface)
         self.swap = False
         self.entity_near = False
+        self.swap_entity = False
         self.mouvement = [False,False,False,False]
         self.deplacement = [0,0]
     def refresh_animation_and_mouvement(self):
@@ -68,7 +69,11 @@ class Perso_game(Perso,Entity):
         self.refresh_animation_and_mouvement()
         self.swap = False
         self.entity_near = False
+        self.swap_entity = False
         possible = True
+        for x in map.change_camera_entity:
+            if pixel_mask.overlap(self.masks,((self.pos_x+self.deplacement[0]+10)-x[0],(self.pos_y+self.deplacement[1]+self.img.get_height()-15)-x[1])):
+                self.swap_entity = True
         for x in map.collision_entity:
             if pixel_mask.overlap(self.masks,((self.pos_x+self.deplacement[0]+10)-x[0],(self.pos_y+self.deplacement[1]+self.img.get_height()-15)-x[1])):
                 self.entity_near = True

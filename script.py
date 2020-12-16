@@ -58,7 +58,7 @@ entity_4 = Shop(pack_bis,8660,790,seller_1_hide["seller_1_idle_1.png"],"seller_1
 entity_5 = Shop(pack_bis,9260,490,seller_1_hide["seller_1_idle_2.png"],"seller_1","Seller",seller_1_animation,"Bonjour Aventurier ! Vous voulez voir mes produits ?")
 entity_6 = Entity(7350-tavern_img.get_width()//2,1125-tavern_img.get_height()//2,tavern_img,"Tavern","Building")
 entity_7 = Entity(11060-tavern_img.get_width()//2,1080-tavern_img.get_height()//2,tavern_img,"Tavern","Building")
-entity_8 = Entity(10540,1790-tavern_img.get_height()//2,tavern2_img,"Tavern","Building")
+entity_8 = Entity(10540+380,1790-tavern_img.get_height()//2+270,tavern2_img,"Tavern","Building")
 wizard = Entity(100,100,wizard_hide["wizard_idle_1.png"],"wizard","Monster",wizard_animation,size=(300,300))
 wizard_2 = Entity(100,100,wizard_hide["wizard_idle_1.png"],"wizard","Monster",wizard_animation,size=(300,300))
 squelton_1 = Entity(12000,4000,squelton_idle["squeleton_idle_1.png"],"squeleton","Monster",squelton_animation,size=(300,300))

@@ -54,16 +54,25 @@ class Case():
 
 class Map():
     def __init__(self,path,list_static_entity):
+        self.path = path
         self.collision = []
         self.collision_change_camera = []
         self.collision_entity = []
         self.tree_position = []
+        self.change_camera_entity = []
         self.map = load_map(path)
         self.display = pygame.Surface((18000,10000))
         self.display_tree = pygame.Surface((18000,10000))
         self.cubesize = 190
         self.static_entity = list_static_entity
         self.mooving_entity = list_mooving_entity
+    def load_map(self):
+        self.map = load_map(self.path)
+        self.collision = []
+        self.collision_change_camera = []
+        self.collision_entity = []
+        self.tree_position = []
+        self.change_camera_entity = []
     def init_map(self):
         self.display.fill(BURGUNDY)
         self.display.set_colorkey(BLACK)
@@ -97,7 +106,7 @@ class Map():
                         self.display.blit(end_game,(x,y))
                         self.collision.append((x,y))
                         #display.blit(pixel_red,(x,y))
-                    if self.map[i][j] == '3':
+                    if self.map[i][j] == '3' or self.map[i][j] == '9' or self.map[i][j] == '7':
                         self.display.blit(grass['grass_' + str(1) + '.png'],(x,y))
                         self.collision.append((x,y))
                     if self.map[i][j] == '4':
@@ -105,16 +114,12 @@ class Map():
                     if self.map[i][j] == '6':
                         self.display.blit(grass['grass_' + str(1) + '.png'],(x,y))
                         self.collision_entity.append((x,y))
-                    if self.map[i][j] == '7':
-                        self.collision.append((x,y))
-                        self.display.blit(grass['grass_' + str(1) + '.png'],(x,y))
                     if self.map[i][j] == '8':
                         self.display.blit(grass["grass_blue_1.png"],(x,y))
-                    if self.map[i][j] == '9':
-                        self.collision.append((x,y))
-                        self.display.blit(grass['grass_' + str(1) + '.png'],(x,y))
-                    if self.map[i][j] == 'a':
-                        self.display.blit(pixel_red,(x,y))
+                    if self.map[i][j] == 'c':
+                        n = random.randint(1,5)
+                        self.display.blit(grass['grass_' + str(n) + '.png'],(x,y))
+                        self.change_camera_entity.append((x,y))
                 j+=1
             i+=1
         i=0
@@ -128,8 +133,8 @@ class Map():
                 if self.map[i][j] != None:
                     if self.map[i][j] == '2' :
                         n = random.randint(1,10)
-                        self.display_tree.blit(tree["tree_" + str(n) + ".png"],(x,y-200))
-                        self.display.blit(tree["tree_" + str(n) + ".png"],(x,y-200))
+                        self.display_tree.blit(tree["tree_" + str(n) + ".png"],(x,y-250))
+                        self.display.blit(tree["tree_" + str(n) + ".png"],(x,y-250))
                     if self.map[i][j] == '7':
                         #collision.append((x,y))
                         self.display_tree.blit(fence_1,(x,y-50))
@@ -177,13 +182,16 @@ class Game():
                 screen.blit(self.map.display,(center_x,center_y))
                 screen.blit(rune_1,(11000+center_x,3000+center_y))
                 screen.blit(self.player.display,(center_x+self.player.pos_x,center_y+self.player.pos_y))
-
+            if self.player.swap_entity:
+                print(1)
+                entity_re_print = self.player.find_nearest_entity(list_static_entity)
+                screen.blit(entity_re_print.display,(entity_re_print.pos_x+center_x,entity_re_print.pos_y+center_y))
             '''Actualiser case interaction + animations'''
-            self.player.animate_map()
+            self.player.animate_map() 
             for x in list_mooving_entity:
                 x.animate_map()
                 x.update_interact()
-            
+            draw_text("x : %i , y : %i"%(self.player.pos_x,self.player.pos_y),ColderWeather,WHITE,screen,100,100)
             
             f += 1
             if f < 150:
@@ -227,7 +235,8 @@ class Game():
                     if event.key == K_i:
                         interact = True
                     if event.key == K_ESCAPE:
-                        pause_menu = True
+                        self.map.load_map()
+                        self.map.init_map()
             self.player.move_player(self.map)
 
             if g != 255:
@@ -393,7 +402,7 @@ class Game():
 map_1 = Map("map.txt",list_static_entity)
 map_1.init_map()
 game = Game(player,map_1)
-#game.main_game()
+game.main_game()
 game.print_combat_screen([entity_2])
 #game.main_game()
 #running = True

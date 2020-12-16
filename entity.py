@@ -74,11 +74,11 @@ class Entity():
         """def move_entity(self,entity,mouvement,collision_entity,collision,pieds_mask,joueurs):
         Permet de décplacer une entité, gère les cases d'intéraction de l'entité + collision avec joueurs, retourne soit l'entité modifié soit l'entité non modifié de mouvement"""
     def find_nearest_entity(self,list_entity):
-        distance = abs(self.pos_x - list_entity[0].pos_x) + abs(self.pos_y - list_entity[0].pos_y)
+        distance = abs(self.pos_x - list_entity[0].center[0]) + abs(self.pos_y - list_entity[0].center[1])
         entity = list_entity[0]
         for i in range(len(list_entity)):
-            if abs(self.pos_x - list_entity[i].pos_x) + abs(self.pos_y - list_entity[i].pos_y) < distance:
-                distance = abs(self.pos_x - list_entity[i].pos_x) + abs(self.pos_y - list_entity[i].pos_y)
+            if abs(self.pos_x - list_entity[i].center[0]) + abs(self.pos_y - list_entity[i].center[1]) < distance:
+                distance = abs(self.pos_x - list_entity[i].center[0]) + abs(self.pos_y - list_entity[i].center[1])
                 entity = list_entity[i]
         return entity
         """def find_nearest_entity(self,player_rect,list_entity):
