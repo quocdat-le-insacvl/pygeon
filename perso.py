@@ -28,7 +28,7 @@ class Personnage():
         self.rect_perso = pygame.Rect((self.X,self.Y),(self.perso.get_width(),self.perso.get_height()))
     def createImages(self,name,scale=True,colorkey=(0,0,0),forceScale=False):
         relative_path = os.path.join(os.path.dirname(os.path.abspath(__file__)),"imgs/")
-        if name not in os.listdir(relative_path):
+        if name not in os.listdir(relative_path): 
             print("Image %s not in imgs/ directory" %name)
         elif name[-4:] != ".png" and name[-4:] != ".jpg":
             print("Image not a .png or a .jpg")

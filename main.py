@@ -12,7 +12,7 @@ from donjon import Donjon
 pygame.init()
 
 
-pygame.display.set_caption("Test")
+pygame.display.set_caption("Test") 
 
 #screen = pygame.display.set_mode((0,0), pygame.FULLSCREEN)
 screen = pygame.display.set_mode((1800,1080))

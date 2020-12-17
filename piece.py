@@ -4,7 +4,7 @@ import random
 import time
 class Piece():
 
-    def __init__(self,display):
+    def __init__(self,display): 
 
         self.tailleMax = [70,70] #argument donnant la definition de la piece -> si on augmente ca dezoome et si on diminue ça zoom
         self.lengthPiece,self.heightPiece = self.tailleMax

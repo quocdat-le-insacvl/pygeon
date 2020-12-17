@@ -73,7 +73,7 @@ class Donjon():
                 self.pieces[self.actuel].update_graph(self.perso,self.screen)
                 
                 pygame.display.update()
-        if self.listekey.get(pygame.K_DOWN):
+        if self.listekey.get(pygame.K_DOWN): 
            
             self.perso.deplacerBas()
             self.interaction = self.pieces[self.actuel].check_interact(self.perso)
