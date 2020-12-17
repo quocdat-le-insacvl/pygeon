@@ -19,6 +19,10 @@ class Inventaire():
         self.backpack = dict()
         self.poid_actuel = 0
         self.poid_max = 100
+        self.have_object = False
+        self.last_moove = 0
+        self.mouse_slot = self.nb_x*self.nb_y
+        self.bouton_test = dict()
         for i in range(0,nb_x*nb_y+1):
             self.backpack[i] = None
     def ajouteritems(self,piece):
@@ -183,29 +187,82 @@ class Inventaire():
             last_moove = -1
             #pygame.draw.rect(screen,RED,button_drag)
             have_object = False  
-    def print_inventory_bis(self):
+    def print_inventory_bis(self,pos_x,pos_y,main=True,mouse=False):
         display = pygame.Surface((500,400))
-        display_rect = pygame.Rect(screen.get_width()//2-display.get_width()//2,screen.get_height()//2-display.get_height()//2,750,500)
         x=display.get_width()//2
         y_=display.get_height()//2
         display.blit(pygame.transform.scale(img_inventaire,(500,400)),(0,0))
         display.set_colorkey(BLACK)
+        
+
         mx,my = pygame.mouse.get_pos()
-        bouton_test = dict()
+        mx_display =  mx  - pos_x
+        my_display =  my  - pos_y
         h=0
+        mouse_slot = self.nb_x*self.nb_y
+        
+        y=0
         for y in range(self.nb_x):
             for i in range(self.nb_y):
-                bouton_test[h+i] = pygame.Rect(60*y+x-60*self.nb_x//2, 60*i+y_-60*self.nb_y//2, 50, 50)
-                if self.backpack[h+i] != None :
-                    display.blit(key[self.backpack[h+i]].wpn_img,(bouton_test[h+i].x, bouton_test[h+i].y))
+                self.bouton_test[h+i] = pygame.Rect(60*y+x-60*self.nb_x//2, 60*i+y_-60*self.nb_y//2, 50, 50)
+                pygame.draw.rect(display,(0,0,1),self.bouton_test[h+i],1)
             h += self.nb_y
         i=0
-        for i in range(0,self.nb_x*self.nb_y):
-            pygame.draw.rect(display,(255,255,254),bouton_test[i],1)
-            
-        if display_rect.collidepoint(mx,my):
-            draw_text("Ici",ColderWeather,WHITE,screen,100,100)
-        screen.blit(display,(screen.get_width()//2-display.get_width()//2,screen.get_height()//2-display.get_height()//2))
+        screen.blit(display,(pos_x,pos_y))
+        for i in range(self.nb_x*self.nb_y):
+            if self.backpack[i] != None :
+                screen.blit(key[self.backpack[i]].wpn_img,(self.bouton_test[i].x+pos_x, self.bouton_test[i].y+pos_y))
+        if main:
+            if self.backpack[mouse_slot] != None :
+                self.have_object = True
+                screen.blit(key[self.backpack[mouse_slot]].wpn_img,(mx,my))
+            else:
+                self.have_object = False
+        i = 0
+        while self.backpack[i] != None:
+            i += 1
+        self.last_moove = i
+        if not mouse:
+            for i in range(self.nb_x*self.nb_y):
+                if self.bouton_test[i].collidepoint(mx_display,my_display):
+                    if self.backpack[i] != None and self.have_object == False:
+                        self.backpack[mouse_slot] = self.backpack[i]
+                        self.backpack[i] = None
+                        self.last_moove = i
+                        self.have_object = True
+        if self.backpack[mouse_slot] != None:
+            if not(any(pygame.mouse.get_pressed())):
+                for i in range(self.nb_y*self.nb_x):
+                    if self.bouton_test[i].collidepoint((mx_display,my_display)) :
+                        self.backpack[self.last_moove] = self.backpack[i]
+                        self.backpack[i] = self.backpack[mouse_slot]
+                        self.backpack[mouse_slot] = None
+                        self.have_object = False
+                        self.last_moove = mouse_slot
+                if self.last_moove <= mouse_slot:
+                    self.backpack[self.last_moove] = self.backpack[mouse_slot]
+                    self.backpack[mouse_slot] = None
+                    self.have_object = False
+        else:
+            self.last_moove = -1
+    def loot_inventory(self,pos_x,pos_y,inv):
+        mx,my = pygame.mouse.get_pos()
+        mx_inv = mx - 500
+        my_inv = my - 500
+        click=False
+        if self.backpack[self.mouse_slot] != None:
+            self.have_object = True
+            for i in range(inv.mouse_slot):
+                if not(any(pygame.mouse.get_pressed())) and inv.bouton_test[i].collidepoint(mx_inv,my_inv):
+                    if inv.backpack[i] == None:
+                        inv.backpack[i] = self.backpack[self.mouse_slot]
+                        self.backpack[self.mouse_slot] = None
+                        self.have_object = False
+        else:
+            self.have_object = False
+        inv.print_inventory_bis(500,500,mouse=self.have_object)
+        self.print_inventory_bis(pos_x,pos_y)
+
 class Shop(Entity):
     def __init__(self,inventory,pos_x,pos_y,img,name,which_type,animation_dict=None,talking=None,size=(0,0)):
         Entity.__init__(self,pos_x,pos_y,img,name,which_type,animation_dict,talking,size)

@@ -242,7 +242,7 @@ class Game():
                 entity_re_print = self.player.find_nearest_entity(list_static_entity)
                 screen.blit(entity_re_print.display,(entity_re_print.pos_x+center_x,entity_re_print.pos_y+center_y))
             '''Actualiser case interaction + animations'''
-            # self.player.animate_map()
+            #self.player.animate_map()
             # for x in list_mooving_entity:
             #     x.animate_map()
             #     x.update_interact()
@@ -258,7 +258,7 @@ class Game():
             # if f == 300:
             #     f=0
             
-            print_mooving_entity(screen,list_mooving_entity,center_x,center_y)
+            #print_mooving_entity(screen,list_mooving_entity,center_x,center_y)
             
 
             #self.print_frog(player_rect,screen,case_connue,center_x,center_y)
@@ -279,8 +279,8 @@ class Game():
                     interact = False
 
             '''Set caméra / player pos pour sauvegarde'''
-            center_x -= (self.player.pos_x + center_x -900)//20
-            center_y -= (self.player.pos_y + center_y- 400) //20
+            center_x -= (self.player.pos_x + center_x - 900+self.player.img.get_width()//2)//20
+            center_y -= (self.player.pos_y + center_y - 540+self.player.img.get_height()//2) //20
             
             self.center_x = center_x 
             self.center_y = center_y
@@ -318,7 +318,8 @@ class Game():
                     transition.set_alpha(int(255-f))
                 screen.blit(transition,(0,0))"""
             if show_inventory:
-                self.player.inventaire.print_inventory_bis()
+                self.player.print_equipement(100,100)
+                #pack_bis.loot_inventory(1000,500,self.player.inventaire)
 
             draw_text("FPS: %i, x : %i , y : %i" % (clock.get_fps(), self.player.pos_x,
                                                     self.player.pos_y), ColderWeather, WHITE, screen, 100, 100)

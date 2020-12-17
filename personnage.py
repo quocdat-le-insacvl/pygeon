@@ -124,18 +124,54 @@ class Perso_game(Perso,Entity):
     def transform_display_for_map(self):
         self.display = pygame.Surface((self.img.get_width(),self.img.get_height()))
         self.display.set_colorkey((0,0,0))
-    def print_equipement(self):
-        bouton_arm = dict()
+    def print_equipement(self,pos_x,pos_y):
         
+        display = pygame.Surface((250,200))
+        x = 125
+        y_ = 100
+        display.blit(pygame.transform.scale(img_inventaire,(250,200)),(0,0))
+        display.blit(self.img,(250//2-self.img.get_width()//2,100-self.img.get_height()//2))
+        bouton_arm = dict()
+        mouse_slot = self.inventaire.nb_x * self.inventaire.nb_y
+        mx,my = pygame.mouse.get_pos()
+        mx_display = mx - pos_x
+        my_display = my - pos_y
+
         for i in range(0,4):
-            bouton_arm[i] = pygame.Rect(pos_x//2-LONGUEUR//5+pack.nb_y*50*1.4, 1.05*(50*(i+1))+pos_y//2-LARGEUR//7,50,50)
-            # pygame.draw.rect(display,WHITE,bouton_arm[i])
-            pygame.draw.rect(display,LIGHT_GREY,bouton_arm[i],1)
-                        
+            bouton_arm[i] = pygame.Rect(x-25, 50*i,50,50)
+            pygame.draw.rect(display,(0,0,1),bouton_arm[i],1)   
         for i in range(0,2):
-            bouton_arm[4+i] = pygame.Rect(pos_x//2-LONGUEUR//5+pack.nb_y*50*1.6+53*i,1.05*50+pos_y//2-LARGEUR//7,50,50)
-            pygame.draw.rect(display,LIGHT_GREY,bouton_arm[4+i],1)
-                    
+            bouton_arm[4+i] = pygame.Rect(25+i*150,75,50,50)
+            pygame.draw.rect(display,(0,0,1),bouton_arm[4+i],1)  
+        screen.blit(display,(pos_x,pos_y))
+        #screen.blit(display,(0,0))
         for i in range(0,6):
             if self.armor[i] != None:
-                display.blit(key[self.armor[i]].wpn_img,(bouton_arm[i].x,bouton_arm[i].y))
+                screen.blit(key[self.armor[i]].wpn_img,(bouton_arm[i].x+pos_x,bouton_arm[i].y+pos_y))
+        i=0
+        if self.inventaire.have_object == False:
+            for i in range(6):
+                if bouton_arm[i].collidepoint((mx_display,my_display)):
+                    self.inventaire.backpack[mouse_slot] = self.armor[i]
+                    self.armor[i] = None
+                    self.inventaire.last_moove = mouse_slot+i+1
+                    self.inventaire.have_object = True
+        i=0
+        if self.inventaire.backpack[mouse_slot] != None:
+            if any(pygame.mouse.get_pressed()):
+                self.have_object =True
+                #screen.blit(key[self.inventaire.backpack[mouse_slot]].wpn_img,(mx,my))
+            elif not(any(pygame.mouse.get_pressed())):
+                for i in range(0,6):
+                    if bouton_arm[i].collidepoint((mx_display,my_display)) and key[self.inventaire.backpack[mouse_slot]].wpn_type == i:
+                        self.inventaire.backpack[self.inventaire.last_moove] = self.armor[i]
+                        self.armor[i] = self.inventaire.backpack[mouse_slot]
+                        self.inventaire.backpack[mouse_slot] = None
+                        self.inventaire.last_moove = mouse_slot
+                        self.inventaire.have_object = False
+        else:
+            self.inventaire.have_object = False
+            self.inventaire.last_moove = -1
+        self.inventaire.print_inventory_bis(500,500,main=False)
+        if self.inventaire.backpack[mouse_slot] != None:
+            screen.blit(key[self.inventaire.backpack[mouse_slot]].wpn_img,(mx,my))
