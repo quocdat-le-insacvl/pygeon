@@ -127,9 +127,11 @@ class Perso_game(Perso,Entity):
     def print_equipement(self,pos_x,pos_y):
         
         display = pygame.Surface((250,200))
+        display.set_colorkey(BLACK)
         x = 125
         y_ = 100
         display.blit(pygame.transform.scale(img_inventaire,(250,200)),(0,0))
+        self.img.set_alpha(50)
         display.blit(self.img,(250//2-self.img.get_width()//2,100-self.img.get_height()//2))
         bouton_arm = dict()
         mouse_slot = self.inventaire.nb_x * self.inventaire.nb_y
