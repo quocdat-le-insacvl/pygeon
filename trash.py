@@ -242,25 +242,19 @@ class Game():
                 entity_re_print = self.player.find_nearest_entity(list_static_entity)
                 screen.blit(entity_re_print.display,(entity_re_print.pos_x+center_x,entity_re_print.pos_y+center_y))
             '''Actualiser case interaction + animations'''
-            #self.player.animate_map()
+            self.player.animate_map()
             # for x in list_mooving_entity:
             #     x.animate_map()
             #     x.update_interact()
 
             
-            # f += 1
-            # if f < 150:
-            #     list_mooving_entity[0].move_entity([2,-1],self.map,self.player)
-            #     list_mooving_entity[2].move_entity([2,-1],self.map,self.player)
-            # elif f > 150:
-            #     list_mooving_entity[0].move_entity([-2,1],self.map,self.player)
-            #     list_mooving_entity[2].move_entity([-2,1],self.map,self.player)
-            # if f == 300:
-            #     f=0
-            
             print_mooving_entity(self, screen,list_mooving_entity,center_x,center_y)
             
-
+            # TEST -> To delete :
+            for entity in self.list_mooving_entity:
+                if entity.name == "test_demon":
+                    entity.pos_y += 1
+                    entity.pos_x += 3
             #self.print_frog(player_rect,screen,case_connue,center_x,center_y)
 
             #screen.blit(player.mask_surface,(center_x+self.player.pos_x+20,center_y+self.player.pos_y+self.player.img.get_height()-15))

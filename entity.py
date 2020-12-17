@@ -27,6 +27,9 @@ class Entity():
         self.decalage_display = decalage
         self.avata = pygame.transform.scale(img, (30, 30))
         self.is_hidden = True
+        self.seen = False
+        self.last_know_pos = (0, 0)
+        self.shadow = img
         
     def update_center(self):
         self.center = [self.pos_x + self.img.get_width()//2,self.pos_y + self.img.get_height()//2]

@@ -5,6 +5,7 @@ from settings.police import Drifftype,ColderWeather,Rumbletumble,coeff,coeff1,co
 from settings.load_img import *
 from settings.color import *
 import random
+# from script import demon_shadow
 
 
 ### Fixing path
@@ -270,13 +271,23 @@ def print_nature(Map,display,tree_position,all = True):
 def print_static_entity(display,list_entity):
     for i in range(len(list_entity)):
         display.blit(list_entity[i].display,(list_entity[i].pos_x,list_entity[i].pos_y))
+        
+        
 """def print_mooving_entity
     Affiche les entités non static sur le display"""
 def print_mooving_entity(game, display,list_entity,center_x,center_y):
     for entity in list_entity:
         # Dat's note : 
+        # if hidden, check if him go out of the zone visible
         # Check if the monster in the fog => he is hidden !
-        if not entity.is_hidden :
-            display.blit(entity.display,(entity.pos_x+center_x,entity.pos_y+center_y))
-        elif game.fog.surface.get_at((entity.pos_x, entity.pos_y)) != NIGHT_COLOR:
+        if game.fog.surface.get_at((entity.pos_x, entity.pos_y)) != NIGHT_COLOR:
             entity.is_hidden = False
+            entity.seen = True
+            display.blit(entity.display, (entity.pos_x + center_x, entity.pos_y+center_y))
+            entity.last_know_pos = (entity.pos_x, entity.pos_y)
+        else:
+            entity.is_hidden = True
+        # If he was seen but now he is hidden => draw his shadow (by the last position)
+        if entity.seen and entity.is_hidden:
+            display.blit(entity.shadow, (entity.last_know_pos[0] +
+                                         center_x, entity.last_know_pos[1] + center_y))
