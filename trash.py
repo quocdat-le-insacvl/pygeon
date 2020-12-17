@@ -18,6 +18,8 @@ from settings.color import *
 from script import list_mooving_entity,list_static_entity,entity_2
 from fonction import *
 from personnage import Perso_game
+from case import *
+from combat import *
 pygame.init()
 clock = pygame.time.Clock()
 
@@ -25,46 +27,7 @@ clock = pygame.time.Clock()
 quand on load les images pour la question de performance
 """
 
-class Case():
-    def __init__(self, i, j):
-        self.in_case = None
-        self.display = pygame.Surface(
-            (pixel_red.get_width(), pixel_red.get_height()))
-        self.display.blit(case, (0, 0))
-        self.display.set_colorkey(BLACK)
-        self.i = i
-        self.j = j
-        self.is_select = False
-
-    def print_contains(self):
-        if self.in_case != None:
-            #screen.blit(self.in_case.display,(self.cordo()[0]+self.in_case.display.get_width()//2,self.cordo()[1]-self.in_case.display.get_height()//2))
-            screen.blit(self.in_case.display,(self.cordo()[0]-self.in_case.img.get_width()//2,self.cordo()[1]-self.in_case.display.get_height()+self.in_case.img.get_height()//2+self.in_case.decalage_display[1]))
-    def cordo(self):
-        return ((self.j-self.i)*(pixel_red.get_width()+45)//2+screen.get_width()//2-pixel_red.get_width()//2, (self.j+self.i)*(pixel_red.get_width()+45)//4-100)
-
-    def select(self, is_select):
-        if is_select:
-            screen.blit(case_select, self.cordo())
-            self.is_select = True
-        else:
-            self.display.blit(case, (0, 0))
-            screen.blit(self.display, (0, 0))
-            self.is_select = False
-
-    def select_neighbour(self, list_case):
-        # if self.in_case != None:
-        for x in list_case:
-            x.is_select = False
-            if x.j == self.j and x.i == self.i - 1:
-                x.select(True)
-            if x.j == self.j and x.i == self.i + 1:
-                x.select(True)
-            if x.i == self.i and x.j == self.j - 1:
-                x.select(True)
-            if x.i == self.i and x.j == self.j + 1:
-                x.select(True)
-    # def print_sort(self,list_case):
+"""Anthony j'ai mis la classe Case dans un fichier tout seul qui s'apelle case.py car j en ai besoin et j ai importé le fichier la"""
 
 
 class Map():
@@ -489,8 +452,8 @@ class Game():
 map_1 = Map("map.txt",list_static_entity)
 map_1.init_map()
 game = Game(player,map_1)
-game.main_game()
-game.print_combat_screen([entity_2])
+c = Combat(game,[])
+c.affichage()
 #game.main_game()
 #running = True
 #click = False

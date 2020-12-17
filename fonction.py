@@ -275,3 +275,19 @@ def print_static_entity(display,list_entity):
 def print_mooving_entity(display,list_entity,center_x,center_y):
     for i in range(len(list_entity)):
         display.blit(list_entity[i].display,(list_entity[i].pos_x+center_x,list_entity[i].pos_y+center_y))
+
+
+#combat
+def bonus(attribut): #pour assigner a chaque attribut les pts bonus correspondants
+        if attribut == 1:
+            return -5
+        else:
+            b, i = -5, 1
+            while i <= attribut:
+                if i%2 == 0:
+                    b += 1
+                i += 1
+            return b
+
+def generate_randint(a,b):
+    return random.randint(a,b)

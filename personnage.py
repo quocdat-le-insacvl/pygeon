@@ -29,6 +29,8 @@ class Perso():
         self.poid_max = 300
         self.armor = dict()
         self.avata = ava_perso
+        self.tour = False
+        self.resultat = 0
         
         for i in range(0,6):     # 0 : HEAD 1 : TORSE 2 : COUE  3 BOTTE 4 : MAIN GAUCHE : 5 MAIN DROITE
             self.armor[i] = None   
