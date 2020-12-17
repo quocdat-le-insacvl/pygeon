@@ -12,8 +12,7 @@ class Sorcerer(Perso):
         self.attack=0
         self.sPoints=0
         self.spells_slots=[]
-        # self.img=pygame.image.load(r"Image\wizard.png")
-        # self.img.set_colorkey(color.BLACK)
+
     
     
 

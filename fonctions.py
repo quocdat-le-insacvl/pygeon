@@ -50,11 +50,6 @@ def screenSave():
     screensave=pygame.Surface(WINDOWS_SIZE)
     screensave.blit(screen,(0,0))
     return screensave
-def surfacesave(surface):
-    #save the current screen on a surface wich is returned
-    screensave=pygame.Surface((surface.get_width(),surface.get_height()))
-    screensave.blit(surface,(0,0))
-    return screensave
 
     """
         screen.blit(board,(WINDOWS_SIZE[0]//2-board.get_width()//2,WINDOWS_SIZE[1]//2-board.get_height()//2))
