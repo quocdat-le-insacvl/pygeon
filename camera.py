@@ -14,7 +14,7 @@ class Camera():
         self.center_y = -perso.Y+400
         
 
-    def afficher(self,display):
+    def afficher(self):
         self.screen.fill((0,0,0))
         self.screen.blit(self.display_piece,(self.center_x,self.center_y))
         self.screen.blit(self.perso.perso,(self.perso.X+self.center_x,self.perso.Y+self.center_y))

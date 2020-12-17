@@ -24,7 +24,7 @@ class Piece():
         self.donotBlit=[]
         #ecran a afficher
         self.piece =[]
-        self.screen = display
+        self.display = pygame.Surface((10000,10000))
 
         #nom des grapiques a afficher
         #convention de nommage : nom_element000 + 1 chiffre entre 0 et 4
@@ -77,7 +77,6 @@ class Piece():
         #graphique important : parquet et interaction possible
         self.important_graph = [1,7,8,16]
         self.vide = self.createImages("antho.png",forceScale=True,autocolorkey=True)
-        self.display = pygame.Surface((2000,2000))
 
     #methode de test pour afficher une liste double
     def afficherListe(self):
@@ -176,15 +175,13 @@ class Piece():
                             self.piece[y][x] = choosen
         if not spawn:
             self.piece[0][0] = 15 #provisoirement le spawn du joueur
-        self.afficherListe()
-        print("----------------------------------")
         #a remplacer plus tard par un teleporteur
 
 
     #methode affichant une piece : parquet murs et elements
     #aucune valeur de retour
     def afficher(self):
-        self.screen.blit(self.display,(0,0))
+        return self.display
         
     def afficherPiece(self):
         #affichage parquet
@@ -367,17 +364,18 @@ class Piece():
 
     #permet de donner un effet de profondeur sur la map:
     #affiche le personnage derriere des meubles si il est effectivement derriere des meubles
-    def update_graph(self,perso,screen):
+    def update_graph(self,perso):
         kdebut=1
         udpate_index=[]
         self.donotBlit=[]
+        self.retour=[]
         y=0
         for i in self.graphique_collision:
             if perso.rect_perso.colliderect(i):
                 if perso.rect_perso.y-10 < i.y:
                     self.__checkVoisin(y,self.donotBlit,first=True)
             y+=1
-
+        return self.retour
     #methode privee, ne pas utiliser
     #utilisee par update_graph(), elle permet de ne blit que le nombre minimum de meubles
     def __checkVoisin(self,index,donotBlit,first=False):
@@ -385,7 +383,7 @@ class Piece():
             self.donotBlit.append(index)
             image = self.image_collision_graphique[index][0]
             if first : image.set_alpha(200)
-            self.screen.blit(image,self.image_collision_graphique[index][1])
+            self.retour.append([image,self.image_collision_graphique[index][1]])
         if self.voisin_collision[index] != []:
             for i in self.voisin_collision[index]:
                 self.__checkVoisin(i,self.donotBlit)
@@ -514,7 +512,7 @@ class Piece():
                 y+= self.heightPiece//4
             y= (self.heightPiece//4)*(i+1)
             x =(self.lengthPiece//2)*(i+1)
-        pygame.display.flip()
+        
 
 """
 #<---Exemple de creation de piece-->

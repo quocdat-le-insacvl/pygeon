@@ -24,8 +24,9 @@ class Personnage():
         self.Y+=self.velocity
 
     def afficher(self):
-        self.perso_screen.blit(self.perso,(self.X,self.Y))
+        #self.perso_screen.blit(self.perso,(self.X,self.Y))
         self.rect_perso = pygame.Rect((self.X,self.Y),(self.perso.get_width(),self.perso.get_height()))
+        return self.perso
     def createImages(self,name,scale=True,colorkey=(0,0,0),forceScale=False):
         relative_path = os.path.join(os.path.dirname(os.path.abspath(__file__)),"imgs/")
         if name not in os.listdir(relative_path): 

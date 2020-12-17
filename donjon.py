@@ -2,12 +2,12 @@ from piece import Piece
 import pygame
 from perso import Personnage
 from pygame.time import Clock
+from camera import Camera
 import os
 clock = pygame.time.Clock()
 #classe permettant de créer un donjon
 #un donjon contient un ensemble de piece ainsi que des monstres, des loots, etc...
-pygame.font.init() # you have to call this at the start, 
-                   # if you want to use this module.
+pygame.font.init()
 myfont = pygame.font.SysFont('Comic Sans MS', 30)
 class Donjon():
 
@@ -35,6 +35,7 @@ class Donjon():
         self.pieces[self.nbEtage-1].max_graphique[8] = self.pieces[0].max_graphique[16] = 0
         
         self.listekey = {pygame.K_UP : False, pygame.K_DOWN : False, pygame.K_RIGHT:False,pygame.K_LEFT:False,pygame.K_SPACE:False}
+
     def creationDonjon(self):
         for salle in self.pieces:
             salle.createRoom()
@@ -42,8 +43,12 @@ class Donjon():
                 salle.createRoom()
                 print("Probleme generation piece")
             salle.afficherPiece()
-    
-
+        self.cam = Camera(self.perso,self.pieces[self.actuel])
+    def update_affichage(self):
+        self.perso.afficher()
+        self.cam.actualiser(self.perso)
+        self.cam.display_piece = self.pieces[self.actuel].afficher()
+        self.cam.afficher()
     #affichage d'un donjon : refresh est pour clean le screen (l'ecran devient noir)
     #permet d'afficher la piece actuelle, mais aussi de definir le spawn du joueur
     def affichageDonjon(self,refresh=False):
@@ -53,10 +58,12 @@ class Donjon():
             self.screen.fill((255,255,255))
             pygame.display.flip()
         
-        self.pieces[self.actuel].afficher()
         self.perso.X,self.perso.Y = (self.pieces[self.actuel].spawn)
+        self.cam.actualiser(self.perso)
+        
         self.perso.afficher()
-        pygame.display.flip()
+        self.cam.display_piece = self.pieces[self.actuel].afficher()
+        self.cam.afficher()
 
     #fonction de deplacement, très nulle mais ce ne sera pas la version finale
     #juste une version d'essai
@@ -68,11 +75,9 @@ class Donjon():
             if self.pieces[self.actuel].check_collision(self.perso):
                 self.perso.deplacerBas()
             else:
-                self.pieces[self.actuel].afficher()
-                self.perso.afficher()
-                self.pieces[self.actuel].update_graph(self.perso,self.screen)
+
+                self.update_affichage()
                 
-                pygame.display.update()
         if self.listekey.get(pygame.K_DOWN): 
            
             self.perso.deplacerBas()
@@ -80,11 +85,7 @@ class Donjon():
             if self.pieces[self.actuel].check_collision(self.perso):
                 self.perso.deplacerHaut()
             else:
-                self.pieces[self.actuel].afficher()
-                self.perso.afficher()
-                self.pieces[self.actuel].update_graph(self.perso,self.screen)
-                
-                pygame.display.update()
+                self.update_affichage()
         if self.listekey.get(pygame.K_RIGHT):
             
             self.perso.deplacerDroite()
@@ -92,23 +93,14 @@ class Donjon():
             if self.pieces[self.actuel].check_collision(self.perso):
                 self.perso.deplacerGauche()
             else:
-                self.pieces[self.actuel].afficher()
-                self.perso.afficher()
-                self.pieces[self.actuel].update_graph(self.perso,self.screen)
-                
-                pygame.display.update()
+                self.update_affichage()
         if self.listekey.get(pygame.K_LEFT):
             self.perso.deplacerGauche()
             self.interaction = self.pieces[self.actuel].check_interact(self.perso)
             if self.pieces[self.actuel].check_collision(self.perso):
                 self.perso.deplacerDroite()
             else:
-                self.pieces[self.actuel].afficher()
-                
-                self.perso.afficher()
-                self.pieces[self.actuel].update_graph(self.perso,self.screen)
-                
-                pygame.display.update()
+                self.update_affichage()
         if self.listekey.get(pygame.K_i):
             if self.interaction == 7:
                 print("COFFRE")
@@ -130,9 +122,7 @@ class Donjon():
             self.deplacement()
             #print '{}: tick={}, fps={}'.format(i+1, clock.tick(fps), clock.get_fps())
             clock.tick(64)
-            textsurface = myfont.render('Etage : %i'%self.actuel, False, (255, 255, 255))
-            self.screen.blit(textsurface,(15,15))
-            pygame.display.update()
+
 
     #permet de changer de salle
     def monter_etage(self):
