@@ -1,5 +1,5 @@
 import pygame
-from settings.load_img import pixel_red
+from settings.load_img import pixel_red, light_mask
 from settings.screen import *
 from settings.color import *
 from settings.load_img import ava_perso
@@ -25,6 +25,8 @@ class Entity():
         self.interaction = [[self.pos_x,self.pos_y],[self.pos_x,self.pos_y],[self.pos_x,self.pos_y]]
         self.type_animation = "idle"
         self.decalage_display = decalage
+        self.avata = pygame.transform.scale(img, (30, 30))
+        
     def update_center(self):
         self.center = [self.pos_x + self.img.get_width()//2,self.pos_y + self.img.get_height()//2]
     def animate(self):
@@ -215,14 +217,15 @@ class Minimap:
             if self.rect.left < entity.pos_x < self.rect.right and self.rect.top < entity.pos_y < self.rect.bottom:
                 self.draw_entity(entity)
 
+    # Not nessary for this moment
     def screen_square(self):
         # print(self.game.center_x, self.game.center_y)
         # print(self.player.pos_x, self.player.pos_y)
-        x_real = self.game.center_x - self.rect.left
-        y_real = self.game.center_y - self.rect.top
+        x_real = self.player.pos_x - self.rect.left
+        y_real = self.player.pos_y - self.rect.top
         x_mini = x_real / self.rect.width * MINIMAP_SCALE
         y_mini = y_real / self.rect.height * MINIMAP_SCALE
-        self.mini_screen_rect.center = (x_mini, y_mini)
+        self.mini_screen_rect.center = (x_mini + self.TOP_LEFT_X, y_mini + self.TOP_LEFT_Y)
         # print(self.mini_screen_rect)
         pygame.draw.rect(self.screen, WHITE, self.mini_screen_rect, width=1)
 
@@ -237,17 +240,20 @@ class Minimap:
             ava_perso, (MINIMAP_SCALE + x_mini, MINIMAP_SCALE + y_mini))
 
 
+
 class Fog:
     def __init__(self, game):
         self.game = game
         self.player = self.game.player
         self.screen = screen
-        self.fog = pygame.Surface((18000, 10000))
-        self.fog.set_alpha(100)
-        self.fog.fill(BLACK)
-
-    def update(self):
-        pass
+        self.surface = pygame.Surface((18000, 10000))
+        self.surface.fill(NIGHT_COLOR)
+        # self.surface.set_colorkey(BLACK)
+        self.light_image = light_mask
+        self.light_image = pygame.transform.scale(
+            self.light_image, LIGHT_RADIUS)
+        self.light_rect = self.light_image.get_rect()
 
     def draw_fog(self):
-        self.screen.blit(self.fog, (self.game.center_x, self.game.center_y))
+        self.light_rect.center = (self.player.pos_x, self.player.pos_y)
+        self.surface.blit(self.light_image, self.light_rect)

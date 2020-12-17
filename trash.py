@@ -200,37 +200,46 @@ class Game():
                 self.print_pause_menu()
                 pause_menu = False
             if self.player.swap:
+                 # Print nature, map, tree ...
                 screen.blit(self.map.display,(center_x,center_y))
                 screen.blit(rune_1,(11000+center_x,3000+center_y))
-                screen.blit(self.player.display,(center_x+self.player.pos_x,center_y+self.player.pos_y))
+                # Print FOG
                 screen.blit(self.map.display_tree,(center_x,center_y))
+                screen.blit(self.fog.surface, (center_x, center_y),
+                            special_flags=pygame.BLEND_MULT)
+                # Print animation player
+                screen.blit(self.player.display,(center_x+self.player.pos_x,center_y+self.player.pos_y))
             else:
+                # Print nature, map, tree ...
                 screen.blit(self.map.display,(center_x,center_y))
                 screen.blit(rune_1,(11000+center_x,3000+center_y))
+                # Print FOG
+                screen.blit(self.fog.surface, (center_x, center_y),
+                            special_flags=pygame.BLEND_MULT)
+                # Print animation player
                 screen.blit(self.player.display,(center_x+self.player.pos_x,center_y+self.player.pos_y))
             if self.player.swap_entity:
-                print(1)
                 entity_re_print = self.player.find_nearest_entity(list_static_entity)
                 screen.blit(entity_re_print.display,(entity_re_print.pos_x+center_x,entity_re_print.pos_y+center_y))
             '''Actualiser case interaction + animations'''
-            self.player.animate_map()
-            for x in list_mooving_entity:
-                x.animate_map()
-                x.update_interact()
-            draw_text("FPS: %i, x : %i , y : %i" % (clock.get_fps(), self.player.pos_x,
-                                           self.player.pos_y), ColderWeather, WHITE, screen, 100, 100)
-            '''
-            f += 1
-            if f < 150:
-                list_mooving_entity[0].move_entity([2,-1],self.map,self.player)
-                list_mooving_entity[2].move_entity([2,-1],self.map,self.player)
-            elif f > 150:
-                list_mooving_entity[0].move_entity([-2,1],self.map,self.player)
-                list_mooving_entity[2].move_entity([-2,1],self.map,self.player)
-            if f == 300:
-                f=0
+            # self.player.animate_map()
+            # for x in list_mooving_entity:
+            #     x.animate_map()
+            #     x.update_interact()
+
+            
+            # f += 1
+            # if f < 150:
+            #     list_mooving_entity[0].move_entity([2,-1],self.map,self.player)
+            #     list_mooving_entity[2].move_entity([2,-1],self.map,self.player)
+            # elif f > 150:
+            #     list_mooving_entity[0].move_entity([-2,1],self.map,self.player)
+            #     list_mooving_entity[2].move_entity([-2,1],self.map,self.player)
+            # if f == 300:
+            #     f=0
+            
             print_mooving_entity(screen,list_mooving_entity,center_x,center_y)
-            '''
+            
 
             #self.print_frog(player_rect,screen,case_connue,center_x,center_y)
 
@@ -256,6 +265,8 @@ class Game():
             self.center_x = center_x 
             self.center_y = center_y
             
+            """ Draw Fog """
+            self.fog.draw_fog()
             """ Draw minimap + Fog"""
             self.minimap.draw_minimap()
             # self.fog.draw_fog()
@@ -293,7 +304,9 @@ class Game():
             if show_inventory:
                 self.player.inventaire.print_inventory_bis()
 
-
+            draw_text("FPS: %i, x : %i , y : %i" % (clock.get_fps(), self.player.pos_x,
+                                                    self.player.pos_y), ColderWeather, WHITE, screen, 100, 100)
+            
             pygame.display.update()
             clock.tick(64)
 
@@ -331,11 +344,11 @@ class Game():
         list_case[59].in_case = self.player
 
         #VOIR TOUT LES MONSTRES
-        """list_case[0].in_case = list_mooving_entity[0]
+        list_case[0].in_case = list_mooving_entity[0]
         list_case[1].in_case = list_mooving_entity[1]
         list_case[2].in_case = list_mooving_entity[2]
         list_case[3].in_case = list_mooving_entity[3]
-        list_case[4].in_case = list_mooving_entity[4]"""
+        list_case[4].in_case = list_mooving_entity[4]
         while running:
             mx, my = pygame.mouse.get_pos()
             screen.fill(LIGHT_GREY)
@@ -372,7 +385,7 @@ class Game():
 
                                         # x.select(True)
                                         # x.select_neighbour(list_case)
-                                print(i, j)
+                                # print(i, j)
                     j += 1
                 i += 1
             draw_text("i =%i j=%i %i" % (i, j, len(list_case)),
