@@ -258,7 +258,7 @@ class Game():
             # if f == 300:
             #     f=0
             
-            #print_mooving_entity(screen,list_mooving_entity,center_x,center_y)
+            print_mooving_entity(self, screen,list_mooving_entity,center_x,center_y)
             
 
             #self.print_frog(player_rect,screen,case_connue,center_x,center_y)

@@ -272,6 +272,11 @@ def print_static_entity(display,list_entity):
         display.blit(list_entity[i].display,(list_entity[i].pos_x,list_entity[i].pos_y))
 """def print_mooving_entity
     Affiche les entités non static sur le display"""
-def print_mooving_entity(display,list_entity,center_x,center_y):
-    for i in range(len(list_entity)):
-        display.blit(list_entity[i].display,(list_entity[i].pos_x+center_x,list_entity[i].pos_y+center_y))
+def print_mooving_entity(game, display,list_entity,center_x,center_y):
+    for entity in list_entity:
+        # Dat's note : 
+        # Check if the monster in the fog => he is hidden !
+        if not entity.is_hidden :
+            display.blit(entity.display,(entity.pos_x+center_x,entity.pos_y+center_y))
+        elif game.fog.surface.get_at((entity.pos_x, entity.pos_y)) != NIGHT_COLOR:
+            entity.is_hidden = False

@@ -26,6 +26,7 @@ class Entity():
         self.type_animation = "idle"
         self.decalage_display = decalage
         self.avata = pygame.transform.scale(img, (30, 30))
+        self.is_hidden = True
         
     def update_center(self):
         self.center = [self.pos_x + self.img.get_width()//2,self.pos_y + self.img.get_height()//2]
@@ -206,6 +207,8 @@ class Minimap:
         minimap_fog = pygame.transform.scale(self.zoom_map_fog, (self.zoom_x - MINIMAP_SCALE, self.zoom_y - MINIMAP_SCALE))
         self.screen.blit(minimap_fog, (MINIMAP_SCALE/2, MINIMAP_SCALE * 3/4), special_flags=pygame.BLEND_MULT)
         self.draw_white_square_zoom()
+        # Not work proprely now
+        # self.check_entity_zoom()
        # self.zoom_draw_perso()
 
     # draw position of player or show monsters, NPCs in minimaps
@@ -217,11 +220,31 @@ class Minimap:
         self.screen.blit(entity.avata, (self.TOP_LEFT_X +
                                         x_mini, self.TOP_LEFT_Y + y_mini))
 
+    def draw_entity_zoom(self, entity):
+        x_real = entity.pos_x - self.rect.left
+        y_real = entity.pos_y - self.rect.top
+        x_mini = x_real / self.rect.width * (self.zoom_x - MINIMAP_SCALE)
+        y_mini = y_real / self.rect.height * (self.zoom_y - MINIMAP_SCALE)
+        bigger_ava = pygame.transform.scale(entity.avata, (50, 50))
+        self.screen.blit(bigger_ava, (MINIMAP_SCALE/2 +
+                                      x_mini, MINIMAP_SCALE * 3/4 + y_mini))
+        
     # Verify if a monster in the view of the player => draw it on minimap
     def check_entity(self):
         for entity in self.game.list_mooving_entity:
+            # Check color , it's mean, if the monster is in the fog, he is hidden
+            if not entity.is_hidden:            
+                # Check position
+                if self.rect.left < entity.pos_x < self.rect.right and self.rect.top < entity.pos_y < self.rect.bottom:
+                    self.draw_entity(entity)
+            elif self.game.fog.surface.get_at((entity.pos_x, entity.pos_y)) != NIGHT_COLOR:
+                entity.is_hidden = False
+            
+
+    def check_entity_zoom(self):
+        for entity in self.game.list_mooving_entity:
             if self.rect.left < entity.pos_x < self.rect.right and self.rect.top < entity.pos_y < self.rect.bottom:
-                self.draw_entity(entity)
+                self.draw_entity_zoom(entity)
 
     # Not nessary for this moment
     def screen_square(self):
@@ -245,14 +268,14 @@ class Minimap:
         self.screen.blit(
             ava_perso, (MINIMAP_SCALE + x_mini, MINIMAP_SCALE + y_mini))
 
-
+    # 
 
 class Fog:
     def __init__(self, game):
         self.game = game
         self.player = self.game.player
         self.screen = screen
-        self.surface = pygame.Surface((18000, 10000)).convert()
+        self.surface = pygame.Surface(self.game.map.display.get_size()).convert()
         self.surface.fill(NIGHT_COLOR)
         # self.surface.set_colorkey(BLACK)
         self.light_image = light_mask
