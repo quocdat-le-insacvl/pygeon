@@ -15,7 +15,7 @@ class Interface():
         self.case=0
         self.listCase=[]
         self.ini_state=0
-        self.perso=Sorcerer()
+        self.perso=Sorcerer(STR=10)
         # self.background = pygame.image.load('assets/grass.jpg')
 
 

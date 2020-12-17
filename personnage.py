@@ -1,10 +1,15 @@
 from competences import Competence
 from basic_actions import Actions
-from feats import Feat
 from settings.screen import screen,WINDOWS_SIZE
-from settings import police,color
+from fonctions import subtitle,subtitle,text
+from settings import color
 from entity import Entity
+from fonctions import *
 import pygame
+
+button_ini1=pygame.image.load(r"Addon\Menu\TextBTN_Medium.png")
+buttonp_ini=pygame.image.load(r"Addon\Menu\TextBTN_Medium_Pressed.png")
+
 class Object():
     def __init__(self,name,value=None):
         self.name = name
@@ -13,7 +18,7 @@ class Object():
 
 class Perso(Entity):
     def __init__(self,STR=8,DEX=8,CON=8,INT=8,WIS=8,CHA=8,hp=10,hp_max=10,inventaire=10,name=None,classe=None,level=0,xp=0,hit_dice=0):
-        super().__init__(100,400,pygame.transform.scale(pygame.image.load(r"Image\perso.png"),(96,147)),"perso","perso")
+        super().__init__(100,100,pygame.transform.scale(pygame.image.load(r"Image\perso.png"),(96,147)),name,"perso")
         ### Stats ###
         self.classe = classe
         self.level = level
@@ -22,12 +27,14 @@ class Perso(Entity):
         self.hp_max = hp_max
         self.proficiency=2
         self.attack=0
+        self.feet=30
         self.STR = STR
         self.DEX = DEX
         self.CON = CON
         self.INT = INT
         self.WIS = WIS
         self.CHA = CHA
+        self.armor_class=self.calcul_armor()
         self.stats=[self.STR,self.DEX,self.CON,self.INT,self.WIS,self.CHA]
         self.av_points=27
         self.pos_xp = xp
@@ -54,7 +61,7 @@ class Perso(Entity):
         #manage the level up of the caracter
         #lvl max=5, change position of float("inf") to change the max lvl
 
-        lvl_XP = (400,600,800,1200,1600,float("inf"),2400,3200,4800,6400,9600,12800,19200,25600,38400,51200,76800,102400,153600,204800)
+        lvl_XP = (400,600,800,1200,float("inf"),1600,2400,3200,4800,6400,9600,12800,19200,25600,38400,51200,76800,102400,153600,204800)
         if self.level==0:
             print("selectionner vos premiers attributs")
             self.level=1
@@ -64,17 +71,15 @@ class Perso(Entity):
             self.hp=self.hp_max
         elif self.xp>=lvl_XP[self.level-1]:
             self.level+=1
-            self.__affichage_lvlup()
+            self.affichage_lvlup()
             self.av_points+=2+self.ability_score(4)
             ######Global bonus for the level 2######
-            if self.level==2:
-                self.attack+=1
+            if self.level==2: self.competence.competence3()
             elif self.level==3: self.competence.competence3()
             ######Global bonus for the level 4######
             elif self.level==4: 
                 self.competence.competence4()
                 #choice
-                self.__choice()
             elif self.level==5: self.competence.competence5()
             #fin des competence initialisation des statistiques de base
             self.nb_hit_dice=self.level
@@ -82,7 +87,7 @@ class Perso(Entity):
             self.hp_max+=(self.level-1)*(self.hit_dice/2+self.ability_score(3))
             self.hp=self.hp_max
 
-    def __affichage_lvlup(self):
+    def affichage_lvlup(self):
         #manage the display of the lvl up (private)
         temp=pygame.Surface(WINDOWS_SIZE)
         temp.blit(screen,(0,0))
@@ -141,31 +146,188 @@ class Perso(Entity):
         assert(comp in select), "wrong argument for score()" 
         if self.skills[select[comp]]:
             return ability_score(self.skills[select[comp]])+self.proficiency
+
+    def calcul_armor(self, type_of_calcul=0):
+        # refresh the value of the class armor, must add calcul with 
+        assert(type_of_calcul==1 or type_of_calcul==0), "must add a valide type of calcul : 1 without armor"
+        return self.ability_score(2)+10
+        if(type_of_calcul==1):
+            return self.ability_score(2)+10
     
-    def __choice(self):
-        screen_S=self.__screenSave()
-        text=police.Outrun_future.render("Level up !",True,color.RED)
-        text2=police.Outrun_future.render("Choose skill or points",True,color.RED)
-        board=pygame.transform.scale(pygame.image.load(r"Addon\Menu\UI board Small  parchment.png"),(text2.get_width()+50,text.get_height()*4))
-        excl=pygame.transform.scale(pygame.image.load(r"Addon\Menu\Exclamation_Red.png"),(board.get_width()//5,board.get_height()//5))
-        board.blit(text,(board.get_width()//2-text.get_width()//2,10))
-        board.blit(text2,(board.get_width()//2-text2.get_width()//2,text.get_height()+20))
-        excl_rect=board.blit(excl,(board.get_width()//2-excl.get_width()*2,text.get_height()*2+30))
-        screen.blit(board,(WINDOWS_SIZE[0]//2-board.get_width()//2,WINDOWS_SIZE[1]//2-board.get_height()//2))
-        pygame.display.flip()
+    ######## All the following fonctions will be for the caractersheet ############
+
+    def caracter_sheet(self):
+        assert(self.name!=None and self.classe!=None), "perso not initialised"
+        screenS=screenSave()
         running=True
+        board=board_init()
+        perso=pygame.transform.scale(self.img,(board.get_width()//5,board.get_height()//3))
+        # if self.classe=="sorcerer":
+        #     perso.set_colorkey(color.BLACK)
+        board2=pygame.transform.scale(board, (int(board.get_width()//1.25-5),board.get_height()//3))
+        board.blit(perso,(10,10))
+        t=wbrown(title,self.name)
+        board2.blit(t,(board2.get_width()//2-t.get_width()//2,0))
+        s=wbrown(subtitle,"Class : " + self.classe)
+        board2.blit(s,(40,t.get_height()))
+        s=wbrown(subtitle,"HP : ")
+        board2.blit(s,(board2.get_width()//2,t.get_height()))
+        s2=wred(subtitle,str(self.hp) + " / "  + str(self.hp_max))
+        board2.blit(s2,(board2.get_width()//2+s.get_width(),t.get_height()))
+        s=wbrown(subtitle,"Lvl : " + str(self.level))
+        board2.blit(s,(40,t.get_height()*(1.5)-10))
+        s=wbrown(subtitle,"AC : " + str(self.armor_class))
+        board2.blit(s,(board2.get_width()//2,t.get_height()*(1.5)-10))
+        s=wbrown(subtitle,"Atck : " + str(self.attack))
+        board2.blit(s,(40,t.get_height()*(2)-20))
+        s=wbrown(subtitle,"Feet : " + str(self.feet))
+        board2.blit(s,(board2.get_width()//2,t.get_height()*(2)-20))
+        s=wbrown(subtitle,"Hit Dice Type : " + str(self.hit_dice))
+        board2.blit(s,(40,t.get_height()*(2.5)-30))
+        s=wbrown(subtitle,"Number Hit Dice : " + str(self.nb_hit_dice))
+        board2.blit(s,(board2.get_width()//2,t.get_height()*(2.5)-30))
+        board.blit(board2,(perso.get_width(),15))
+        boardn=surfacesave(board)
+        av=self.av_points
+        board=self.boardSkill(board,av)
+        board=pygame.transform.scale(board, (screen.get_height()-40, screen.get_height()-40))
+        screen.blit(board,(screen.get_width()//2-board.get_width()//2,20))
+        buttonList=self.buttons_select(av)
         while running:
-            for events in pygame.event.get():
-                if all([events.type==pygame.MOUSEBUTTONUP,excl_rect.collidepoint((pygame.mouse.get_pos()[0]-WINDOWS_SIZE[0]//2+board.get_width()//2,pygame.mouse.get_pos()[1]-WINDOWS_SIZE[1]//2+board.get_height()//2))]):
-                    screen.blit(screen_S,(0,0))
-                    pygame.display.flip()
-                    running=False
-                elif events.type==pygame.QUIT:
-                    pygame.quit()
-                    running=False
+            indice=-1
+            indice= self.collides(pygame.mouse.get_pos(),buttonList)
+            pygame.display.flip()
+            for event in pygame.event.get():
+                running=exit_checkevent(event)
+                if all([event.type==pygame.MOUSEBUTTONDOWN, indice!=-1, av!=0]) :
+                    self.buttons_select(av,indice)
+                    running1=True
+                    while running1:
+                        pygame.display.flip()
+                        indice= self.collides(pygame.mouse.get_pos(),buttonList)
+                        for event2 in pygame.event.get():
+                            if all([event2.type!=pygame.MOUSEBUTTONUP, indice!=-1, av!=0])!=True:
+                                if all([indice!=-1, av!=0]):
+                                    if indice%2==0:
+                                        self.stats[indice//2]+=1
+                                        av-=1
+                                    elif indice%2==1:
+                                        if self.stats[indice//2]>8:
+                                            self.stats[indice//2]-=1
+                                            av+=1
+                                self.buttons_select(av)
+                                running1=False
+            if running==False:
+                screen.blit(screenS,(0,0))
+                pygame.display.flip()
+    
+
+    def boardSkill(self,board1,av):
+        board=board_init()
+        board.set_colorkey(color.BLACK)
+        t=wbrown(title2,"SKILL POINTS")
+        board.blit(t,(40,40))
+        n=wbrown(title, "AIVABLE")
+        board2=pygame.transform.scale(board_init(), (n.get_width()+20, n.get_height()+100))
+        board.blit(board2,(140+t.get_width(),board.get_height()//2-100))
+        a=wbrown(title,str(av))
+        board.blit(n, (150+t.get_width(),board.get_height()//2-90))
+        board.blit(a, (223+t.get_width(),board.get_height()//2-30))
+        s=wbrown(title, "STR")
+        board.blit(s,(50,s.get_height()+20))
+        s2=wbrown(title, ":        "+str(self.stats[0]))
+        board.blit(s2,(s.get_width()+80,s.get_height()+20))
+        s3=wbrown(title, "DEX")
+        board.blit(s3,(50,s.get_height()*2+20))
+        s2=wbrown(title, ":        "+str(self.stats[1]))
+        board.blit(s2,(s.get_width()+80,s.get_height()*2+20))
+        s3=wbrown(title, "CON")
+        board.blit(s3,(50,s.get_height()*3+20))
+        s2=wbrown(title, ":        "+str(self.stats[2]))
+        board.blit(s2,(s.get_width()+80,s.get_height()*3+20))
+        s3=wbrown(title, "INT")
+        board.blit(s3,(50,s.get_height()*4+20))
+        s2=wbrown(title, ":        "+str(self.stats[3]))
+        board.blit(s2,(s.get_width()+80,s.get_height()*4+20))
+        s3=wbrown(title, "WIS")
+        board.blit(s3,(50,s.get_height()*5+20))
+        s2=wbrown(title, ":        "+str(self.stats[4]))
+        board.blit(s2,(s.get_width()+80,s.get_height()*5+20))
+        s3=wbrown(title, "CHA")
+        board.blit(s3,(50,s.get_height()*6+20))
+        s2=wbrown(title, ":        "+str(self.stats[5]))
+        board.blit(s2,(s.get_width()+80,s.get_height()*6+20))
+        board=pygame.transform.scale(board, (board1.get_width()-10,int(board.get_height()//1.5)))
+        board1.blit(board,(5,10+board1.get_height()//3))
+        return board1
+
+    def buttons_select(self,av,selected=-1):
+        buttonList=[]
+        if av==0:
+            buttonAdd=buttonp_ini.copy()
+            add=wbrown(astxt,"+")
+            buttonAdd=pygame.transform.scale(buttonAdd, (70, add.get_height()))
+            buttonSub=pygame.transform.scale(buttonAdd, (70, add.get_height()))
+            buttonAdd.blit(add,(buttonAdd.get_width()//2-add.get_width()//2,buttonAdd.get_height()//2-add.get_height()/2))
+            sub=wbrown(astxt,"-")
+            buttonSub.blit(sub,(buttonSub.get_width()//2-sub.get_width()//2,buttonSub.get_height()//2-sub.get_height()/2))
+            buttonList=[]
+            for n in range(6):
+                screen.blit(buttonAdd,(WINDOWS_SIZE[0]//2-WINDOWS_SIZE[0]//10,WINDOWS_SIZE[1]//16.5*(n+1)+20+screen.get_height()//2.6))
+                screen.blit(buttonSub,(WINDOWS_SIZE[0]//2-WINDOWS_SIZE[0]//5.5,WINDOWS_SIZE[1]//16.5*(n+1)+20+screen.get_height()//2.6))
+        if av!=0:
+            buttonpa=buttonp_ini.copy()
+            add=wbrown(astxt,"+")
+            buttonpa=pygame.transform.scale(buttonpa, (70, add.get_height()))
+            buttonps=pygame.transform.scale(buttonpa, (70, add.get_height()))
+            buttonpa.blit(add,(buttonpa.get_width()//2-add.get_width()//2,buttonpa.get_height()//2-add.get_height()/2))
+            sub=wbrown(astxt,"-")
+            buttonps.blit(sub,(buttonps.get_width()//2-sub.get_width()//2,buttonps.get_height()//2-sub.get_height()/2))
+            buttonAdd=button_ini1.copy()
+            buttonAdd=pygame.transform.scale(buttonAdd, (70, add.get_height()))
+            buttonSub=pygame.transform.scale(buttonAdd, (70, add.get_height()))
+            buttonAdd.blit(add,(buttonAdd.get_width()//2-add.get_width()//2,buttonAdd.get_height()//2-add.get_height()/2))
+            buttonSub.blit(sub,(buttonSub.get_width()//2-sub.get_width()//2,buttonSub.get_height()//2-sub.get_height()/2))
+            for n in range(6):
+                if n*2==selected:
+                    buttonList.append(screen.blit(buttonpa,(WINDOWS_SIZE[0]//2-WINDOWS_SIZE[0]//10,WINDOWS_SIZE[1]//16.5*(n+1)+20+screen.get_height()//2.6)))
+                else:
+                    buttonList.append(screen.blit(buttonAdd,(WINDOWS_SIZE[0]//2-WINDOWS_SIZE[0]//10,WINDOWS_SIZE[1]//16.5*(n+1)+20+screen.get_height()//2.6)))
+                if ((n+1)*2-1)==selected:
+                    buttonList.append(screen.blit(buttonps,(WINDOWS_SIZE[0]//2-WINDOWS_SIZE[0]//5.5,WINDOWS_SIZE[1]//16.5*(n+1)+20+screen.get_height()//2.6)))
+                elif self.stats[n]>8:
+                    buttonList.append(screen.blit(buttonSub,(WINDOWS_SIZE[0]//2-WINDOWS_SIZE[0]//5.5,WINDOWS_SIZE[1]//16.5*(n+1)+20+screen.get_height()//2.6)))
+                elif self.stats[n]<=8:
+                    buttonList.append(screen.blit(buttonps,(WINDOWS_SIZE[0]//2-WINDOWS_SIZE[0]//5.5,WINDOWS_SIZE[1]//16.5*(n+1)+20+screen.get_height()//2.6)))
+        return buttonList
+    
+    def confirm(self,board, const_att, chang, change=False):
+        #permet de creer un bouton de confirmation pour un attribut de classe, puis peut changer cette attribut
+        button=button_ini1.copy()
+        buttonp=buttonp_ini.copy()
+        t=wbrown(title,"CONFIRM")
+        button=pygame.transform.scale(button, (t.get_width()+20, t.get_height()))
+        buttonp=pygame.transform.scale(buttonp, (t.get_width()+20, t.get_height()))
+        button.blit
+        if chang!=const_att:
+            rect=board.blit()
+            if change:
+                const_att=chang
 
 
-    def __screenSave(self):
-        screensave=pygame.Surface(WINDOWS_SIZE)
-        screensave.blit(screen,(0,0))
-        return screensave
+    def repair_coord(self,pos,rect):
+        x,y=pos
+        x=x-rect.x
+        y=y-rect.y      
+        return x,y
+    
+    def coord(self,pos,surface):
+        x=pos[0]*surface.get_width()/screen.get_width()
+        y=pos[1]*surface.get_height()/screen.get_height()  
+        return x,y
+
+    def collides(self,pos,listrect):
+        for n in range(len(listrect)):
+            if listrect[n].collidepoint(pos):
+                return n
+        return -1

@@ -7,13 +7,17 @@ running=True
 interface.generer()
 interface.basic_affichage()
 while running:
-    interface.perso.xp+=10
+    interface.perso.xp+=1
     interface.perso.levelupchange()
     n=pygame.time.get_ticks()
     pygame.display.flip()
     for event in pygame.event.get():
         if event.type==pygame.MOUSEBUTTONUP:
-            interface.affichage()
+            interface.perso.caracter_sheet()
+        if event.type == pygame.KEYDOWN:
+            if event.key==pygame.K_ESCAPE:
+                running=False
+                pygame.quit()
         if event.type==pygame.QUIT:
             running=False
             pygame.quit()
