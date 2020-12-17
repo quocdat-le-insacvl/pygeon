@@ -134,7 +134,7 @@ class Minimap:
         self.draw_surface()
         self.draw_white_square()
         self.check_entity()
-        self.draw_entity(self.player)
+        self.draw_entity(self.player, True)
         self.screen_square()
 
     def draw_white_square(self):
@@ -215,13 +215,22 @@ class Minimap:
        # self.zoom_draw_perso()
 
     # draw position of player or show monsters, NPCs in minimaps
-    def draw_entity(self, entity):
-        x_real = entity.pos_x - self.rect.left
-        y_real = entity.pos_y - self.rect.top
-        x_mini = x_real / self.rect.width * MINIMAP_SCALE
-        y_mini = y_real / self.rect.height * MINIMAP_SCALE
-        self.screen.blit(entity.avata, (self.TOP_LEFT_X +
-                                        x_mini, self.TOP_LEFT_Y + y_mini))
+    def draw_entity(self, entity, real):
+        if real : 
+            x_real = entity.pos_x - self.rect.left
+            y_real = entity.pos_y - self.rect.top
+            x_mini = x_real / self.rect.width * MINIMAP_SCALE
+            y_mini = y_real / self.rect.height * MINIMAP_SCALE
+            self.screen.blit(entity.avata, (self.TOP_LEFT_X +
+                                            x_mini, self.TOP_LEFT_Y + y_mini))
+        else:
+            x_real = entity.last_know_pos[0] - self.rect.left
+            y_real = entity.last_know_pos[1] - self.rect.top
+            x_mini = x_real / self.rect.width * MINIMAP_SCALE
+            y_mini = y_real / self.rect.height * MINIMAP_SCALE
+            mini_shadow = pygame.transform.scale(entity.shadow, (30, 30))
+            self.screen.blit(mini_shadow, (self.TOP_LEFT_X +
+                                            x_mini, self.TOP_LEFT_Y + y_mini))
 
     def draw_entity_zoom(self, entity):
         x_real = entity.pos_x - self.rect.left
@@ -239,15 +248,18 @@ class Minimap:
             if not entity.is_hidden:            
                 # Check position
                 if self.rect.left < entity.pos_x < self.rect.right and self.rect.top < entity.pos_y < self.rect.bottom:
-                    self.draw_entity(entity)
-            elif self.game.fog.surface.get_at((entity.pos_x, entity.pos_y)) != NIGHT_COLOR:
-                entity.is_hidden = False
-            
+                    self.draw_entity(entity, True)
+                                    
+            elif entity.seen:
+                self.draw_entity(entity, False)
+
 
     def check_entity_zoom(self):
         for entity in self.game.list_mooving_entity:
             if self.rect.left < entity.pos_x < self.rect.right and self.rect.top < entity.pos_y < self.rect.bottom:
                 self.draw_entity_zoom(entity)
+            
+
 
     # Not nessary for this moment
     def screen_square(self):
