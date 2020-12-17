@@ -23,6 +23,7 @@ class Piece():
         self.startX, self.startY = self.start
         self.donotBlit=[]
         #ecran a afficher
+        self.piece =[]
         self.screen = display
 
         #nom des grapiques a afficher
@@ -253,7 +254,7 @@ class Piece():
                             image=self.__imageAngle(self.graphique[self.piece[y][x]], gauche=True)
                             #self.display.blit(self.__imageAngle(self.graphique[self.piece[y][x]], gauche=True),(currentX,currentY))
                         if(self.piece[y][x] == 15):
-                            self.spawn=(currentX+20,currentY)
+                            self.spawn=(currentX+20,currentY+5)
                         #self.display.blit(image,(currentX,currentY+self.tailleMax[1]-image.get_height()))
                         self.display.blit(image,(currentX,currentY))
                         if(self.piece[y][x] != 15):
@@ -344,12 +345,15 @@ class Piece():
             return liste_etats[1]
         return liste_etats[3]
 
+
+    #gere les collisions entre le joueurs et les elements du decor (meubles/murs)
     def check_collision(self,perso):
         
         for x in self.liste_collision:
             if self.collide_mask.overlap(perso.pieds_mask,((round(perso.X))-x[0]+10,(perso.perso.get_height()+round(perso.Y)-x[1])-15)):
                 return True
         
+    #gere les interactions entre le perso et les graphs importants (escalier, coffre...)
     def check_interact(self,perso):
         i=0
         interact=0
@@ -361,6 +365,8 @@ class Piece():
         return interact
 
 
+    #permet de donner un effet de profondeur sur la map:
+    #affiche le personnage derriere des meubles si il est effectivement derriere des meubles
     def update_graph(self,perso,screen):
         kdebut=1
         udpate_index=[]
@@ -371,25 +377,76 @@ class Piece():
                 if perso.rect_perso.y-10 < i.y:
                     self.__checkVoisin(y,self.donotBlit,first=True)
             y+=1
+
+    #methode privee, ne pas utiliser
+    #utilisee par update_graph(), elle permet de ne blit que le nombre minimum de meubles
     def __checkVoisin(self,index,donotBlit,first=False):
         if index not in self.donotBlit:
             self.donotBlit.append(index)
             image = self.image_collision_graphique[index][0]
-            #image.set_alpha(15)
             if first : image.set_alpha(200)
             self.screen.blit(image,self.image_collision_graphique[index][1])
         if self.voisin_collision[index] != []:
             for i in self.voisin_collision[index]:
                 self.__checkVoisin(i,self.donotBlit)
 
+
+    #methode permettant de savoir si une piece est jouable ou non
+    #une piece est consideree jouable si le joueur peut acceder a tous les elements du parquet, les escaliers et les coffres
+    def check_jouabilite(self):
+        importantPiece = [[1 if self.piece[y][x] in self.important_graph else 0 if self.piece[y][x] == 0 else 100 for x in range(len(self.piece[y]))] for y in range(len(self.piece))]
+        if (self.__checkPath(importantPiece,0,0) == None):
+            return False
+        return True
+
+    #methode privee utilisee par check_jouabilite()
+    def __checkPath(self,importantPiece,x,y):
+        nbrePossibilite = 0
+        Haut,Bas,Droite,Gauche = False,False,False,False
+        print("Coord: ",(y,x))
+        if importantPiece[y][x] > 0:
+            importantPiece[y][x] = -1
+
+            if (x!=0 and importantPiece[y][x-1] != -1):
+                if (self.piece[y][x-1] == 1) and self.piece[y][x-1] != 0 :
+                    nbrePossibilite+=1
+                    Gauche = self.__checkPath(importantPiece,x-1,y)
+                if(importantPiece[y][x-1] in self.important_graph):
+                    importantPiece[y][x-1] =-1
+            if(x!=len(self.piece[y])-1 and importantPiece[y][x+1] != -1):
+                if (self.piece[y][x+1] == 1) and self.piece[y][x+1] != 0:
+                    nbrePossibilite+=1
+                    Droite = self.__checkPath(importantPiece,x+1,y)
+                if(importantPiece[y][x+1] in self.important_graph):
+                    importantPiece[y][x+1] =-1
+            if(y!=0 and importantPiece[y-1][x]!=-1):
+                if (self.piece[y-1][x] ==1)and self.piece[y-1][x] != 0:
+                    nbrePossibilite +=1
+                    Haut =self.__checkPath(importantPiece,x,y-1)
+                if(importantPiece[y-1][x] in self.important_graph):
+                    importantPiece[y-1][x] =-1
+            if(y!=len(self.piece)-1 and importantPiece[y+1][x]!=-1):
+                if (self.piece[y+1][x] ==1) and self.piece[y+1][x] != 0:
+                    nbrePossibilite +=1
+                    Bas =self.__checkPath(importantPiece,x,y+1)
+                if(importantPiece[y+1][x] in self.important_graph):
+                    importantPiece[y+1][x] =-1
+        if nbrePossibilite == 0:
+            if 1 not in [importantPiece[y][x] for y in range(len(self.piece)) for x in range(len(self.piece[0]))]:
+                return True
+        if Bas or Haut or Gauche or Droite: 
+            return True
+
+
     #methode sauvegardant une piece dans un fichier
     #la sauvegarde se situe obligatoirement dans le fichier saves
     #arguement nom_fichier : nom_du fichier avec l'extension .txt obligatoire
-    def save(self,nom_fichier):
+    def save(self,nom_fichier,ecrireFin=False):
         relative_path = os.path.join(os.path.dirname(os.path.abspath(__file__)),"saves/")
         print(relative_path)
         ecrase = True
-        if nom_fichier in os.listdir(relative_path):
+        mode = "w"
+        if nom_fichier in os.listdir(relative_path) and not ecrireFin:
             print("Fichier %s existe deja, voulez-vous l'ecrase ? : (O/N)" % nom_fichier)
             rep = input("\n")
             while(rep not in ["O","N"]):
@@ -398,11 +455,13 @@ class Piece():
         if nom_fichier[-4:] != ".txt":
             print("Le fichier n'est pas un .txt")
         elif ecrase:
-            fichier = open(os.path.join(relative_path,nom_fichier),"w")
+            if ecrireFin:mode="a"
+            fichier = open(os.path.join(relative_path,nom_fichier),mode)
             for y in range(len(self.piece)):
                 for x in range(len(self.piece[0])):
                     fichier.write("%i "%(self.piece[y][x]))
                 fichier.write("\n")
+            fichier.write("end\n")
             fichier.close()
             
     #methode permettant de creer une piece a partir d'un fichier
@@ -416,24 +475,28 @@ class Piece():
         max=0
         chaine =""
         for things in fichier:
-            for i in range(len(things)):
-                if things[i] == " ":
-                    x+=1
-                    ligne.append(int(chaine))
-                    chaine =""
-                elif things[i] == "\n":
-                    y+=1
-                    if chaine != "":
+            if things == "end":
+                break
+            else:
+                for i in range(len(things)):
+                    if things[i] == " ":
                         x+=1
                         ligne.append(int(chaine))
-                    self.piece.append(ligne)
-                    if(x>max):
-                        max=x
-                    x=0
-                    ligne = []
-                    chaine =""
-                else:
-                    chaine +=things[i]
+                        chaine =""
+                    elif things[i] == "\n":
+                        y+=1
+                        if chaine != "":
+                            x+=1
+                            ligne.append(int(chaine))
+                        self.piece.append(ligne)
+                        if(x>max):
+                            max=x
+                        x=0
+                        ligne = []
+                        chaine =""
+                    else:
+                        chaine +=things[i]
+            
         for y in range(len(self.piece)):
             for x in range(len(self.piece[y]),max):
                 self.piece[y].append(0)

@@ -1,5 +1,4 @@
 import pygame
-from map import Map
 from perso import Personnage
 from donjon import Donjon
 #<------Creation du donjon------>
@@ -15,11 +14,14 @@ pygame.init()
 
 pygame.display.set_caption("Test")
 
-screen = pygame.display.set_mode((0,0), pygame.FULLSCREEN)
+#screen = pygame.display.set_mode((0,0), pygame.FULLSCREEN)
+screen = pygame.display.set_mode((1800,1080))
+camera = pygame.Surface((1000,1000))
 screen.fill((255,255,255))
 pygame.display.flip()
 perso = Personnage(screen)
 donjon = Donjon(2,screen,perso)
+#donjon.load("test1.txt")
 donjon.creationDonjon()
 donjon.affichageDonjon()
 donjon.runningDonjon()

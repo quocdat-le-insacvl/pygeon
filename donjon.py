@@ -2,10 +2,13 @@ from piece import Piece
 import pygame
 from perso import Personnage
 from pygame.time import Clock
+import os
 clock = pygame.time.Clock()
 #classe permettant de créer un donjon
 #un donjon contient un ensemble de piece ainsi que des monstres, des loots, etc...
-
+pygame.font.init() # you have to call this at the start, 
+                   # if you want to use this module.
+myfont = pygame.font.SysFont('Comic Sans MS', 30)
 class Donjon():
 
     #difficulte pas encore implementee, soon
@@ -13,8 +16,7 @@ class Donjon():
     #peros : self.personnage que l'on doit déplacer -> sert pour les collisions
     #nbreEtage : De base on est a 3, mais on peut faire +
     def __init__(self,difficulte,screen,perso,nbreEtage=3):
-        
-        
+
         self.difficulty = difficulte
         self.nbEtage = nbreEtage
         self.pieces = []
@@ -36,7 +38,9 @@ class Donjon():
     def creationDonjon(self):
         for salle in self.pieces:
             salle.createRoom()
-        for salle in self.pieces:
+            while salle.check_jouabilite() != True:
+                salle.createRoom()
+                print("Probleme generation piece")
             salle.afficherPiece()
     
 
@@ -51,6 +55,7 @@ class Donjon():
         
         self.pieces[self.actuel].afficher()
         self.perso.X,self.perso.Y = (self.pieces[self.actuel].spawn)
+        self.perso.afficher()
         pygame.display.flip()
 
     #fonction de deplacement, très nulle mais ce ne sera pas la version finale
@@ -66,7 +71,7 @@ class Donjon():
                 self.pieces[self.actuel].afficher()
                 self.perso.afficher()
                 self.pieces[self.actuel].update_graph(self.perso,self.screen)
-
+                
                 pygame.display.update()
         if self.listekey.get(pygame.K_DOWN):
            
@@ -78,7 +83,7 @@ class Donjon():
                 self.pieces[self.actuel].afficher()
                 self.perso.afficher()
                 self.pieces[self.actuel].update_graph(self.perso,self.screen)
-
+                
                 pygame.display.update()
         if self.listekey.get(pygame.K_RIGHT):
             
@@ -93,7 +98,6 @@ class Donjon():
                 
                 pygame.display.update()
         if self.listekey.get(pygame.K_LEFT):
-            self.pieces[self.actuel].afficher()
             self.perso.deplacerGauche()
             self.interaction = self.pieces[self.actuel].check_interact(self.perso)
             if self.pieces[self.actuel].check_collision(self.perso):
@@ -126,6 +130,9 @@ class Donjon():
             self.deplacement()
             #print '{}: tick={}, fps={}'.format(i+1, clock.tick(fps), clock.get_fps())
             clock.tick(64)
+            textsurface = myfont.render('Etage : %i'%self.actuel, False, (255, 255, 255))
+            self.screen.blit(textsurface,(15,15))
+            pygame.display.update()
 
     #permet de changer de salle
     def monter_etage(self):
@@ -164,3 +171,46 @@ class Donjon():
             if event.type == pygame.KEYUP:
                 self.listekey[event.key] = False
                 return True
+
+    def save(self,nom_fichier):
+        for salle in self.pieces:
+            salle.save(nom_fichier,ecrireFin=(salle!=self.pieces[0]))
+
+    def load(self,nom_fichier):
+        relative_path = os.path.join(os.path.dirname(os.path.abspath(__file__)),"saves/")
+        fichier = open(os.path.join(relative_path,nom_fichier),"r")
+        ligne = []
+        x=0
+        y=0
+        max=0
+        chaine =""
+        index=0
+        for things in fichier:
+            print(things)
+            if things[0]=='e':
+                for y in range(len(self.pieces[index].piece)):
+                    for x in range(len(self.pieces[index].piece[y]),max):
+                        self.pieces[index].piece[y].append(0)
+                index+=1
+            else:
+                for i in range(len(things)):
+                    if things[i] == " ":
+                        x+=1
+                        ligne.append(int(chaine))
+                        chaine =""
+                    elif things[i] == "\n":
+                        y+=1
+                        if chaine != "":
+                            x+=1
+                            ligne.append(int(chaine))
+                        self.pieces[index].piece.append(ligne)
+                        if(x>max):
+                            max=x
+                        x=0
+                        ligne = []
+                        chaine =""
+                    else:
+                        chaine +=things[i]
+        fichier.close()
+        for salle in self.pieces:
+            salle.afficherPiece()

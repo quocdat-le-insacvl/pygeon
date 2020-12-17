@@ -11,7 +11,7 @@ class Personnage():
         self.perso_screen = screen
         self.persos =  pygame.mask.from_surface(self.perso)
         self.rect_perso = pygame.Surface.get_bounding_rect(self.perso)
-        self.velocity = 5
+        self.velocity = 2
     
     def deplacerDroite(self):
         self.X+=self.velocity
