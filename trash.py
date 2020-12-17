@@ -279,8 +279,8 @@ class Game():
                     interact = False
 
             '''Set caméra / player pos pour sauvegarde'''
-            center_x -= (self.player.pos_x + center_x - 900+self.player.img.get_width()//2)//20
-            center_y -= (self.player.pos_y + center_y - 540+self.player.img.get_height()//2) //20
+            center_x -= (self.player.pos_x + center_x - 900)//20
+            center_y -= (self.player.pos_y + center_y - 540) //20
             
             self.center_x = center_x 
             self.center_y = center_y

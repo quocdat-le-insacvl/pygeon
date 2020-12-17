@@ -83,41 +83,38 @@ seller_1_animation["idle"] = seller_1_hide
 
 
 
-wizard_hide = dict(image_loader('Addon/Wizard Pack/idle/'))
+wizard_hide = dict(image_loader(path.join(path_addon,'Wizard Pack/idle/')))
 transform_image(wizard_hide,2)
-wizard_attack = dict(image_loader('Addon/Wizard Pack/attack/'))
+wizard_attack = dict(image_loader(path.join(path_addon,'Wizard Pack/attack/')))
 transform_image(wizard_attack,2)
-wizard_walk = dict(image_loader('Addon/Wizard Pack/walk/'))
+wizard_walk = dict(image_loader(path.join(path_addon,'Wizard Pack/walk/')))
 transform_image(wizard_walk,2.3)
 wizard_animation = dict()
 wizard_animation["idle"] = wizard_hide
 wizard_animation["attack"] = wizard_attack
 wizard_animation["walk"] = wizard_walk
 
-
-
-squelton_idle = dict(image_loader('Addon/squeleton_idle/'))
+squelton_idle = dict(image_loader(path.join(path_addon,'squeleton_idle/')))
 transform_image(squelton_idle,5)
 squelton_animation = dict()
 squelton_animation["idle"] = squelton_idle
 
-squelton_walk = dict(image_loader('Addon/squeleton_walk/'))
+squelton_walk = dict(image_loader(path.join(path_addon,'squeleton_walk/')))
 transform_image(squelton_walk,5)
 squelton_animation["walk"] = squelton_walk
 
-squelton_attack = dict(image_loader('Addon/squeleton_attack/'))
+squelton_attack = dict(image_loader(path.join(path_addon,'squeleton_attack/')))
 transform_image(squelton_attack,5)
 squelton_animation["attack"] = squelton_attack
 
-dark_wizard_idle = dict(image_loader('Addon/dark_wizard_idle/'))
+dark_wizard_idle = dict(image_loader(path.join(path_addon,'dark_wizard_idle/')))
 transform_image(dark_wizard_idle,3)
 dark_wizard_animation = dict()
-dark_wizard_walk = dict(image_loader('Addon/dark_wizard_walk/'))
+dark_wizard_walk = dict(image_loader(path.join(path_addon,'dark_wizard_walk/')))
 transform_image(dark_wizard_walk,3)
 
-dark_wizard_attack = dict(image_loader('Addon/dark_wizard_attack/'))
+dark_wizard_attack = dict(image_loader(path.join(path_addon,'dark_wizard_attack/')))
 transform_image(dark_wizard_attack,3)
-
 dark_wizard_animation["idle"] = dark_wizard_idle
 dark_wizard_animation["walk"] = dark_wizard_walk
 dark_wizard_animation["attack"] = dark_wizard_attack
@@ -149,14 +146,6 @@ demon_1_animation["idle"] = demon_1_idle
 demon_1_attack = dict(image_loader(path.join(path_addon, 'demon_1_attack/')))
 transform_image(demon_1_attack,4.5)
 demon_1_animation["attack"] = demon_1_attack
-
-
-
-
-
-
-
-
 
 
 fence_1 = pygame.image.load(path.join(path_addon, 'fence_1.png'))
