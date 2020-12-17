@@ -210,9 +210,9 @@ class Perso(Entity):
                     screen.blit(board,(screen.get_width()//2-board.get_width()//2,20))
                     rectcf=self.confirm(board)
                     self.buttons_select(av,indice)
+                    pygame.display.flip()
                     running1=True
                     while running1:
-                        pygame.display.flip()
                         indice= self.collides(pygame.mouse.get_pos(),buttonList)
                         for event2 in pygame.event.get():
                             if all([event2.type!=pygame.MOUSEBUTTONUP,indice!=-1])!=True:
