@@ -119,6 +119,7 @@ class Minimap:
         self.rect_zoom = pygame.Rect(
             0, 0, (self.zoom_x-MINIMAP_SCALE) * 4, (self.zoom_y-MINIMAP_SCALE) * 4)
         self.zoom_map = self.display_with_nature.subsurface(self.rect_zoom)
+        self.zoom_map_fog = self.game.fog.surface.subsurface(self.rect_zoom)
         # Screen_Square in minimap
         self.mini_screen_width = self.zoom_x / self.rect.width * MINIMAP_SCALE
         self.mini_screen_height = self.zoom_y / self.rect.height * MINIMAP_SCALE
@@ -139,7 +140,7 @@ class Minimap:
 
     def draw_white_square_zoom(self):
         minimap_rect = pygame.Rect(
-            MINIMAP_SCALE, MINIMAP_SCALE, self.zoom_x - MINIMAP_SCALE, self.zoom_y - MINIMAP_SCALE)
+            MINIMAP_SCALE / 2, MINIMAP_SCALE * 3/4, self.zoom_x - MINIMAP_SCALE, self.zoom_y - MINIMAP_SCALE)
         pygame.draw.rect(self.screen, WHITE, minimap_rect, width=3)
 
     def draw_surface(self):
@@ -169,13 +170,16 @@ class Minimap:
         # try pour etre sur que le programme marche toujours bien
         try:
             self.map_sp = self.display_with_nature.subsurface(self.rect)
+            self.map_sp_fog = self.game.fog.surface.subsurface(self.rect)
         except:
             pass
+        
         # self.map_sp.blit(
         #     ava_perso, (self.player.pos_x, self.player.pos_y))
-        minimap = pygame.transform.scale(
-            self.map_sp, (MINIMAP_SCALE, MINIMAP_SCALE))
+        minimap = pygame.transform.scale(self.map_sp, (MINIMAP_SCALE, MINIMAP_SCALE))
         self.screen.blit(minimap, (self.TOP_LEFT_X, self.TOP_LEFT_Y))
+        minimap_fog = pygame.transform.scale(self.map_sp_fog, (MINIMAP_SCALE, MINIMAP_SCALE))
+        self.screen.blit(minimap_fog, (self.TOP_LEFT_X, self.TOP_LEFT_Y), special_flags=pygame.BLEND_MULT)
 
     def zoom_minimap(self):
         if self.player.pos_x - self.zoom_x < 0:
@@ -194,11 +198,13 @@ class Minimap:
         # try pour etre sur que le programme marche toujours bien
         try:
             self.zoom_map = self.display_with_nature.subsurface(self.rect_zoom)
+            self.zoom_map_fog = self.game.fog.surface.subsurface(self.rect_zoom)
         except:
             pass
-        minimap = pygame.transform.scale(
-            self.zoom_map, (self.zoom_x - MINIMAP_SCALE, self.zoom_y - MINIMAP_SCALE))
-        self.screen.blit(minimap, (MINIMAP_SCALE, MINIMAP_SCALE))
+        minimap = pygame.transform.scale(self.zoom_map, (self.zoom_x - MINIMAP_SCALE, self.zoom_y - MINIMAP_SCALE))
+        self.screen.blit(minimap, (MINIMAP_SCALE / 2, MINIMAP_SCALE * 3/4))
+        minimap_fog = pygame.transform.scale(self.zoom_map_fog, (self.zoom_x - MINIMAP_SCALE, self.zoom_y - MINIMAP_SCALE))
+        self.screen.blit(minimap_fog, (MINIMAP_SCALE/2, MINIMAP_SCALE * 3/4), special_flags=pygame.BLEND_MULT)
         self.draw_white_square_zoom()
        # self.zoom_draw_perso()
 
@@ -246,7 +252,7 @@ class Fog:
         self.game = game
         self.player = self.game.player
         self.screen = screen
-        self.surface = pygame.Surface((18000, 10000))
+        self.surface = pygame.Surface((18000, 10000)).convert()
         self.surface.fill(NIGHT_COLOR)
         # self.surface.set_colorkey(BLACK)
         self.light_image = light_mask

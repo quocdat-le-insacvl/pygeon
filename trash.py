@@ -21,6 +21,9 @@ from personnage import Perso_game
 pygame.init()
 clock = pygame.time.Clock()
 
+""" Une chose intéréssant que je viens d'apprendre : Il faut utiliser toujours .convert() ou .conver_alpha() 
+quand on load les images pour la question de performance
+"""
 
 class Case():
     def __init__(self, i, j):
@@ -194,6 +197,23 @@ class Game():
         ###
         show_inventory = False
         while running:
+            #""" If Press M : Zoom map === PAUSE"""
+            if self.zoom_map:
+                screen.fill(BLACK)
+                self.minimap.zoom_minimap()
+                draw_text("MAP", ColderWeather, RED, screen, screen.get_width() / 2 - 100, 50)
+                draw_text("FPS: %i, x : %i , y : %i" % (clock.get_fps(), self.player.pos_x,
+                                                    self.player.pos_y), ColderWeather, WHITE, screen, 100, 100)
+
+                """Check event classique"""
+                for event in pygame.event.get():
+                    if event.type == KEYUP:
+                        if event.key == K_m:
+                            self.zoom_map = False
+                pygame.display.update()
+                clock.tick(64)
+                continue
+            
             screen.fill(LIGHT_GREY)
             """Changer l'affichage pour respecter vue joueurs"""
             if pause_menu:
@@ -203,21 +223,21 @@ class Game():
                  # Print nature, map, tree ...
                 screen.blit(self.map.display,(center_x,center_y))
                 screen.blit(rune_1,(11000+center_x,3000+center_y))
-                # Print FOG
-                screen.blit(self.map.display_tree,(center_x,center_y))
-                screen.blit(self.fog.surface, (center_x, center_y),
-                            special_flags=pygame.BLEND_MULT)
                 # Print animation player
                 screen.blit(self.player.display,(center_x+self.player.pos_x,center_y+self.player.pos_y))
+                screen.blit(self.map.display_tree,(center_x,center_y))
+                # Print FOG
+                screen.blit(self.fog.surface, (center_x, center_y),
+                            special_flags=pygame.BLEND_MULT)
             else:
                 # Print nature, map, tree ...
                 screen.blit(self.map.display,(center_x,center_y))
                 screen.blit(rune_1,(11000+center_x,3000+center_y))
+                # Print animation player
+                screen.blit(self.player.display,(center_x+self.player.pos_x,center_y+self.player.pos_y))
                 # Print FOG
                 screen.blit(self.fog.surface, (center_x, center_y),
                             special_flags=pygame.BLEND_MULT)
-                # Print animation player
-                screen.blit(self.player.display,(center_x+self.player.pos_x,center_y+self.player.pos_y))
             if self.player.swap_entity:
                 entity_re_print = self.player.find_nearest_entity(list_static_entity)
                 screen.blit(entity_re_print.display,(entity_re_print.pos_x+center_x,entity_re_print.pos_y+center_y))
@@ -269,11 +289,7 @@ class Game():
             self.fog.draw_fog()
             """ Draw minimap + Fog"""
             self.minimap.draw_minimap()
-            # self.fog.draw_fog()
 
-            """ If Press M : Zoom map"""
-            if self.zoom_map:
-                self.minimap.zoom_minimap()
             """Check event classique"""
             for event in pygame.event.get():
                 self.player.check_user(event)
