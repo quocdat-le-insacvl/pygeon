@@ -202,20 +202,14 @@ class Perso(Entity):
             indice=self.collides(pygame.mouse.get_pos(),buttonList)
             for event in pygame.event.get():
                 running=exit_checkevent(event)
-                if all([event.type==pygame.MOUSEBUTTONDOWN, indice%2==0]) or all([event.type==pygame.MOUSEBUTTONDOWN,indice!=-1,av!=self.av_points,indice%2==1]):
-                    board=boardn.copy()
-                    screen.blit(screenS,(0,0))
-                    board=self.boardSkill(board,av)
-                    board=pygame.transform.scale(board, (screen.get_height()-40, screen.get_height()-40))
-                    screen.blit(board,(screen.get_width()//2-board.get_width()//2,20))
-                    rectcf=self.confirm(board)
+                if all([event.type==pygame.MOUSEBUTTONDOWN,indice!=1, indice%2==0]) or all([event.type==pygame.MOUSEBUTTONDOWN,indice!=-1,av!=self.av_points,indice%2==1]):
                     self.buttons_select(av,indice)
                     pygame.display.flip()
                     running1=True
                     while running1:
                         indice= self.collides(pygame.mouse.get_pos(),buttonList)
                         for event2 in pygame.event.get():
-                            if all([event2.type!=pygame.MOUSEBUTTONUP,indice!=-1])!=True:
+                            if all([event2.type!=pygame.MOUSEBUTTONUP,indice!=-1,av!=0])!=True or all([event.type==pygame.MOUSEBUTTONDOWN,indice!=-1,av!=self.av_points,indice%2==1])!=True:
                                 if all([indice!=-1, av!=0]) or all([indice!=-1,av!=self.av_points,indice%2==1]):
                                     if indice%2==0:
                                         self.stats_eph[indice//2]+=1
@@ -225,10 +219,7 @@ class Perso(Entity):
                                             self.stats_eph[indice//2]-=1
                                             av+=1
                             running1=False
-                            self.buttons_select(av)
-                                
-
-                                    
+                            self.buttons_select(av)                 
                 if all([event.type==pygame.MOUSEBUTTONDOWN, self.collide(pygame.mouse.get_pos(),rectcf), av!=self.av_points]):
                     self.confirm(board)
                     running2=True
@@ -247,11 +238,6 @@ class Perso(Entity):
                 screen.blit(screenS,(0,0))
                 pygame.display.flip()
             elif av1!=av or achang:
-                board=boardn.copy()
-                screen.blit(screenS,(0,0))
-                board=self.boardSkill(board,av)
-                board=pygame.transform.scale(board, (screen.get_height()-40, screen.get_height()-40))
-                screen.blit(board,(screen.get_width()//2-board.get_width()//2,20))
                 rectcf=self.confirm(board,av)
                 buttonList=self.buttons_select(av)
 
@@ -361,9 +347,8 @@ class Perso(Entity):
 
     def collides(self,pos,listrect):
         for n in range(len(listrect)):
-            if listrect[n]:
-                if listrect[n].collidepoint(pos):
-                    return n
+            if listrect[n].collidepoint(pos):
+                return n
         return -1
     
     def collide(self,pos,rect):
