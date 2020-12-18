@@ -197,13 +197,11 @@ class Perso(Entity):
         rect_confirm=self.confirm(board,rectboard,av)
         board1=self.boardSkill(board.copy(),av)
         while running:
-
             "actualise le board avec les skills points et les buttons si un changement a été fait"
-            if click!=True:
-                board1=self.boardSkill(board.copy(),av)
-                self.confirm(board1,rectboard,av)
-                self.buttons_select(board1,av)
-
+            board1=self.boardSkill(board.copy(),av)
+            self.confirm(board1,rectboard,av)
+            self.buttons_select(board1,av)  
+            
             indice=self.collides(pygame.mouse.get_pos(),Blist)
             "ici on vérifie si le joueur a fait un click et où"
             if click and indice!=-1:
