@@ -1,7 +1,10 @@
 import pygame
 from settings import police,color
 from settings.screen import WINDOWS_SIZE,screen
-from settings.load_img import menu_background,img_description
+from settings.load_img import parchment,img_description
+
+button=pygame.image.load(r"Addon\Menu\TextBTN_Medium.png")
+buttonp=pygame.image.load(r"Addon\Menu\TextBTN_Medium_Pressed.png")
 
 def exit_checkevent(event):
     if event.type == pygame.QUIT:
@@ -23,9 +26,9 @@ def wyellow(police,msg):
 def board_init(i=0):
     # create a board and return it, take in arguments the size (tuple) of the board
     if i==0:
-        return pygame.image.load(r"Addon\Menu\UI board Large  parchment.png")
+        return parchment.copy()
     if i==1:
-        return pygame.image.load(r"Addon\Menu\UI board Large stone.png")
+        return img_description.copy()
     
 
 def board_with_msg(message):
@@ -51,25 +54,38 @@ def screenSave():
     screensave.blit(screen,(0,0))
     return screensave
 
-    """
-        screen.blit(board,(WINDOWS_SIZE[0]//2-board.get_width()//2,WINDOWS_SIZE[1]//2-board.get_height()//2))
-        pygame.display.flip()
-        running=True
-        while running:
-            for events in pygame.event.get():
-                if all([events.type==pygame.MOUSEBUTTONUP,excl_rect.collidepoint((pygame.mouse.get_pos()[0]-WINDOWS_SIZE[0]//2+board.get_width()//2,pygame.mouse.get_pos()[1]-WINDOWS_SIZE[1]//2+board.get_height()//2))]):
-                    screen.blit(screen_S,(0,0))
-                    pygame.display.flip()
-                    running=False
-                elif events.type==pygame.QUIT:
-                    pygame.quit()
-                    running=False
-"""
+def replace_rect(rectsurface,rect):
+    """cette fonction permet de replacer un rectangle blit sur une surface sur les coordonnées du screen
+       (evidemment si la surface est scale ou reblit les coordonnées ne sont plus valides)"""
+    rect.x=rect.x+rectsurface.x
+    rect.y=rect.y+rectsurface.y
+    return rect
 
+def init_buttonsas():
+    #initialise les boutons + et -
+    add=wbrown(astxt,"+")
+    buttonpa=pygame.transform.scale(buttonp, (70, add.get_height()))
+    buttonps=pygame.transform.scale(buttonp, (70, add.get_height()))
+    buttonpa.blit(add,(buttonpa.get_width()//2-add.get_width()//2,buttonpa.get_height()//2-add.get_height()/2))
+    sub=wbrown(astxt,"-")
+    buttonps.blit(sub,(buttonps.get_width()//2-sub.get_width()//2,buttonps.get_height()//2-sub.get_height()/2))
+    buttonAdd=pygame.transform.scale(button, (70, add.get_height()))
+    buttonSub=pygame.transform.scale(button, (70, add.get_height()))
+    buttonAdd.blit(add,(buttonAdd.get_width()//2-add.get_width()//2,buttonAdd.get_height()//2-add.get_height()/2))
+    buttonSub.blit(sub,(buttonSub.get_width()//2-sub.get_width()//2,buttonSub.get_height()//2-sub.get_height()/2))
+    return buttonAdd,buttonSub,buttonpa,buttonps
+
+def confirm_button():
+    t=wbrown(title,"CONFIRM")
+    confirm=pygame.transform.scale(button, (t.get_width()+20, t.get_height()))
+    confirmp=pygame.transform.scale(buttonp, (t.get_width()+20, t.get_height()))
+    confirm.blit(t, (10,5))
+    confirmp.blit(t, (10,5)) 
+    return confirm,confirmp
 
 title=pygame.font.Font(r'Addon\Police\ColderWeather-Regular.ttf', board_init().get_height()//10)
 title2=pygame.font.Font(r'Addon\Police\21 Glyphs.ttf', board_init().get_height()//10)
-subtitle=pygame.font.Font(r'Addon\Police\ColderWeather-Regular.ttf', board_init().get_height()//20)
+subtitle=pygame.font.Font(r'Addon\Police\ColderWeather-Regular.ttf', board_init().get_height()//13)
 sub2=pygame.font.Font(r'Addon\Police\21 Glyphs.ttf', board_init().get_height()//20)
 text=pygame.font.Font(r'Addon\Police\ColderWeather-Regular.ttf', board_init().get_height()//30)
 astxt=pygame.font.Font(r'Addon\Police\Outrun-future.otf', 20)

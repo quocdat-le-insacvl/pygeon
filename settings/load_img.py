@@ -2,6 +2,7 @@ import pygame
 from fonction_load_image import image_loader,transform_image
 from settings.screen import WINDOWS_SIZE
 
+parchment=pygame.image.load(r"Addon\Menu\UI board Large  parchment.png")
 img_next = pygame.image.load(r'Addon\Menu\TextBTN_Big.png')
 menu_background = pygame.image.load(r'Addon\Menu\UI board Large Set.png')
 title = pygame.image.load(r'Addon\Menu\IRONY TITLE  empty.png')
