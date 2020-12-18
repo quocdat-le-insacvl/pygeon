@@ -64,7 +64,7 @@ def creation_img_text_click(img,text,font,color,display,click,x=0,y=0,button=1,l
 """def validation_screen
     Affiche un message (text) pour valider une action / lancer une autre
     return True si click sur bouton suivant"""
-def Validation_screen(text,display,click):
+def Validation_screen(text,display,click,choice=False):
         running = True
         while running:
             # Backgrounds :
@@ -77,8 +77,14 @@ def Validation_screen(text,display,click):
             text_width, text_height = ColderWeather_small.size(text)
             draw_text(text,ColderWeather_small,WHITE,display,display.get_width()//2-text_width//2,display.get_height()//2-text_height//2-img_backgrounds_warning.get_height()//2)
             pygame.display.update()
-            if creation_img_text_click(validation_button,"Valider",ColderWeather,WHITE,display,click,display.get_width()//2,display.get_height()//2):
-                return True
+            if not choice :
+                if creation_img_text_click(validation_button,"Valider",ColderWeather,WHITE,display,click,display.get_width()//2,display.get_height()//2):
+                    return True
+            else:
+                if creation_img_text_click(validation_button,"Oui",ColderWeather,WHITE,display,click,display.get_width()//2-200,display.get_height()//2):
+                    return True
+                elif creation_img_text_click(validation_button,"Non",ColderWeather,WHITE,display,click,display.get_width()//2+200,display.get_height()//2):
+                    return False
             screen.blit(pygame.transform.scale(display,WINDOWS_SIZE),(0,0))
             running,click = basic_checkevent(click)
             pygame.display.update()

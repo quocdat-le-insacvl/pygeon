@@ -390,8 +390,9 @@ class Perso_game(Perso):
         x = 125
         y_ = 100
         display.blit(pygame.transform.scale(img_inventaire,(250,200)),(0,0))
-        self.img.set_alpha(50)
-        display.blit(self.img,(250//2-self.img.get_width()//2,100-self.img.get_height()//2))
+        copy_img = pygame.Surface.copy(self.img)
+        copy_img.set_alpha(50)
+        display.blit(copy_img,(250//2-self.img.get_width()//2,100-self.img.get_height()//2))
         bouton_arm = dict()
         mouse_slot = self.inventaire.nb_x * self.inventaire.nb_y
         mx,my = pygame.mouse.get_pos()
@@ -405,7 +406,7 @@ class Perso_game(Perso):
             bouton_arm[4+i] = pygame.Rect(25+i*150,75,50,50)
             pygame.draw.rect(display,(0,0,1),bouton_arm[4+i],1)  
         screen.blit(display,(pos_x,pos_y))
-        screen.blit(display_argent,(pos_x+250,pos_y+200))
+        screen.blit(display_argent,(pos_x,pos_y+200))
         for i in range(0,6):
             if self.armor[i] != None:
                 screen.blit(key[self.armor[i]].wpn_img,(bouton_arm[i].x+pos_x,bouton_arm[i].y+pos_y))

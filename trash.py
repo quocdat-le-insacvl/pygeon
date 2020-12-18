@@ -218,6 +218,8 @@ class Game():
             if pygame.time.get_ticks() > time_line:
                 time_line += 160
                 frame = (frame)%6 +1 
+                
+
             #""" If Press M : Zoom map === PAUSE"""
             
             if self.zoom_map:
@@ -303,8 +305,7 @@ class Game():
                     self.player.mouvement = [False,False,False,False]
             else:
                 draw_interact = True
-                    
-
+        
             '''Set caméra / player pos pour sauvegarde'''
             center_x -= (self.player.pos_x + center_x - 900)//20
             center_y -= (self.player.pos_y + center_y - 540) //20
