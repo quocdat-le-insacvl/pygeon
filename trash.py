@@ -18,9 +18,10 @@ from settings.color import *
 from script import list_mooving_entity,list_static_entity,entity_2
 from fonction import *
 from personnage import Perso_game
+from seller_scripts import list_seller
 pygame.init()
 clock = pygame.time.Clock()
-
+time_line = pygame.time.get_ticks()
 """ Une chose intéréssant que je viens d'apprendre : Il faut utiliser toujours .convert() ou .conver_alpha() 
 quand on load les images pour la question de performance
 """
@@ -119,6 +120,9 @@ class Map():
                         self.collision_change_camera.append(((j-i+1)*self.cubesize//2+9000,(j+i-3)*self.cubesize//4))
                         self.collision_change_camera.append(((j-i-1)*self.cubesize//2+9000,(j+i-3)*self.cubesize//4))
                         self.collision_change_camera.append(((j-i)*self.cubesize//2+9000,(j+i-4)*self.cubesize//4))
+                        self.collision_change_camera.append(((j-i+1)*self.cubesize//2+9000,(j+i-5)*self.cubesize//4))
+                        self.collision_change_camera.append(((j-i)*self.cubesize//2+9000,(j+i-5)*self.cubesize//4))
+
                         self.collision.append((x,y))
                         self.tree_position.append((x,y))
                         self.display.blit(pixel_red,(((j-i-1)*self.cubesize//2+9000,(j+i+1)*self.cubesize//4)))
@@ -181,6 +185,7 @@ class Game():
         self.list_mooving_entity = list_mooving_entity
 
     def main_game(self):
+        global time_line
         center_x,center_y=0,0
         '''Set de toute les variables d'actions'''
         transition = pygame.Surface((screen.get_width(),screen.get_height()))
@@ -188,16 +193,33 @@ class Game():
         interact = False
         pause_menu = False
         running = True
+        for x in list_seller:
+            x.update_interact()
+            for y in x.interaction:
+                self.map.dict_collision['collision_entity'].append(y)
+            self.map.display.blit(x.img,(x.pos_x,x.pos_y))
         n= 1
         f=0
         g=0
-
+        is_talking = False
+        self.player.pos_x = 8680
+        self.player.pos_y = 800
         ### Minimap
         self.minimap = Minimap(self, self.map.display)
+        
         ###
         show_inventory = False
+        show_characteresheet = False
+        display_1 = pygame.Surface((1980,1080))
+        display_1.set_colorkey(BLACK)
+        draw_interact = True
+        frame = 1
         while running:
+            if pygame.time.get_ticks() > time_line:
+                time_line += 160
+                frame = (frame)%6 +1 
             #""" If Press M : Zoom map === PAUSE"""
+            
             if self.zoom_map:
                 screen.fill(BLACK)
                 self.minimap.zoom_minimap()
@@ -224,7 +246,7 @@ class Game():
                 screen.blit(self.map.display,(center_x,center_y))
                 screen.blit(rune_1,(11000+center_x,3000+center_y))
                 # Print animation player
-                screen.blit(self.player.display,(center_x+self.player.pos_x,center_y+self.player.pos_y))
+                screen.blit(self.player.img,(center_x+self.player.pos_x,center_y+self.player.pos_y))
                 screen.blit(self.map.display_tree,(center_x,center_y))
                 # Print FOG
                 screen.blit(self.fog.surface, (center_x, center_y),
@@ -234,16 +256,17 @@ class Game():
                 screen.blit(self.map.display,(center_x,center_y))
                 screen.blit(rune_1,(11000+center_x,3000+center_y))
                 # Print animation player
-                screen.blit(self.player.display,(center_x+self.player.pos_x,center_y+self.player.pos_y))
+                screen.blit(self.player.img,(center_x+self.player.pos_x,center_y+self.player.pos_y))
                 # Print FOG
                 screen.blit(self.fog.surface, (center_x, center_y),
                             special_flags=pygame.BLEND_MULT)
             if self.player.swap_entity:
                 entity_re_print = self.player.find_nearest_entity(list_static_entity)
-                screen.blit(entity_re_print.display,(entity_re_print.pos_x+center_x,entity_re_print.pos_y+center_y))
+                screen.blit(entity_re_print.img,(entity_re_print.pos_x+center_x,entity_re_print.pos_y+center_y))
+        
             '''Actualiser case interaction + animations'''
-            #self.player.animate_map()
-            # for x in list_mooving_entity:
+            
+            #for x in list_mooving_entity:
             #     x.animate_map()
             #     x.update_interact()
 
@@ -257,8 +280,9 @@ class Game():
             #     list_mooving_entity[2].move_entity([-2,1],self.map,self.player)
             # if f == 300:
             #     f=0
-            
-            #print_mooving_entity(screen,list_mooving_entity,center_x,center_y)
+            for x in list_mooving_entity:
+                x.animate_map(frame)
+            print_mooving_entity(screen,list_mooving_entity,center_x,center_y)
             
 
             #self.print_frog(player_rect,screen,case_connue,center_x,center_y)
@@ -267,16 +291,19 @@ class Game():
 
             '''Action si contact avec entité'''
             if self.player.entity_near:
-                entity = self.player.find_nearest_entity(list_mooving_entity)
-                draw_text("Press I for interact %s"%entity.name,ColderWeather,WHITE,screen,500,500)
+                entity = self.player.find_nearest_entity(list_seller)
+                if draw_interact: draw_text("Press I for interact %s"%entity.name,ColderWeather,WHITE,screen,500,500)
                 if entity.type == "Monster":
                     list_monster = []
                     list_monster.append(entity)
                     self.print_combat_screen(list_monster)
                 if interact:
-                    self.interact(entity)
+                    draw_interact = False
+                    is_talking = self.interact(entity,is_talking)
                     self.player.mouvement = [False,False,False,False]
-                    interact = False
+            else:
+                draw_interact = True
+                    
 
             '''Set caméra / player pos pour sauvegarde'''
             center_x -= (self.player.pos_x + center_x - 900)//20
@@ -297,7 +324,7 @@ class Game():
                     sys.exit()
                 if event.type == KEYDOWN:
                     if event.key == K_i:
-                        interact = True
+                        interact = not interact
                     if event.key == K_m:
                         self.zoom_map = True
                     if event.key == K_j:
@@ -305,12 +332,14 @@ class Game():
                     """if event.key == K_ESCAPE:
                         self.map.load_map()
                         self.map.init_map()"""
-
+                    if event.key == K_u:
+                        show_characteresheet = not show_characteresheet
                 if event.type == KEYUP:
                     if event.key == K_m:
                         self.zoom_map = False
 
             self.player.move_player(self.map.dict_collision)
+            self.player.animate_map(frame%2+1)
             """
             if g != 255:
                 for x in range(255):
@@ -318,11 +347,14 @@ class Game():
                     transition.set_alpha(int(255-f))
                 screen.blit(transition,(0,0))"""
             if show_inventory:
-                self.player.print_equipement(100,100)
+                self.player.print_equipement(100,100,500,500)
                 #pack_bis.loot_inventory(1000,500,self.player.inventaire)
-
+            if show_characteresheet:
+                self.player.caracter_sheet()
+            
             draw_text("FPS: %i, x : %i , y : %i" % (clock.get_fps(), self.player.pos_x,
                                                     self.player.pos_y), ColderWeather, WHITE, screen, 100, 100)
+            
             
             pygame.display.update()
             clock.tick(64)
@@ -454,32 +486,16 @@ class Game():
         self.click = False
         """Affiche un menu pause classique"""
 
-    def ligne_colonne(self, pos_x, pos_y):
-        return [math.trunc(1/(2*190)*(4*pos_y-2*(pos_x-9000))), math.trunc(1/(2*190)*(4*pos_y+2*(pos_x-9000)))]
-        """Retourne la ligne et la colonne en fonction de la position"""
-    def print_frog(self,rect,display,case_connue,center_x,center_y):
-        #display.fill(LIGHT_GREY)
-        ligne_colonne = self.ligne_colonne(rect.x,+rect.y+135)
-        for j in range(-5,5,1):
-            for i in range(-5,5,1):
-                if not case_connue.__contains__([ligne_colonne[0]+i,ligne_colonne[1]+j]) :
-                   case_connue.append([ligne_colonne[0]+i,ligne_colonne[1]+j])
-        j,i = 0,0
-        for j in range(-13,13,1):
-            for i in range(-13,13,1):
-                if not case_connue.__contains__([ligne_colonne[0]+i,ligne_colonne[1]+j]) :
-                   display.blit(pixel_red,(((ligne_colonne[1]+j-ligne_colonne[0]-i)*190//2+9000+center_x,(ligne_colonne[1]+j+ligne_colonne[0]+i)*190//4+center_y)))
-        """Actualise les case_connues de joueur et affiche les cases map seulement sur les cases non connue de joueur
-        le brouillard n'est actualiser que sur la surface de Screnne et pas sur tout la map"""
-    def interact(self,entity):
+    def interact(self,entity,is_talking):
         display_talk = pygame.Surface((1800,1080))
         display_talk.set_colorkey((0,0,0))
         if entity.type == "Seller":
             if entity.talking != None:
-                if Validation_screen(entity.talking,display_talk,self.click):
+                if is_talking == True or Validation_screen(entity.talking,display_talk,self.click):
+                    is_talking = True
                     entity.print_shop(self.player,self.click)
                 screen.blit(display_talk,(0,0))
-
+        return is_talking
 
 # player_direct = Perso(0,0,0,0,0,0,0,0,0)
 # game = Game(player_direct)

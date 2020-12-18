@@ -1,7 +1,8 @@
 import pickle,os
 from pygame.locals import *
+from settings import police,color
 from settings.screen import *
-from settings.police import Drifftype,ColderWeather,Rumbletumble,coeff,coeff1,coeff2,ColderWeather_small
+from settings.police import *
 from settings.load_img import *
 from settings.color import *
 import random
@@ -10,9 +11,9 @@ import random
 ### Fixing path
 path_pygeon = os.path.dirname(__file__)
 path_save = os.path.join(path_pygeon, 'Save')
-# path_addon = os.path.join(path_pygeon, 'Addon')
+path_addon = os.path.join(path_pygeon, 'Addon')
 # path_son = os.path.join(path_addon, 'Son')
-# path_police = os.path.join(path_addon, 'Police')
+path_police = os.path.join(path_addon, 'Police')
 # path_menu = os.path.join(path_addon, 'Menu')
 # path_demon_walk = os.path.join(path_addon, 'demon_walk')
 # path_seller = os.path.join(path_addon, 'seller')
@@ -240,38 +241,61 @@ def load_map(path):
         Return collision_change_camera List de position pour pixel (bloc de collision) permet de changer l'affichage
         Return tree_position List de postion des Arbres
         Return collision_entity List de position pour pixel_red (bloc de collision) permet l'interaction avec les entitées fixes"""
-
-
-"""Def print_nature
-    Affiche les arbre sur le display
-    return Display avec les arbres"""
-def print_nature(Map,display,tree_position,all = True):
-    cubesize=190
-    i=0
-    if all:
-        for layer in Map:
-            j=0
-            for tile in layer:
-                x = (j-i)*cubesize//2+9000
-                y = (j+i)*cubesize//4
-                if Map[i][j] != None:
-                    if Map[i][j] == '2' :
-                        n = random.randint(1,4)
-                        display.blit(tree["tree_" + str(2) + ".png"],(x,y-200))
-                    if Map[i][j] == '7':
-                        #collision.append((x,y))
-                        display.blit(fence_1,(x,y-50))
-                    if Map[i][j] == '9':
-                        display.blit(fence_2,(x,y-50))
-                j+=1
-
-"""def print_static_entity
-    Affiche les entités static sur le display"""
-def print_static_entity(display,list_entity):
-    for i in range(len(list_entity)):
-        display.blit(list_entity[i].display,(list_entity[i].pos_x,list_entity[i].pos_y))
 """def print_mooving_entity
     Affiche les entités non static sur le display"""
 def print_mooving_entity(display,list_entity,center_x,center_y):
     for i in range(len(list_entity)):
-        display.blit(list_entity[i].display,(list_entity[i].pos_x+center_x,list_entity[i].pos_y+center_y))
+        display.blit(list_entity[i].img,(list_entity[i].pos_x+center_x,list_entity[i].pos_y+center_y))
+
+def exit_checkevent(event):
+    if event.type == pygame.QUIT:
+        pygame.quit()
+    if event.type == pygame.KEYDOWN:
+        if event.key == pygame.K_ESCAPE:
+            return False
+    return True
+
+def wgrey(police,msg):
+    return police.render(msg, True, color.LIGHT_GREY)
+def wbrown(police,msg):
+    return police.render(msg, True, color.BROWN)
+def wred(police,msg):
+    return police.render(msg, True, color.RED)
+def wyellow(police,msg):
+    return police.render(msg, True, color.YELLOW)
+
+
+
+    
+
+
+def board_with_msg(message):
+    #take a message as argument (string) and creat a board wich is returned
+    assert(len(message)<35 and type(message)==str), "message invalid in boarb_with_message"
+    text2=police.Outrun_future.render(message,True,color.RED)
+    board=pygame.transform.scale(pygame.image.load(r"Addon\Menu\UI board Small  parchment.png"),(text2.get_width()+200,text2.get_height()*4))
+    board.blit(text2,(board.get_width()//2-text2.get_width()//2,text2.get_height()+20))
+    return board
+
+
+def choices(board,choices):
+    assert(type(board)==pygame.Surface), "choices need a surface"
+    assert(len(choices)<=5), "to much choice"
+    assert((type(n)==pygame.Surface for n in choices)), "the choices are an img (surface)"
+    for n in range(len(choices)):
+        choices[n]=pygame.transform.scale(choices[n], (board.get_width()//(len(choices)+1), board.get_height()//3))
+        board.blit(choices[n],(choices[n].get_width()//(len(choices)+1)*(n+1)+choices[n].get_width()*n,board.get_height()-choices[n].get_height()-30))
+    return board
+
+
+def screenSave():
+    #save the current screen on a surface wich is returned
+    screensave=pygame.Surface(WINDOWS_SIZE)
+    screensave.blit(screen,(0,0))
+    return screensave
+
+
+
+
+
+

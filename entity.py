@@ -16,7 +16,7 @@ class Entity():
         self.nom = name
         self.center = [pos_x + img.get_width()//2,pos_y + img.get_height()//2]
         self.rect = pygame.Rect(pos_x,pos_y,self.img.get_width(),self.img.get_height())
-        self.display = pygame.Surface(size)
+        self.display = pygame.Surface(size).convert_alpha()
         self.display.set_colorkey((0,0,0))
         self.display.blit(self.img,(0,0))
         self.animation_dict = animation_dict
@@ -31,6 +31,7 @@ class Entity():
         self.center = [self.pos_x + self.img.get_width()//2,self.pos_y + self.img.get_height()//2]
     def animate(self):
         if self.type_animation != "" and self.animation_dict != None :
+            print(1)
             animation = self.animation_dict[self.type_animation]
             self.frame += 0.05
             if self.frame > len(animation)+1:
@@ -42,20 +43,19 @@ class Entity():
                 self.display.blit(animation[ self.type_animation + "_" + str(int(self.frame)) + ".png"],(self.img.get_width()//2-animation[ self.type_animation + "_" + str(int(self.frame)) + ".png"].get_width()//2+150-int(self.img.get_width()//2)+self.decalage_display[0],self.img.get_height()-animation[ self.type_animation + "_" + str(int(self.frame)) + ".png"].get_height()+300-self.img.get_height()+self.decalage_display[1]))
 
     def update_interact(self):
-        self.interaction[0] = [ self.pos_x + 95 - pixel_red.get_width()//2 + self.img.get_width()//2 , 47+self.pos_y+self.img.get_height()-pixel_red.get_height()//1.5]
-        self.interaction[1] = [ self.pos_x - pixel_red.get_width()//2 + self.img.get_width()//2 , 47*2+self.pos_y+self.img.get_height()-pixel_red.get_height()//1.5]
-        self.interaction[2] = [ self.pos_x - 95 - pixel_red.get_width()//2 + self.img.get_width()//2 , 47+self.pos_y+self.img.get_height()-pixel_red.get_height()//1.5]
-    def animate_map(self):
+
+        self.interaction[0] = [int ( self.pos_x + 95 - pixel_red.get_width()//2 + self.img.get_width()//2 ) , int ( 47+self.pos_y+self.img.get_height()-pixel_red.get_height()//1.5)]
+        self.interaction[1] = [ int ( self.pos_x - pixel_red.get_width()//2 + self.img.get_width()//2 ), int ( 47*2+self.pos_y+self.img.get_height()-pixel_red.get_height()//1.5)]
+        self.interaction[2] = [ int ( self.pos_x - 95 - pixel_red.get_width()//2 + self.img.get_width()//2 ) ,int ( 47+self.pos_y+self.img.get_height()-pixel_red.get_height()//1.5)]
+    def animate_map(self,frame):
         if self.type_animation != "" and self.animation_dict != None :
             animation = self.animation_dict[self.type_animation]
-            self.frame += 0.05
-            if self.frame > len(animation)+1:
-                self.frame=1
-            self.refresh_display()
             if self.nom != None:
-                self.display.blit(animation[ self.nom + "_" + self.type_animation + "_" + str(int(self.frame)) + ".png"],(0,0))
+                #self.display.blit(animation[ self.nom + "_" + self.type_animation + "_" + str(int(self.frame)) + ".png"],(0,0))
+                self.img = animation[ self.nom + "_" + self.type_animation + "_" + str(int(frame)) + ".png"]
             else:
-                self.display.blit(animation[ self.type_animation + "_" + str(int(self.frame)) + ".png"],(0,0))
+                #self.display.blit(animation[ self.type_animation + "_" + str(int(self.frame)) + ".png"],(0,0))
+                self.img = animation[ self.type_animation + "_" + str(int(frame)) + ".png"]
     def refresh_display(self):
         self.display.fill((0,0,0))
         self.display.set_colorkey((0,0,0))
@@ -261,5 +261,5 @@ class Fog:
         self.light_rect = self.light_image.get_rect()
 
     def draw_fog(self):
-        self.light_rect.center = (self.player.pos_x, self.player.pos_y)
+        self.light_rect.center = (self.player.pos_x+self.player.img.get_width()//2,self.player.pos_y+self.player.img.get_height()//2)
         self.surface.blit(self.light_image, self.light_rect)
