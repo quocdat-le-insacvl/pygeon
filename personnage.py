@@ -193,9 +193,9 @@ class Perso(Entity):
         rectboard=pygame.Rect(screen.get_width()//2-board.get_width()//2,20,0,0)
         click=False
         "initialise la liste de boutons cliquable"
-        Blist=self.buttons_init(board,rectboard)
-        rect_confirm=self.confirm(board,rectboard,av)
         board1=self.boardSkill(board.copy(),av)
+        Blist=self.buttons_init(board1,rectboard)
+        rect_confirm=self.confirm(board,rectboard,av)
         while running:
             "actualise le board avec les skills points et les buttons si un changement a été fait"
             board1=self.boardSkill(board.copy(),av)
@@ -244,12 +244,12 @@ class Perso(Entity):
         "actualise les boutons en fonction de av (aivable points) et du clique"
         for n in range(6):
             if av==0:
-                board.blit(buttonpa,(345,120+60*n+board.get_height()//3))
+                board.blit(buttonpa,(355,120+60*n+board.get_height()//3))
             else:
                 if n*2==selected:
-                    board.blit(buttonpa,(345,120+60*n+board.get_height()//3))
+                    board.blit(buttonpa,(355,120+60*n+board.get_height()//3))
                 else:
-                    board.blit(buttona,(345,120+60*n+board.get_height()//3))
+                    board.blit(buttona,(355,120+60*n+board.get_height()//3))
             if((n+1)*2-1)==selected:
                 board.blit(buttonps,(230,120+60*n+board.get_height()//3))
             elif self.stats_eph[n]>0:
