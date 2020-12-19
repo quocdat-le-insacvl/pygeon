@@ -186,7 +186,7 @@ floor_tavern = pygame.transform.scale(floor_tavern,(floor_tavern.get_width(),flo
 def board_init(i=0):
     # create a board and return it, take in arguments the size (tuple) of the board
     if i==0:
-        return pygame.image.load(r'\Users\Anthony\Desktop\pygeon\Addon\Menu\UI board Large  parchment.png').convert_alpha()
+        return pygame.image.load(path.join(path_menu, r'UI board Large  parchment.png')).convert_alpha()
     if i==1:
-        return pygame.image.load(path.join(path_addon,r'\Menu\UI board Large stone.png')).convert_alpha()
+        return pygame.image.load(path.join(path_menu,r'UI board Large stone.png')).convert_alpha()
 

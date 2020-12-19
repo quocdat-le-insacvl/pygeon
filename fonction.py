@@ -332,16 +332,21 @@ def screenSave():
 
 def print_mooving_entity(game, display,list_entity,center_x,center_y):
     for entity in list_entity:
-        # Dat's note : 
-        # if hidden, check if him go out of the zone visible
-        # Check if the monster in the fog => he is hidden !
-        if game.fog.surface.get_at((entity.pos_x, entity.pos_y)) != NIGHT_COLOR:
-            entity.is_hidden = False
-            entity.seen = True
-            display.blit(entity.display, (entity.pos_x + center_x, entity.pos_y+center_y))
-            entity.last_know_pos = (entity.pos_x, entity.pos_y)
-        else:
-            entity.is_hidden = True
+        # Use try to prevent the entity who is out of the map 
+        try : 
+            # Dat's note : 
+            # if hidden, check if him go out of the zone visible
+            # Check if the monster in the fog => he is hidden !
+            if game.fog.surface.get_at((entity.pos_x, entity.pos_y)) != NIGHT_COLOR:
+                entity.is_hidden = False
+                entity.seen = True
+                display.blit(entity.display, (entity.pos_x + center_x, entity.pos_y+center_y))
+                entity.last_know_pos = (entity.pos_x, entity.pos_y)
+            else:
+                entity.is_hidden = True
+        except:
+            print("Error of entity : ", entity.name, entity , " out of the map !")
+            
         # If he was seen but now he is hidden => draw his shadow (by the last position)
         if entity.seen and entity.is_hidden:
             display.blit(entity.shadow, (entity.last_know_pos[0] +
