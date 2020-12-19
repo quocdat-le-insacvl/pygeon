@@ -286,6 +286,23 @@ class Perso(Entity):
             if listrect[n].collidepoint(pos):
                 return n
         return -1
+    
+    def createImages(self,name,scale=True,colorkey=(0,0,0),forceScale=False):
+        relative_path = os.path.join(os.path.dirname(os.path.abspath(__file__)),"Donjon/imgs/")
+        if name not in os.listdir(relative_path): 
+            print("Image %s not in imgs/ directory" %name)
+        elif name[-4:] != ".png" and name[-4:] != ".jpg":
+            print("Image not a .png or a .jpg")
+        else:
+            image = pygame.image.load(os.path.join(relative_path,name))
+            if image.get_width() >= 128 or image.get_height() >= 128 or forceScale:
+                image = pygame.transform.scale(image,(32, 32))
+            image.set_colorkey(colorkey)
+            return image
+    def afficher(self):
+        #self.perso_screen.blit(self.perso,(self.pos_x,self.pos_y))
+        self.rect_perso = pygame.Rect((self.pos_x,self.pos_y),(self.img.get_width(),self.img.get_height()))
+        return self.img
 
 class Perso_game(Perso):
     def __init__(self,STR,DEX,CON,INT,WIS,CHA,hp,hp_max,inventaire,img,pos_x,pos_y,player_animation = None ,argent = 0,name=None,classe=None,level=1,xp=0):
@@ -300,6 +317,7 @@ class Perso_game(Perso):
         self.swap_entity = False
         self.mouvement = [False,False,False,False]
         self.deplacement = [0,0]
+        self.interact_range = (10,10)
     def refresh_animation_and_mouvement(self):
         if self.mouvement[0]:
             self.deplacement = [10,-5]
@@ -370,6 +388,7 @@ class Perso_game(Perso):
         self.display = pygame.Surface((self.img.get_width(),self.img.get_height()))
         self.display.set_colorkey((0,0,0))
     def print_equipement(self,pos_x,pos_y,pos_x_inventory_player,pos_y_inventory_player,also_inventory=True,mouse=False):
+
         
         display = pygame.Surface((250,200))
         display.set_colorkey(BLACK)
@@ -428,3 +447,12 @@ class Perso_game(Perso):
             self.inventaire.print_inventory_bis(pos_x_inventory_player,pos_y_inventory_player,main=False,mouse=mouse)
         if self.inventaire.backpack[mouse_slot] != None:
             screen.blit(key[self.inventaire.backpack[mouse_slot]].wpn_img,(mx,my))
+    def deplacerDroite(self):
+        self.pos_x+=2
+        
+    def deplacerGauche(self):
+        self.pos_x -=2
+    def deplacerHaut(self):
+        self.pos_y -=2
+    def deplacerBas(self):
+        self.pos_y+=2
