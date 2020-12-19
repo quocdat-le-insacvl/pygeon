@@ -300,7 +300,6 @@ class Game():
                 if entity.name == "test_demon":
                     entity.pos_y += 1
                     entity.pos_x += 3
-
             #self.print_frog(player_rect,screen,case_connue,center_x,center_y)
 
             #screen.blit(player.mask_surface,(center_x+self.player.pos_x+20,center_y+self.player.pos_y+self.player.img.get_height()-15))

@@ -88,6 +88,16 @@ squelton_16 = Entity(9765,1700,wizard_hide["wizard_idle_1.png"],"wizard","Monste
 
 dark_wizard = Entity(10000,400,dark_wizard_idle["dark_wizard_idle_1.png"],"dark_wizard","Monster",dark_wizard_animation,size=(500,500),decalage=[70,60])
 
+# For test 
+test_demon = Entity(7180, 1940, demon, 'test_demon', 'Monster',
+                  demon_1_animation, size=(500, 400), decalage=[60, 0])
+demon_shadow = pygame.image.load(
+    path.join(path_demon_walk, 'demon_shadow.png')).convert_alpha()
+demon_shadow = pygame.transform.scale(
+    demon_shadow, (10*demon_shadow.get_width(), 10*demon_shadow.get_height()))
+test_demon.shadow = demon_shadow
+###
+
 list_static_entity = []
 list_mooving_entity = []
 

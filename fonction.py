@@ -6,6 +6,7 @@ from settings.police import *
 from settings.load_img import *
 from settings.color import *
 import random
+# from script import demon_shadow
 
 
 ### Fixing path
