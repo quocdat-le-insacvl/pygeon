@@ -16,7 +16,7 @@ class Entity():
         self.nom = name
         self.center = [pos_x + img.get_width()//2,pos_y + img.get_height()//2]
         self.rect = pygame.Rect(pos_x,pos_y,self.img.get_width(),self.img.get_height())
-        self.display = pygame.Surface(size)
+        self.display = pygame.Surface(size).convert_alpha()
         self.display.set_colorkey((0,0,0))
         self.display.blit(self.img,(0,0))
         self.animation_dict = animation_dict
@@ -26,11 +26,15 @@ class Entity():
         self.type_animation = "idle"
         self.decalage_display = decalage
         self.avata = pygame.transform.scale(img, (30, 30))
-        
+        self.is_hidden = True
+        self.seen = False
+        self.last_know_pos = (0, 0)
+        self.shadow = img
     def update_center(self):
         self.center = [self.pos_x + self.img.get_width()//2,self.pos_y + self.img.get_height()//2]
     def animate(self):
         if self.type_animation != "" and self.animation_dict != None :
+            print(1)
             animation = self.animation_dict[self.type_animation]
             self.frame += 0.05
             if self.frame > len(animation)+1:
@@ -42,20 +46,19 @@ class Entity():
                 self.display.blit(animation[ self.type_animation + "_" + str(int(self.frame)) + ".png"],(self.img.get_width()//2-animation[ self.type_animation + "_" + str(int(self.frame)) + ".png"].get_width()//2+150-int(self.img.get_width()//2)+self.decalage_display[0],self.img.get_height()-animation[ self.type_animation + "_" + str(int(self.frame)) + ".png"].get_height()+300-self.img.get_height()+self.decalage_display[1]))
 
     def update_interact(self):
-        self.interaction[0] = [ self.pos_x + 95 - pixel_red.get_width()//2 + self.img.get_width()//2 , 47+self.pos_y+self.img.get_height()-pixel_red.get_height()//1.5]
-        self.interaction[1] = [ self.pos_x - pixel_red.get_width()//2 + self.img.get_width()//2 , 47*2+self.pos_y+self.img.get_height()-pixel_red.get_height()//1.5]
-        self.interaction[2] = [ self.pos_x - 95 - pixel_red.get_width()//2 + self.img.get_width()//2 , 47+self.pos_y+self.img.get_height()-pixel_red.get_height()//1.5]
-    def animate_map(self):
+
+        self.interaction[0] = [int ( self.pos_x + 95 - pixel_red.get_width()//2 + self.img.get_width()//2 ) , int ( 47+self.pos_y+self.img.get_height()-pixel_red.get_height()//1.5)]
+        self.interaction[1] = [ int ( self.pos_x - pixel_red.get_width()//2 + self.img.get_width()//2 ), int ( 47*2+self.pos_y+self.img.get_height()-pixel_red.get_height()//1.5)]
+        self.interaction[2] = [ int ( self.pos_x - 95 - pixel_red.get_width()//2 + self.img.get_width()//2 ) ,int ( 47+self.pos_y+self.img.get_height()-pixel_red.get_height()//1.5)]
+    def animate_map(self,frame):
         if self.type_animation != "" and self.animation_dict != None :
             animation = self.animation_dict[self.type_animation]
-            self.frame += 0.05
-            if self.frame > len(animation)+1:
-                self.frame=1
-            self.refresh_display()
             if self.nom != None:
-                self.display.blit(animation[ self.nom + "_" + self.type_animation + "_" + str(int(self.frame)) + ".png"],(0,0))
+                #self.display.blit(animation[ self.nom + "_" + self.type_animation + "_" + str(int(self.frame)) + ".png"],(0,0))
+                self.img = animation[ self.nom + "_" + self.type_animation + "_" + str(int(frame)) + ".png"]
             else:
-                self.display.blit(animation[ self.type_animation + "_" + str(int(self.frame)) + ".png"],(0,0))
+                #self.display.blit(animation[ self.type_animation + "_" + str(int(self.frame)) + ".png"],(0,0))
+                self.img = animation[ self.type_animation + "_" + str(int(frame)) + ".png"]
     def refresh_display(self):
         self.display.fill((0,0,0))
         self.display.set_colorkey((0,0,0))
@@ -130,7 +133,7 @@ class Minimap:
         self.draw_surface()
         self.draw_white_square()
         self.check_entity()
-        self.draw_entity(self.player)
+        self.draw_entity(self.player, True)
         self.screen_square()
 
     def draw_white_square(self):
@@ -206,22 +209,56 @@ class Minimap:
         minimap_fog = pygame.transform.scale(self.zoom_map_fog, (self.zoom_x - MINIMAP_SCALE, self.zoom_y - MINIMAP_SCALE))
         self.screen.blit(minimap_fog, (MINIMAP_SCALE/2, MINIMAP_SCALE * 3/4), special_flags=pygame.BLEND_MULT)
         self.draw_white_square_zoom()
+        # Not work proprely now
+        # self.check_entity_zoom()
        # self.zoom_draw_perso()
 
     # draw position of player or show monsters, NPCs in minimaps
-    def draw_entity(self, entity):
+    def draw_entity(self, entity, real):
+        if real : 
+            x_real = entity.pos_x - self.rect.left
+            y_real = entity.pos_y - self.rect.top
+            x_mini = x_real / self.rect.width * MINIMAP_SCALE
+            y_mini = y_real / self.rect.height * MINIMAP_SCALE
+            self.screen.blit(entity.avata, (self.TOP_LEFT_X +
+                                            x_mini, self.TOP_LEFT_Y + y_mini))
+        else:
+            x_real = entity.last_know_pos[0] - self.rect.left
+            y_real = entity.last_know_pos[1] - self.rect.top
+            x_mini = x_real / self.rect.width * MINIMAP_SCALE
+            y_mini = y_real / self.rect.height * MINIMAP_SCALE
+            mini_shadow = pygame.transform.scale(entity.shadow, (30, 30))
+            self.screen.blit(mini_shadow, (self.TOP_LEFT_X +
+                                            x_mini, self.TOP_LEFT_Y + y_mini))
+
+    def draw_entity_zoom(self, entity):
         x_real = entity.pos_x - self.rect.left
         y_real = entity.pos_y - self.rect.top
-        x_mini = x_real / self.rect.width * MINIMAP_SCALE
-        y_mini = y_real / self.rect.height * MINIMAP_SCALE
-        self.screen.blit(entity.avata, (self.TOP_LEFT_X +
-                                        x_mini, self.TOP_LEFT_Y + y_mini))
-
+        x_mini = x_real / self.rect.width * (self.zoom_x - MINIMAP_SCALE)
+        y_mini = y_real / self.rect.height * (self.zoom_y - MINIMAP_SCALE)
+        bigger_ava = pygame.transform.scale(entity.avata, (50, 50))
+        self.screen.blit(bigger_ava, (MINIMAP_SCALE/2 +
+                                      x_mini, MINIMAP_SCALE * 3/4 + y_mini))
+        
     # Verify if a monster in the view of the player => draw it on minimap
     def check_entity(self):
         for entity in self.game.list_mooving_entity:
+            # Check color , it's mean, if the monster is in the fog, he is hidden
+            if not entity.is_hidden:            
+                # Check position
+                if self.rect.left < entity.pos_x < self.rect.right and self.rect.top < entity.pos_y < self.rect.bottom:
+                    self.draw_entity(entity, True)
+                                    
+            elif entity.seen:
+                self.draw_entity(entity, False)
+
+
+    def check_entity_zoom(self):
+        for entity in self.game.list_mooving_entity:
             if self.rect.left < entity.pos_x < self.rect.right and self.rect.top < entity.pos_y < self.rect.bottom:
-                self.draw_entity(entity)
+                self.draw_entity_zoom(entity)
+            
+
 
     # Not nessary for this moment
     def screen_square(self):
@@ -245,14 +282,14 @@ class Minimap:
         self.screen.blit(
             ava_perso, (MINIMAP_SCALE + x_mini, MINIMAP_SCALE + y_mini))
 
-
+    # 
 
 class Fog:
     def __init__(self, game):
         self.game = game
         self.player = self.game.player
         self.screen = screen
-        self.surface = pygame.Surface((18000, 10000)).convert()
+        self.surface = pygame.Surface(self.game.map.display.get_size()).convert()
         self.surface.fill(NIGHT_COLOR)
         # self.surface.set_colorkey(BLACK)
         self.light_image = light_mask
@@ -261,5 +298,5 @@ class Fog:
         self.light_rect = self.light_image.get_rect()
 
     def draw_fog(self):
-        self.light_rect.center = (self.player.pos_x, self.player.pos_y)
+        self.light_rect.center = (self.player.pos_x+self.player.img.get_width()//2, self.player.pos_y+self.player.img.get_height()//2)
         self.surface.blit(self.light_image, self.light_rect)

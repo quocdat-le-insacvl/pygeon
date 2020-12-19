@@ -1,7 +1,7 @@
 import pygame
 from os import path
 from settings.screen import LARGEUR
-
+from settings.load_img import board_init
 pygame.init()
 
 coeff = 10
@@ -24,3 +24,12 @@ Drifftype = pygame.font.Font(path.join(path_police, 'Drifttype Solid.ttf'), LARG
 #Outrun_future =
 Rumbletumble = pygame.font.Font(path.join(path_police, 'rumbletumble.ttf'), LARGEUR//coeff2)
 ColderWeather_small = pygame.font.Font(path.join(path_police, 'ColderWeather-Regular.ttf'), 30)
+
+
+title = pygame.font.Font(path.join(path_addon,r'Police\ColderWeather-Regular.ttf' ), board_init().get_height()//10)
+title2=pygame.font.Font(path.join(path_addon,r'Police\21 Glyphs.ttf' ), board_init().get_height()//10)
+subtitle=pygame.font.Font(path.join(path_addon,r'Police\ColderWeather-Regular.ttf' ), board_init().get_height()//20)
+sub2=pygame.font.Font(path.join(path_addon,r'Police\21 Glyphs.ttf' ), board_init().get_height()//20)
+text=pygame.font.Font(path.join(path_addon,r'Police\ColderWeather-Regular.ttf' ), board_init().get_height()//30)
+astxt=pygame.font.Font(path.join(path_addon,r'Police\Outrun-future.otf' ), 20)
+astxt.set_bold(1)
