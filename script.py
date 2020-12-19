@@ -37,6 +37,7 @@ path_demon_walk = path.join(path_addon, 'demon_walk')
 path_seller = path.join(path_addon, 'seller')
 ###
 
+
 tavern_img = pygame.image.load(path.join(path_addon, 'tavern_1.png')).convert_alpha()
 tavern_img = pygame.transform.scale(tavern_img,(int(1.8*tavern_img.get_width()),int(1.8*tavern_img.get_height())))
 tavern_2_img = pygame.image.load(path.join(path_addon, 'tavern_2.png')).convert_alpha()
@@ -48,6 +49,13 @@ vendeur_1 = pygame.image.load(path.join(path_seller, 'seller_5/seller_1_idle_1.p
 tavern2_img = pygame.image.load(path.join(path_addon, 'medieval-tavern_00000.png')).convert_alpha()
 tavern2_img = pygame.transform.scale(tavern2_img,(2*tavern2_img.get_width(),2*tavern2_img.get_height()))
 
+test_demon = Entity(7180, 1940, demon, 'test_demon', 'Monster',
+                  demon_1_animation, size=(500, 400), decalage=[60, 0])
+demon_shadow = pygame.image.load(
+    path.join(path_demon_walk, 'demon_shadow.png')).convert_alpha()
+demon_shadow = pygame.transform.scale(
+    demon_shadow, (10*demon_shadow.get_width(), 10*demon_shadow.get_height()))
+test_demon.shadow = demon_shadow
 
 vendeur_1 = pygame.transform.scale(vendeur_1,(3*vendeur_1.get_width(),3*vendeur_1.get_height()))
 entity_1 = Entity(9250-tavern_img.get_width()//2,175-tavern_img.get_height()//2,tavern_img,'Tavern','Building')
@@ -107,6 +115,7 @@ list_mooving_entity.append(squelton_13)
 list_mooving_entity.append(squelton_14)
 list_mooving_entity.append(squelton_15)
 list_mooving_entity.append(squelton_16)
+list_mooving_entity.append(test_demon)
 '''list_mooving_entity.append(dark_wizard)
 list_mooving_entity.append(wizard)
 

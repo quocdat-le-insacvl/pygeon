@@ -69,7 +69,7 @@ class Case():
 
 
 class Map():
-    def __init__(self,path,list_static_entity):
+    def __init__(self,path,list_static_entity,cubesize=190):
         self.path = path
         self.collision = []
         self.collision_change_camera = []
@@ -79,7 +79,7 @@ class Map():
         self.map = load_map(path)
         self.display = pygame.Surface((18000,10000))
         self.display_tree = pygame.Surface((18000,10000))
-        self.cubesize = 190
+        self.cubesize = cubesize
         self.static_entity = list_static_entity
         self.mooving_entity = list_mooving_entity
         self.dict_collision = dict()
@@ -144,6 +144,14 @@ class Map():
                         n = random.randint(1,5)
                         self.display.blit(grass['grass_' + str(n) + '.png'],(x,y))
                         self.change_camera_entity.append((x,y))
+                    if self.map[i][j] == 'd':
+                        self.display.blit(road,(x,y))
+                        #self.display.blit(comptoir,(x,y))
+                    if self.map[i][j] == 'a':
+                        self.collision.append((x,y))
+                        self.display.blit(wall,(x,y-100))
+                    if self.map[i][j] == 'b':
+                        self.display.blit(void,(x,y-100))
                 j+=1
             i+=1
         i=0
@@ -186,6 +194,8 @@ class Game():
 
     def main_game(self):
         global time_line
+        self.player.name = 'f'
+        self.player.classe = 'l'
         center_x,center_y=0,0
         '''Set de toute les variables d'actions'''
         transition = pygame.Surface((screen.get_width(),screen.get_height()))
@@ -265,7 +275,8 @@ class Game():
             if self.player.swap_entity:
                 entity_re_print = self.player.find_nearest_entity(list_static_entity)
                 screen.blit(entity_re_print.img,(entity_re_print.pos_x+center_x,entity_re_print.pos_y+center_y))
-        
+            
+            
             '''Actualiser case interaction + animations'''
             
             #for x in list_mooving_entity:
@@ -282,10 +293,13 @@ class Game():
             #     list_mooving_entity[2].move_entity([-2,1],self.map,self.player)
             # if f == 300:
             #     f=0
-            for x in list_mooving_entity:
-                x.animate_map(frame)
-            print_mooving_entity(screen,list_mooving_entity,center_x,center_y)
-            
+            #for x in list_mooving_entity:
+            #    x.animate_map(frame)
+            print_mooving_entity(self, screen,list_mooving_entity,center_x,center_y)
+            for entity in self.list_mooving_entity:
+                if entity.name == "test_demon":
+                    entity.pos_y += 1
+                    entity.pos_x += 3
 
             #self.print_frog(player_rect,screen,case_connue,center_x,center_y)
 
@@ -335,6 +349,9 @@ class Game():
                         self.map.init_map()"""
                     if event.key == K_u:
                         show_characteresheet = not show_characteresheet
+                    if event.key == K_l:
+                        self.map = map_2
+                        self.map.init_map()
                 if event.type == KEYUP:
                     if event.key == K_m:
                         self.zoom_map = False
@@ -352,6 +369,7 @@ class Game():
                 #pack_bis.loot_inventory(1000,500,self.player.inventaire)
             if show_characteresheet:
                 self.player.caracter_sheet()
+                show_characteresheet = False
             
             draw_text("FPS: %i, x : %i , y : %i" % (clock.get_fps(), self.player.pos_x,
                                                     self.player.pos_y), ColderWeather, WHITE, screen, 100, 100)
@@ -505,6 +523,8 @@ class Game():
 
 map_1 = Map("map.txt",list_static_entity)
 map_1.init_map()
+map_2 = Map(r"C:\Users\Anthony\Desktop\pygeon\tavern_1",[])
+map_2.init_map()
 game = Game(player,map_1)
 game.main_game()
 game.print_combat_screen([entity_2])

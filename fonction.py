@@ -23,6 +23,12 @@ path_police = os.path.join(path_addon, 'Police')
 """def draw_text
     Affiche un text avec la police (font) avec la couleur (color) sur un pygame surface (surface) a la position x , y"""
 def draw_text(text, font, color, surface, x, y):
+    if color=="bl":
+        color=BLACK
+    if color=="b":
+        color=BROWN
+    if color=="y":
+        color=YELLOW
     textobj = font.render(text, 1, color)
     textrect = textobj.get_rect()
     textrect.topleft = (x, y)
@@ -249,9 +255,7 @@ def load_map(path):
         Return collision_entity List de position pour pixel_red (bloc de collision) permet l'interaction avec les entitées fixes"""
 """def print_mooving_entity
     Affiche les entités non static sur le display"""
-def print_mooving_entity(display,list_entity,center_x,center_y):
-    for i in range(len(list_entity)):
-        display.blit(list_entity[i].img,(list_entity[i].pos_x+center_x,list_entity[i].pos_y+center_y))
+
 
 def exit_checkevent(event):
     if event.type == pygame.QUIT:
@@ -271,9 +275,34 @@ def wyellow(police,msg):
     return police.render(msg, True, color.YELLOW)
 
 
+def replace_rect(rectsurface,rect):
+    """cette fonction permet de replacer un rectangle blit sur une surface sur les coordonnées du screen
+       (evidemment si la surface est scale ou reblit les coordonnées ne sont plus valides)"""
+    rect.x=rect.x+rectsurface.x
+    rect.y=rect.y+rectsurface.y
+    return rect
 
-    
+def init_buttonsas():
+    #initialise les boutons + et -
+    add=wbrown(astxt,"+")
+    buttonpa=pygame.transform.scale(buttonp, (70, add.get_height()))
+    buttonps=pygame.transform.scale(buttonp, (70, add.get_height()))
+    buttonpa.blit(add,(buttonpa.get_width()//2-add.get_width()//2,buttonpa.get_height()//2-add.get_height()/2))
+    sub=wbrown(astxt,"-")
+    buttonps.blit(sub,(buttonps.get_width()//2-sub.get_width()//2,buttonps.get_height()//2-sub.get_height()/2))
+    buttonAdd=pygame.transform.scale(button, (70, add.get_height()))
+    buttonSub=pygame.transform.scale(button, (70, add.get_height()))
+    buttonAdd.blit(add,(buttonAdd.get_width()//2-add.get_width()//2,buttonAdd.get_height()//2-add.get_height()/2))
+    buttonSub.blit(sub,(buttonSub.get_width()//2-sub.get_width()//2,buttonSub.get_height()//2-sub.get_height()/2))
+    return buttonAdd,buttonSub,buttonpa,buttonps
 
+def confirm_button():
+    t=wbrown(title,"CONFIRM")
+    confirm=pygame.transform.scale(button, (t.get_width()+20, t.get_height()))
+    confirmp=pygame.transform.scale(buttonp, (t.get_width()+20, t.get_height()))
+    confirm.blit(t, (10,5))
+    confirmp.blit(t, (10,5)) 
+    return confirm,confirmp
 
 def board_with_msg(message):
     #take a message as argument (string) and creat a board wich is returned
@@ -300,7 +329,22 @@ def screenSave():
     screensave.blit(screen,(0,0))
     return screensave
 
-
+def print_mooving_entity(game, display,list_entity,center_x,center_y):
+    for entity in list_entity:
+        # Dat's note : 
+        # if hidden, check if him go out of the zone visible
+        # Check if the monster in the fog => he is hidden !
+        if game.fog.surface.get_at((entity.pos_x, entity.pos_y)) != NIGHT_COLOR:
+            entity.is_hidden = False
+            entity.seen = True
+            display.blit(entity.display, (entity.pos_x + center_x, entity.pos_y+center_y))
+            entity.last_know_pos = (entity.pos_x, entity.pos_y)
+        else:
+            entity.is_hidden = True
+        # If he was seen but now he is hidden => draw his shadow (by the last position)
+        if entity.seen and entity.is_hidden:
+            display.blit(entity.shadow, (entity.last_know_pos[0] +
+                                         center_x, entity.last_know_pos[1] + center_y))
 
 
 

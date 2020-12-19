@@ -243,9 +243,9 @@ inv.ajouteritems(Mace1)
 inv.ajouteritems(Bow1)
 inv.ajouteritems(Spear11)
 inv.ajouteritems(Key1)
-#inv.add_random_drop(random.randint(0,15))
+#inv.add_random_drop(random.randint(1,5))
+
 running = True
 click = False
-
 
 
