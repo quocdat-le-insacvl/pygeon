@@ -369,7 +369,6 @@ def print_mooving_entity(game, display,list_entity,center_x,center_y):
                 entity.is_hidden = True
         except:
             print("Error of entity : ", entity.name, entity , " out of the map !")
-
         # If he was seen but now he is hidden => draw his shadow (by the last position)
         if entity.seen and entity.is_hidden:
             display.blit(entity.shadow, (entity.last_know_pos[0] +
