@@ -522,11 +522,11 @@ class Game():
 
 map_1 = Map("map.txt",list_static_entity)
 map_1.init_map()
-map_2 = Map(r"C:\Users\Anthony\Desktop\pygeon\tavern_1",[])
+map_2 = Map(r"tavern_1",[])
 map_2.init_map()
 game = Game(player,map_1)
-game.main_game()
-game.print_combat_screen([entity_2])
+#game.main_game()
+#game.print_combat_screen([entity_2])
 #game.main_game()
 #running = True
 #click = False

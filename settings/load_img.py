@@ -50,6 +50,11 @@ DK = pygame.image.load(path.join(path_intro_menu, 'f11.png')).convert_alpha()
 pixel_red = pygame.image.load(path.join(path_addon, 'Collide.png')).convert()
 pixel_red = pygame.transform.scale(pixel_red,(200,120))
 pixel_red.set_colorkey((255,255,255))
+
+collide_map = pygame.image.load(path.join(path_addon,'map_collide.png')).convert()
+
+
+
 board_medium = pygame.image.load(path.join(path_menu,'UI board Medium  parchment.png'))
 
 end_game = pygame.image.load(path.join(path_addon, 'end_game.png')).convert_alpha()
@@ -186,7 +191,7 @@ floor_tavern = pygame.transform.scale(floor_tavern,(floor_tavern.get_width(),flo
 def board_init(i=0):
     # create a board and return it, take in arguments the size (tuple) of the board
     if i==0:
-        return pygame.image.load(r'\Users\Anthony\Desktop\pygeon\Addon\Menu\UI board Large  parchment.png').convert_alpha()
+        return pygame.image.load(path.join(path_menu, r'UI board Large  parchment.png')).convert_alpha()
     if i==1:
-        return pygame.image.load(path.join(path_addon,r'\Menu\UI board Large stone.png')).convert_alpha()
+        return pygame.image.load(path.join(path_menu,r'UI board Large stone.png')).convert_alpha()
 

@@ -6,6 +6,7 @@ from settings.police import *
 from settings.load_img import *
 from settings.color import *
 import random
+import time
 # from script import demon_shadow
 
 
@@ -140,6 +141,7 @@ def load_game(click,perso):
         click=False
         num = 0
         display = pygame.Surface((1980,1024))
+        first_blit = True
         while running:
 
             printbackgrounds(display)
@@ -233,7 +235,25 @@ def load_game(click,perso):
 
             screen.blit(pygame.transform.scale(display,WINDOWS_SIZE),(0,0))
             running,click = basic_checkevent(click)
+            if not first_blit:pygame.display.update()
+            first_blit = transition(5,screen.copy(),first_blit)
+
+def transition(ms,capture_screen,first_blit):
+    if first_blit:
+        transition = pygame.Surface((screen.get_width(),screen.get_height()))
+        transition.fill((0,0,0))
+        for x in range(255):
+            transition.set_alpha(255-x)
+            screen.blit(capture_screen,(0,0))
+            screen.blit(transition,(0,0))
             pygame.display.update()
+            pygame.time.wait(ms)
+    screen.blit(capture_screen,(0,0))
+    return False
+
+
+
+
 
 """ def load_map
     Chargement de la carte, crée une nouvelle ligne a chaque \n
@@ -335,13 +355,21 @@ def print_mooving_entity(game, display,list_entity,center_x,center_y):
         # Dat's note : 
         # if hidden, check if him go out of the zone visible
         # Check if the monster in the fog => he is hidden !
-        if game.fog.surface.get_at((entity.pos_x, entity.pos_y)) != NIGHT_COLOR:
-            entity.is_hidden = False
-            entity.seen = True
-            display.blit(entity.display, (entity.pos_x + center_x, entity.pos_y+center_y))
-            entity.last_know_pos = (entity.pos_x, entity.pos_y)
-        else:
-            entity.is_hidden = True
+        # Use try to prevent the entity who is out of the map 
+        try : 
+            # Dat's note : 
+            # if hidden, check if him go out of the zone visible
+            # Check if the monster in the fog => he is hidden !
+            if game.fog.surface.get_at((entity.pos_x, entity.pos_y)) != NIGHT_COLOR:
+                entity.is_hidden = False
+                entity.seen = True
+                display.blit(entity.display, (entity.pos_x + center_x, entity.pos_y+center_y))
+                entity.last_know_pos = (entity.pos_x, entity.pos_y)
+            else:
+                entity.is_hidden = True
+        except:
+            print("Error of entity : ", entity.name, entity , " out of the map !")
+
         # If he was seen but now he is hidden => draw his shadow (by the last position)
         if entity.seen and entity.is_hidden:
             display.blit(entity.shadow, (entity.last_know_pos[0] +
