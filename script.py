@@ -49,14 +49,6 @@ vendeur_1 = pygame.image.load(path.join(path_seller, 'seller_5/seller_1_idle_1.p
 tavern2_img = pygame.image.load(path.join(path_addon, 'medieval-tavern_00000.png')).convert_alpha()
 tavern2_img = pygame.transform.scale(tavern2_img,(2*tavern2_img.get_width(),2*tavern2_img.get_height()))
 
-test_demon = Entity(7180, 1940, demon, 'test_demon', 'Monster',
-                  demon_1_animation, size=(500, 400), decalage=[60, 0])
-demon_shadow = pygame.image.load(
-    path.join(path_demon_walk, 'demon_shadow.png')).convert_alpha()
-demon_shadow = pygame.transform.scale(
-    demon_shadow, (10*demon_shadow.get_width(), 10*demon_shadow.get_height()))
-test_demon.shadow = demon_shadow
-
 vendeur_1 = pygame.transform.scale(vendeur_1,(3*vendeur_1.get_width(),3*vendeur_1.get_height()))
 entity_1 = Entity(9250-tavern_img.get_width()//2,175-tavern_img.get_height()//2,tavern_img,'Tavern','Building')
 entity_2 = Entity(10000,1000,demon,'demon_1','Monster',demon_1_animation,size=(500,400),decalage=[60,0])
@@ -88,6 +80,11 @@ squelton_16 = Entity(9765,1700,wizard_hide["wizard_idle_1.png"],"wizard","Monste
 
 dark_wizard = Entity(10000,400,dark_wizard_idle["dark_wizard_idle_1.png"],"dark_wizard","Monster",dark_wizard_animation,size=(500,500),decalage=[70,60])
 
+
+list_static_entity = []
+list_mooving_entity = []
+
+"""
 # For test 
 test_demon = Entity(7180, 1940, demon, 'test_demon', 'Monster',
                   demon_1_animation, size=(500, 400), decalage=[60, 0])
@@ -96,10 +93,11 @@ demon_shadow = pygame.image.load(
 demon_shadow = pygame.transform.scale(
     demon_shadow, (10*demon_shadow.get_width(), 10*demon_shadow.get_height()))
 test_demon.shadow = demon_shadow
-###
+# list_mooving_entity.append(test_demon)
 
-list_static_entity = []
-list_mooving_entity = []
+###
+"""
+
 
 list_static_entity.append(entity_1)
 
@@ -125,7 +123,6 @@ list_mooving_entity.append(squelton_13)
 list_mooving_entity.append(squelton_14)
 list_mooving_entity.append(squelton_15)
 list_mooving_entity.append(squelton_16)
-list_mooving_entity.append(test_demon)
 '''list_mooving_entity.append(dark_wizard)
 list_mooving_entity.append(wizard)
 
