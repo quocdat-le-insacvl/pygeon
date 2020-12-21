@@ -30,6 +30,7 @@ class Entity():
         self.seen = False
         self.last_know_pos = (0, 0)
         self.shadow = img
+        
     def update_center(self):
         self.center = [self.pos_x + self.img.get_width()//2,self.pos_y + self.img.get_height()//2]
     def animate(self):
