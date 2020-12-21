@@ -90,9 +90,9 @@ class Perso(Entity):
     def point_cost(self,i=0):
         "actualise les stats en fonction des points dans ces dernières, si i=0 actualise les stats constantes, si i=1 les ephemeres"
         if i==0:
-            self.stats=[8+self.points[n] if self.stats[n]<14 else 14+(self.points[n]-6)//2 if 14<=self.stats[n]<16 else 16+(self.points[n]-10)//3 if 16<=self.stats[n]<18 else 18 if self.stats[n]==18 for n in range(6)]
+            self.stats=[8+self.points[n] if self.stats[n]<14 else 14+(self.points[n]-6)//2 if 14<=self.stats[n]<16 else 16+(self.points[n]-10)//3 if 16<=self.stats[n]<18 else 18 for n in range(6)]
         if i==1:
-            self.stats_eph[(8+self.points_eph[n]-self.stats[n] if self.stats[n]<14 else 14-self.stats[n]+(self.points[n]-6)//2 if 14<=self.stats[n]<16 else 16-self.stats[n]+(self.points[n]-10)//3 if 16<=self.stats[n]<18 else 0 if self.stats[n]==18 for n in range(6))]
+            self.stats_eph[(8+self.points_eph[n]-self.stats[n] if self.stats[n]<14 else 14-self.stats[n]+(self.points[n]-6)//2 if 14<=self.stats[n]<16 else 16-self.stats[n]+(self.points[n]-10)//3 if 16<=self.stats[n]<18 else 0 for n in range(6))]
 
     def affichage_lvlup(self):
         #manage the display of the lvl up (private)
@@ -208,9 +208,9 @@ class Perso(Entity):
         rectboard=pygame.Rect(screen.get_width()//2-board.get_width()//2,20,0,0)
         click=False
         "initialise la liste de boutons cliquable"
-        board1=self.boardSkill(board.copy(),av)
-        Blist=self.buttons_init(board1,rectboard)
+        Blist=self.buttons_init(board,rectboard)
         rect_confirm=self.confirm(board,rectboard,av)
+        board1=self.boardSkill(board.copy(),av)
         while running:
             "actualise le board avec les skills points et les buttons si un changement a été fait"
             board1=self.boardSkill(board.copy(),av)
@@ -261,12 +261,12 @@ class Perso(Entity):
         "actualise les boutons en fonction de av (aivable points) et du clique"
         for n in range(6):
             if av==0:
-                board.blit(buttonpa,(355,120+60*n+board.get_height()//3))
+                board.blit(buttonpa,(345,120+60*n+board.get_height()//3))
             else:
                 if n*2==selected:
-                    board.blit(buttonpa,(355,120+60*n+board.get_height()//3))
+                    board.blit(buttonpa,(345,120+60*n+board.get_height()//3))
                 else:
-                    board.blit(buttona,(355,120+60*n+board.get_height()//3))
+                    board.blit(buttona,(345,120+60*n+board.get_height()//3))
             if((n+1)*2-1)==selected:
                 board.blit(buttonps,(230,120+60*n+board.get_height()//3))
             elif self.stats_eph[n]>0:
@@ -292,4 +292,5 @@ class Perso(Entity):
 
 
     
+
 
