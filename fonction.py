@@ -291,3 +291,18 @@ def bonus(attribut): #pour assigner a chaque attribut les pts bonus correspondan
 
 def generate_randint(a,b):
     return random.randint(a,b)
+
+
+def creation_box(img,text,font,color,display,x,y,text2=''):
+        text_width, text_height = font.size(text)
+        text2_width, text2_height = font.size(text2)
+        t_width, t_height = max(text_width, text2_width), max(text_height,text2_height)
+        if img.get_width() < t_width:
+            img = pygame.transform.scale(img,(t_width+50,img.get_height()))
+        display.blit(img,(x,y))
+        box_crea = pygame.Rect(x,y,img.get_width(),img.get_height())
+        draw_text(text,font,color,display,x+img.get_width()//2-text_width//2,y+img.get_height()+10-img.get_height())
+        if text2 != '':
+            draw_text(text2,font,color,display,x+img.get_width()//2-text_width//2,y+img.get_height()-img.get_height()//2)
+        
+        

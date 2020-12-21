@@ -9,8 +9,10 @@ from fonction import *
 key = list(Wikitem.keys())
 pixel_mask = pygame.mask.from_surface(pixel_red)
 class Perso():
-    def __init__(self,STR,DEX,CON,INT,WIS,CHA,hp,hp_max,inventaire,argent = 0,name=None,classe=None,level=1,xp=0):
+    def __init__(self,ac,STR,DEX,CON,INT,WIS,CHA,hp,hp_max,inventaire,argent = 0,name=None,classe=None,level=1,xp=0):
         self.name=name
+        self.ac = ac
+        self.hit = False
         self.classe = classe
         self.level = level
         self.xp = xp 
@@ -31,6 +33,7 @@ class Perso():
         self.avata = ava_perso
         self.tour = False
         self.resultat = 0
+        self.n_de = 6
         
         for i in range(0,6):     # 0 : HEAD 1 : TORSE 2 : COUE  3 BOTTE 4 : MAIN GAUCHE : 5 MAIN DROITE
             self.armor[i] = None   

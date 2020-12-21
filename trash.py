@@ -45,6 +45,7 @@ class Map():
         self.static_entity = list_static_entity
         self.mooving_entity = list_mooving_entity
         self.dict_collision = dict()
+        
     def load_map(self):
         self.map = load_map(self.path)
         self.collision = []

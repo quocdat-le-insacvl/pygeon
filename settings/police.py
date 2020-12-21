@@ -24,3 +24,4 @@ Drifftype = pygame.font.Font(path.join(path_police, 'Drifttype Solid.ttf'), LARG
 #Outrun_future =
 Rumbletumble = pygame.font.Font(path.join(path_police, 'rumbletumble.ttf'), LARGEUR//coeff2)
 ColderWeather_small = pygame.font.Font(path.join(path_police, 'ColderWeather-Regular.ttf'), 30)
+

@@ -10,7 +10,7 @@ pack_bis = Inventaire(5,5)
 #player = Perso_game(10,10,10,10,10,10,100,150,pack_bis,walk_bottom['walk_bottom_' + str(1) +'.png'],9000,1000)
 player = Perso_game(10,10,10,10,10,10,100,100,pack,walk_bottom['walk_bottom_' + str(1) +'.png'],9000,1000,player_animation)
 player.xp = 500
-playerbis = Perso(20,20,20,20,20,20,20,20,pack)
+playerbis = Perso(0,20,20,20,20,20,20,20,20,pack)
 
 
 pack_bis.ajouteritems(Sword9)

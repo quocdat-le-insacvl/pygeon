@@ -1,4 +1,4 @@
-import pygame
+import pygame as pg
 from Dice import Dice
 from fonction import generate_randint
 
@@ -8,52 +8,32 @@ class DiceEvent:
         #self.compteur = 0
         self.velocity = 2
         self.damage = 0
-        self.all_dices = pygame.sprite.Group()
+        self.all_dices = pg.sprite.Group()
         self.resultat = 0
-        self.dice = Dice(20)
+        self.dice = Dice(20,combat,life_time=1000)
         self.combat = combat
         self.start = True
         self.actdamage = False
         self.game = game
+        self.time = 1000
+        self.resultat = 0
+        self.resultat_monstreatk, self.resultat_degats = 0, 0
 
-    def compter(self):
-        self.combat.compteur += self.velocity
-
-    def limit(self):
-        return self.combat.compteur == 100
-
-    def reset(self):
-        self.combat.compteur = 0
     
     def reset_all(self):
         self.combat.message = "-"
         self.damage = 0 ###
         self.resultat = 0 ###
 
-    def load_dice(self):
+    def load_dice(self,i):
+        self.dice.life_time = self.time + i
         self.all_dices.add(self.dice)
 
-    def check(self):
-        if self.limit():
-            self.all_dices.remove(self.dice)
-            self.combat.pause = True
-            self.combat.stop = True
-    
-
-    def pause(self):
-        if self.limit():
-            self.all_dices.remove(self.dice)
-            self.dice = Dice("pause")##
-            self.load_dice()
-            self.reset()
-    
-    def resume(self,n):
+    def resume(self,n,i=1000,birthday_time=0):
         if n == 6:
-            self.actdamage = True
-        self.all_dices.remove(self.dice)
+            self.combat.actdamage = True #
         self.combat.pause = False
-        self.dice = Dice(n)
-        self.load_dice()
-        self.reset()
+        self.dice = Dice(n,self.combat,born = birthday_time)
+        self.load_dice(i)
 
 
