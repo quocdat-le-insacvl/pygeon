@@ -1,4 +1,3 @@
-from competences import Competence
 from basic_actions import Actions
 from settings.screen import screen,WINDOWS_SIZE
 from settings import color
@@ -35,18 +34,19 @@ class Perso(Entity):
         self.WIS = WIS
         self.CHA = CHA
         self.stats=[self.STR,self.DEX,self.CON,self.INT,self.WIS,self.CHA]
-        self.armor_class=self.calcul_armor()
         self.stats_eph=[0,0,0,0,0,0]
-        self.av_points=27
+        self.points=[0,0,0,0,0,0]
+        self.points_eph=[0,0,0,0,0,0]
+        self.skills=[0,0,0,0,0,0]
+        self.armor_class=self.calcul_armor()
+        self.av_points=25
         self.pos_xp = xp
         self.hit_dice=hit_dice
         self.nb_hit_dice=0
-        self.competence=Competence(self.classe)
         self.competencesList=[]
-        self.skills=[0,0,0,0,0,0,0]
         ### Actions during the game ###
         self.action=Actions(self.attack)
-        self.feats=[]
+        self.next_hd_attack=self.action.dice(20)
         ### extern elements ###
         self.difficulty = 10
         self.inventaire = inventaire
@@ -66,27 +66,33 @@ class Perso(Entity):
         if self.level==0:
             print("selectionner vos premiers attributs")
             self.level=1
-            self.competence.competence1()
+            print("level1")
             self.nb_hit_dice=1
-            self.hp_max=8+self.ability_score(2) 
+            self.hp_max=8+self.score("con") 
             self.hp=self.hp_max
         elif self.xp>=lvl_XP[self.level-1]:
             self.level+=1
             self.affichage_lvlup()
             self.av_points+=2+self.ability_score(3)
             ######Global bonus for the level 2######
-            if self.level==2: self.competence.competence3()
-            elif self.level==3: self.competence.competence3()
+            if self.level==2: print("level2")
+            elif self.level==3: print("level3")
             ######Global bonus for the level 4######
             elif self.level==4: 
-                self.competence.competence4()
+                print("level4")
                 #choice
-            elif self.level==5: self.competence.competence5()
             #fin des competence initialisation des statistiques de base
             self.nb_hit_dice=self.level
-            self.hp_max=8+self.ability_score(2)
-            self.hp_max+=(self.level-1)*(self.hit_dice/2+self.ability_score(2))
+            self.hp_max=8+self.score("con")
+            self.hp_max+=(self.level-1)*(self.hit_dice//2+self.score("con"))
             self.hp=self.hp_max
+
+    def point_cost(self,i=0):
+        "actualise les stats en fonction des points dans ces dernières, si i=0 actualise les stats constantes, si i=1 les ephemeres"
+        if i==0:
+            self.stats=[8+self.points[n] if self.stats[n]<14 else 14+(self.points[n]-6)//2 if 14<=self.stats[n]<16 else 16+(self.points[n]-10)//3 if 16<=self.stats[n]<18 else 18 if self.stats[n]==18 for n in range(6)]
+        if i==1:
+            self.stats_eph[(8+self.points_eph[n]-self.stats[n] if self.stats[n]<14 else 14-self.stats[n]+(self.points[n]-6)//2 if 14<=self.stats[n]<16 else 16-self.stats[n]+(self.points[n]-10)//3 if 16<=self.stats[n]<18 else 0 if self.stats[n]==18 for n in range(6))]
 
     def affichage_lvlup(self):
         #manage the display of the lvl up (private)
@@ -95,8 +101,15 @@ class Perso(Entity):
         screen.blit(self.lvl_up_img,(self.pos_x+100,self.pos_y))
         time=pygame.time.get_ticks()
         pygame.display.flip()
-        while(pygame.time.get_ticks()<time+1000):
+        running=True
+        while(pygame.time.get_ticks()<time+1000 and running):
             for event in pygame.event.get():
+                if event.type==pygame.KEYDOWN:
+                    if event.key==K_ESCAPE:
+                        running=False
+                        pygame.quit()
+                elif event.type==pygame.MOUSEBUTTONDOWN or event.type==pygame.KEYDOWN:
+                    running=False
                 if event.type==pygame.QUIT:
                     running=False
                     pygame.quit()
@@ -108,8 +121,8 @@ class Perso(Entity):
     ####### End lvl def #######
 
     def ability_score(self,caracteristique):
-        #permet d'augmenter ou de diminuer ses chances de réussir une action
-        #STR=0, DEX=1, CON=2, INT=3, WIS=4, CHA=5
+        """calcul basic du score en fonction d'une caractéristique passée en paramètre
+        STR=0, DEX=1, CON=2, INT=3, WIS=4, CHA=5"""
 
         return (self.stats[caracteristique]-10)//2
 
@@ -124,8 +137,8 @@ class Perso(Entity):
 
     
     def rest(self):
-        #vie que récupère le joueur après s'être reposé
-        #coder un lit pour que le joueur puisse se reposer, faut faire le temps encore
+        """vie que récupère le joueur après s'être reposé
+        coder un lit pour que le joueur puisse se reposer, faut faire le temps encore"""
         self.hp+=self.level*self.action.dice(self.hit_dice)
         if self.hp>self.hp_max:
             self.hp=self.hp_max
@@ -141,19 +154,21 @@ class Perso(Entity):
         pygame.draw.rect(surface, bar_color, bar_position)
 
     def score(self,comp):
-        #basic version of the skills effect just to provide proficiency
-        #this fonction must be call for all the calculs wich need ability modifier
+        """basic version of the skills effect just to provide proficiency
+        this fonction must be call for all the calculs wich need ability modifier"""
         select={"str" : 0,"dex" : 1, "con" : 2, "int" : 3, "wis" : 4, "cha" : 5}
         assert(comp in select), "wrong argument for score()" 
         if self.skills[select[comp]]:
-            return ability_score(self.skills[select[comp]])+self.proficiency
+            return self.ability_score(select[comp])+self.proficiency
+        else :
+            return self.ability_score(select[comp])
 
     def calcul_armor(self, type_of_calcul=0):
-        # refresh the value of the class armor, must add calcul with 
+        """ refresh the value of the class armor, must add calcul with """
         assert(type_of_calcul==1 or type_of_calcul==0), "must add a valide type of calcul : 1 without armor"
-        return self.ability_score(1)+10
+        return self.score("dex")+10
         if(type_of_calcul==1):
-            return self.ability_score(1)+10
+            return self.score("dex")+10
     
     ######## All the following fonctions will be for the caractersheet ############
 
@@ -202,16 +217,18 @@ class Perso(Entity):
             self.confirm(board1,rectboard,av)
             self.buttons_select(board1,av)  
             
-            indice=self.collides(pygame.mouse.get_pos(),Blist)
+            indice=collides(pygame.mouse.get_pos(),Blist)
             "ici on vérifie si le joueur a fait un click et où"
             if click and indice!=-1:
                 self.buttons_select(board1,av,indice)
                 if av>0 and indice%2==0:
                     av-=1
-                    self.stats_eph[(indice+1)//2]+=1
+                    self.points_eph[(indice+1)//2]+=1
+                    self.point_cost(1)
                 elif indice%2==1 and self.stats_eph[indice//2]!=0:
                     av+=1
-                    self.stats_eph[indice//2]-=1
+                    self.points_eph[indice//2]-=1
+                    self.point_cost(1)
             elif click and rect_confirm.collidepoint(pygame.mouse.get_pos()):
                 self.confirm(board1,rectboard,av,True)
             screen.blit(board1,(screen.get_width()//2-board.get_width()//2,20))
@@ -258,11 +275,13 @@ class Perso(Entity):
                 board.blit(buttonps,(230,120+60*n+board.get_height()//3))
     
     def confirm(self,board,rectboard, chang=0, change=False):
-        #permet de creer un bouton de confirmation pour l'attribut av_points, puis peut changer cette attribut
+        """permet de creer un bouton de confirmation pour l'attribut av_points, puis peut changer cette attribut"""
         if change:
                 self.av_points=chang
-                self.STR,self.DEX,self.CON,self.INT,self.WIS,self.CHA=(self.stats[n]+self.stats_eph[n] for n in range(len(self.stats)))
-                self.stats=[self.STR,self.DEX,self.CON,self.INT,self.WIS,self.CHA]
+                self.points=self.points+self.points_eph
+                self.point_cost()
+                #self.stats=[self.stats[n]+self.stats_eph[n] for n in range(len(self.stats))]
+                self.points_eph=[0,0,0,0,0,0]
                 self.stats_eph=[0,0,0,0,0,0]
         if chang!=self.av_points:
             rect=replace_rect(rectboard,board.blit(confirm, (600,board.get_height()//2+200)))
@@ -272,11 +291,5 @@ class Perso(Entity):
 
 
 
-    def collides(self,pos,listrect):
-        "vérifie la collision d'un point avec une list passés en paramètre"
-        for n in range(len(listrect)):
-            if listrect[n].collidepoint(pos):
-                return n
-        return -1
     
 

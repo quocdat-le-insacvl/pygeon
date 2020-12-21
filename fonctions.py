@@ -14,6 +14,7 @@ def exit_checkevent(event):
             return False
     return True
 
+"""quelques fonctions pour accélerer l'écriture d'une certiane couleur"""
 def wgrey(police,msg):
     return police.render(msg, True, color.LIGHT_GREY)
 def wbrown(police,msg):
@@ -24,7 +25,7 @@ def wyellow(police,msg):
     return police.render(msg, True, color.YELLOW)
 
 def board_init(i=0):
-    # create a board and return it, take in arguments the size (tuple) of the board
+    # create a board and return it
     if i==0:
         return parchment.copy()
     if i==1:
@@ -34,19 +35,22 @@ def board_init(i=0):
 def board_with_msg(message):
     #take a message as argument (string) and creat a board wich is returned
     assert(len(message)<35 and type(message)==str), "message invalid in boarb_with_message"
-    text2=police.Outrun_future.render(message,True,color.RED)
-    board=pygame.transform.scale(pygame.image.load(r"Addon\Menu\UI board Small  parchment.png"),(text2.get_width()+200,text2.get_height()*4))
-    board.blit(text2,(board.get_width()//2-text2.get_width()//2,text2.get_height()+20))
+    text2=police.Outrun_future.render(message,True,color.BROWN)
+    board=pygame.transform.scale(pygame.image.load(r"Addon\Menu\UI board Small  parchment.png"),(int(text2.get_width()*1.2),text2.get_width()//2))
+    board.blit(text2,(board.get_width()//2-text2.get_width()//2,text2.get_height()))
     return board
 
-def choices(board,choices):
+def choices_clickable(board,choices,rectboard=pygame.Rect((0,0),(0,0))):
+    """prend en argument un liste de choix et un board, les appliquent sur ce dernier,
+     si l'on veut recuperer des rects valides donner rectboard en argument"""
     assert(type(board)==pygame.Surface), "choices need a surface"
     assert(len(choices)<=5), "to much choice"
     assert((type(n)==pygame.Surface for n in choices)), "the choices are an img (surface)"
+    listrect=[]
     for n in range(len(choices)):
         choices[n]=pygame.transform.scale(choices[n], (board.get_width()//(len(choices)+1), board.get_height()//3))
-        board.blit(choices[n],(choices[n].get_width()//(len(choices)+1)*(n+1)+choices[n].get_width()*n,board.get_height()-choices[n].get_height()-30))
-    return board
+        listrect.append(replace_rect(rectboard,board.blit(choices[n],(choices[n].get_width()//(len(choices)+1)*(n+1)+choices[n].get_width()*n,int(board.get_height()*0.8)-choices[n].get_height()))))
+    return listrect
 
 def screenSave():
     #save the current screen on a surface wich is returned
@@ -76,12 +80,20 @@ def init_buttonsas():
     return buttonAdd,buttonSub,buttonpa,buttonps
 
 def confirm_button():
+    """initialise un bouton de confirmation"""
     t=wbrown(title,"CONFIRM")
     confirm=pygame.transform.scale(button, (t.get_width()+20, t.get_height()))
     confirmp=pygame.transform.scale(buttonp, (t.get_width()+20, t.get_height()))
     confirm.blit(t, (10,5))
     confirmp.blit(t, (10,5)) 
     return confirm,confirmp
+
+def collides(pos,listrect):
+    "vérifie la collision d'un point avec une list passés en paramètre"
+    for n in range(len(listrect)):
+        if listrect[n].collidepoint(pos):
+            return n
+    return -1
 
 title=pygame.font.Font(r'Addon\Police\ColderWeather-Regular.ttf', board_init().get_height()//10)
 title2=pygame.font.Font(r'Addon\Police\21 Glyphs.ttf', board_init().get_height()//10)

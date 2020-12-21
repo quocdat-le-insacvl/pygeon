@@ -91,3 +91,9 @@ rune_1 = pygame.image.load(r"Addon\rune_2.png").convert_alpha()
 
 sheep = pygame.image.load(r'Addon\sheep.PNG').convert()
 sheep.set_colorkey((255,255,255))
+
+"lvl pour les spells"
+
+lvl0=pygame.image.load(r"Addon\spell\lvl0.png")
+lvl1=pygame.image.load(r"Addon\spell\lvl1.png")
+lvl2=pygame.image.load(r"Addon\spell\lvl2.png")

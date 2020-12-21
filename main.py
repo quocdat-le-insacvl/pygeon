@@ -12,8 +12,10 @@ while running:
     n=pygame.time.get_ticks()
     pygame.display.flip()
     for event in pygame.event.get():
-        if event.type==pygame.MOUSEBUTTONUP:
-            interface.perso.caracter_sheet()
+        if event.type==pygame.MOUSEBUTTONDOWN:
+            i=interface.perso.magic_missile()
+            for n in i:
+                print(n)
         if event.type == pygame.KEYDOWN:
             if event.key==pygame.K_ESCAPE:
                 running=False

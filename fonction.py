@@ -101,7 +101,7 @@ def basic_checkevent(click):
     click = False
     for event in pygame.event.get():
         if event.type == QUIT:
-            sys.exit()
+            quit()
         if event.type == KEYDOWN:
             if event.key == K_ESCAPE:
                 return False,click
