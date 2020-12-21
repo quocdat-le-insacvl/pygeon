@@ -87,12 +87,6 @@ class Perso(Entity):
             self.hp_max+=(self.level-1)*(self.hit_dice//2+self.score("con"))
             self.hp=self.hp_max
 
-    def point_cost(self,i=0):
-        "actualise les stats en fonction des points dans ces dernières, si i=0 actualise les stats constantes, si i=1 les ephemeres"
-        if i==0:
-            self.stats=[8+self.points[n] if self.stats[n]<14 else 14+(self.points[n]-6)//2 if 14<=self.stats[n]<16 else 16+(self.points[n]-10)//3 if 16<=self.stats[n]<18 else 18 for n in range(6)]
-        if i==1:
-            self.stats_eph[(8+self.points_eph[n]-self.stats[n] if self.stats[n]<14 else 14-self.stats[n]+(self.points[n]-6)//2 if 14<=self.stats[n]<16 else 16-self.stats[n]+(self.points[n]-10)//3 if 16<=self.stats[n]<18 else 0 for n in range(6))]
 
     def affichage_lvlup(self):
         #manage the display of the lvl up (private)
@@ -221,19 +215,25 @@ class Perso(Entity):
             "ici on vérifie si le joueur a fait un click et où"
             if click and indice!=-1:
                 self.buttons_select(board1,av,indice)
-                if av>0 and indice%2==0:
+                if av>0 and indice%2==0 and self.stats[indice//2]+self.stats_eph[indice//2]<18:
                     av-=1
                     self.points_eph[(indice+1)//2]+=1
-                    self.point_cost(1)
+                    self.stats_eph=[8+self.points_eph[n]+self.points[n]-self.stats[n] if self.stats[n]+self.stats_eph[n]<14 else 14-self.stats[n]+
+                      (self.points_eph[n]+self.points[n]-6)//2 if 14<=self.stats[n]+self.stats_eph[n]<16 else 16-self.stats[n]+(self.points_eph[n]+
+                      self.points[n]-10)//3 for n in range(6)]
                 elif indice%2==1 and self.stats_eph[indice//2]!=0:
                     av+=1
                     self.points_eph[indice//2]-=1
-                    self.point_cost(1)
+                    self.stats_eph=[8+self.points_eph[n]+self.points[n]-self.stats[n] if self.stats[n]+self.stats_eph[n]<14 else 14-self.stats[n]+
+                      (self.points_eph[n]+self.points[n]-6)//2 if 14<=self.stats[n]+self.stats_eph[n]<16 else 16-self.stats[n]+(self.points_eph[n]+
+                      self.points[n]-10)//3 for n in range(6)]
             elif click and rect_confirm.collidepoint(pygame.mouse.get_pos()):
                 self.confirm(board1,rectboard,av,True)
             screen.blit(board1,(screen.get_width()//2-board.get_width()//2,20))
             pygame.display.flip()
             running,click=basic_checkevent(click)
+        self.stats_eph=[0,0,0,0,0,0]
+        self.points_eph=[0,0,0,0,0,0]
         screen.blit(screenS,(0,0))
     
 
@@ -252,7 +252,10 @@ class Perso(Entity):
         "initialise les boutons + et -"
         buttonList=[]
         for n in range(6):
-            buttonList.append(replace_rect(rectboard,board.blit(buttona,(345,120+60*n+board.get_height()//3))))
+            if self.stats_eph[n]+self.stats[n]!=18:
+                buttonList.append(replace_rect(rectboard,board.blit(buttona,(345,120+60*n+board.get_height()//3))))
+            else:
+                buttonList.append(replace_rect(rectboard,board.blit(buttonpa,(345,120+60*n+board.get_height()//3))))
             buttonList.append(replace_rect(rectboard,board.blit(buttonps,(230,120+60*n+board.get_height()//3))))
         return buttonList
     
@@ -261,6 +264,8 @@ class Perso(Entity):
         "actualise les boutons en fonction de av (aivable points) et du clique"
         for n in range(6):
             if av==0:
+                board.blit(buttonpa,(345,120+60*n+board.get_height()//3))
+            elif self.stats_eph[n]+self.stats[n]==18:
                 board.blit(buttonpa,(345,120+60*n+board.get_height()//3))
             else:
                 if n*2==selected:
@@ -278,9 +283,9 @@ class Perso(Entity):
         """permet de creer un bouton de confirmation pour l'attribut av_points, puis peut changer cette attribut"""
         if change:
                 self.av_points=chang
-                self.points=self.points+self.points_eph
-                self.point_cost()
-                #self.stats=[self.stats[n]+self.stats_eph[n] for n in range(len(self.stats))]
+                self.points=[self.points[n]+self.points_eph[n] for n in range(6)]
+                self.stats=[8+self.points[n] if self.stats[n]+self.stats_eph[n]<14 else 14+(self.points[n]-6)//2 if 14<=self.stats[n]+
+                            self.stats_eph[n]<16 else 16+(self.points[n]-10)//3 if 16<=self.stats[n]+self.stats_eph[n]<18 else 18 for n in range(6)]
                 self.points_eph=[0,0,0,0,0,0]
                 self.stats_eph=[0,0,0,0,0,0]
         if chang!=self.av_points:
