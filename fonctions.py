@@ -2,6 +2,7 @@ import pygame
 from settings import police,color
 from settings.screen import WINDOWS_SIZE,screen
 from settings.load_img import parchment,img_description
+from fonction import basic_checkevent
 
 button=pygame.image.load(r"Addon\Menu\TextBTN_Medium.png")
 buttonp=pygame.image.load(r"Addon\Menu\TextBTN_Medium_Pressed.png")
@@ -34,8 +35,9 @@ def board_init(i=0):
 
 def board_with_msg(message):
     #take a message as argument (string) and creat a board wich is returned
-    assert(len(message)<35 and type(message)==str), "message invalid in boarb_with_message"
-    text2=police.Outrun_future.render(message,True,color.BROWN)
+    assert(len(message)<60 and type(message)==str), "message invalid in boarb_with_message"
+    text2=subtitle.render(message,True,color.BROWN)
+    text2=pygame.transform.scale(text2, (screen.get_width()//2,text2.get_height()))
     board=pygame.transform.scale(pygame.image.load(r"Addon\Menu\UI board Small  parchment.png"),(int(text2.get_width()*1.2),text2.get_width()//2))
     board.blit(text2,(board.get_width()//2-text2.get_width()//2,text2.get_height()))
     return board
@@ -94,6 +96,16 @@ def collides(pos,listrect):
         if listrect[n].collidepoint(pos):
             return n
     return -1
+
+def board_error(message):
+    screen.blit(board_with_msg(message),(screen.get_width()//6,screen.get_height()//6))
+    pygame.display.flip()
+    running=True
+    click=False
+    while running:
+        running,click=basic_checkevent(click)
+        if click: running=False
+    return running
 
 title=pygame.font.Font(r'Addon\Police\ColderWeather-Regular.ttf', board_init().get_height()//10)
 title2=pygame.font.Font(r'Addon\Police\21 Glyphs.ttf', board_init().get_height()//10)

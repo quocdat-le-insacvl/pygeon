@@ -7,13 +7,13 @@ running=True
 interface.generer()
 interface.basic_affichage()
 while running:
-    interface.perso.xp+=1
+    interface.perso.xp=100000000
     interface.perso.levelupchange()
     n=pygame.time.get_ticks()
     pygame.display.flip()
     for event in pygame.event.get():
         if event.type==pygame.MOUSEBUTTONDOWN:
-            interface.perso.caracter_sheet()
+            interface.perso.convertSpellS()
         if event.type == pygame.KEYDOWN:
             if event.key==pygame.K_ESCAPE:
                 running=False

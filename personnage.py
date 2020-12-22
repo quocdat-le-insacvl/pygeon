@@ -45,7 +45,7 @@ class Perso(Entity):
         self.nb_hit_dice=0
         self.competencesList=[]
         ### Actions during the game ###
-        self.action=Actions(self.attack)
+        self.action=Actions()
         self.next_hd_attack=self.action.dice(20)
         ### extern elements ###
         self.difficulty = 10
@@ -70,6 +70,7 @@ class Perso(Entity):
             self.nb_hit_dice=1
             self.hp_max=8+self.score("con") 
             self.hp=self.hp_max
+            return True
         elif self.xp>=lvl_XP[self.level-1]:
             self.level+=1
             self.affichage_lvlup()
@@ -86,6 +87,7 @@ class Perso(Entity):
             self.hp_max=8+self.score("con")
             self.hp_max+=(self.level-1)*(self.hit_dice//2+self.score("con"))
             self.hp=self.hp_max
+            return True
 
 
     def affichage_lvlup(self):
@@ -293,9 +295,3 @@ class Perso(Entity):
         else:
             rect=replace_rect(rectboard,board.blit(confirmp, (600,board.get_height()//2+200)))
         return rect
-
-
-
-    
-
-
