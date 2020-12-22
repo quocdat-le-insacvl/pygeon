@@ -45,3 +45,7 @@ class Case():
             if x.i == self.i and x.j == self.j + 1:
                 x.select(True)
     # def print_sort(self,list_case):
+
+    def checkIfSelected(self):
+        if self.is_select:
+            screen.blit(case_select, self.cordo())

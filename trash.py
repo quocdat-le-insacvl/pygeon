@@ -445,7 +445,7 @@ class Game():
                 screen.blit(display_talk,(0,0))
 
 
-# player_direct = Perso(0,0,0,0,0,0,0,0,0)
+#player_direct = Perso(0,0,0,0,0,0,0,0,0,[])
 # game = Game(player_direct)
 # while True:
 #     game.main_game()
