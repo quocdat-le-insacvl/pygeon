@@ -38,15 +38,20 @@ class Perso(Entity):
         self.points=[0,0,0,0,0,0]
         self.points_eph=[0,0,0,0,0,0]
         self.skills=[0,0,0,0,0,0]
+        self.chose_skill=False
         self.armor_class=self.calcul_armor()
-        self.av_points=25
+        self.av_points=15
         self.pos_xp = xp
         self.hit_dice=hit_dice
         self.nb_hit_dice=0
         self.competencesList=[]
+        self.master=False
+        self.masterAction=0
         ### Actions during the game ###
         self.action=Actions()
         self.next_hd_attack=self.action.dice(20)
+        self.actionP=1
+        self.bonusAction=1
         ### extern elements ###
         self.difficulty = 10
         self.inventaire = inventaire
@@ -60,9 +65,8 @@ class Perso(Entity):
 
     def levelupchange(self):
         #manage the level up of the caracter
-        #lvl max=5, change position of float("inf") to change the max lvl
 
-        lvl_XP = (400,600,800,1200,float("inf"),1600,2400,3200,4800,6400,9600,12800,19200,25600,38400,51200,76800,102400,153600,204800)
+        lvl_XP = (400,600,800,1200,1600,2400,3200,4800,6400,9600,12800,19200,25600,38400,51200,76800,102400,153600,204800)
         if self.level==0:
             print("selectionner vos premiers attributs")
             self.level=1
@@ -71,17 +75,24 @@ class Perso(Entity):
             self.hp_max=8+self.score("con") 
             self.hp=self.hp_max
             return True
-        elif self.xp>=lvl_XP[self.level-1]:
+        elif self.xp>=lvl_XP[self.level-1] and self.level<5:
             self.level+=1
             self.affichage_lvlup()
             self.av_points+=2+self.ability_score(3)
             ######Global bonus for the level 2######
-            if self.level==2: print("level2")
-            elif self.level==3: print("level3")
+            if self.level==2: 
+                print("level2")
+                self.chose_skill=True
+            elif self.level==3: 
+                print("level3")
             ######Global bonus for the level 4######
             elif self.level==4: 
                 print("level4")
-                #choice
+                self.master=True
+                self.masterAction=False
+            elif self.level==5: 
+                print("level5")
+                self.proficiency=3
             #fin des competence initialisation des statistiques de base
             self.nb_hit_dice=self.level
             self.hp_max=8+self.score("con")
@@ -295,3 +306,15 @@ class Perso(Entity):
         else:
             rect=replace_rect(rectboard,board.blit(confirmp, (600,board.get_height()//2+200)))
         return rect
+    
+    def moove(self):
+        if self.bonusAction>0:
+            "à completer"
+            self.bonusAction-=1
+        else:
+            running=True
+            while running:
+                running=board_error("no more bonus action")
+
+    def passTurn(self):
+        self.actionP=0

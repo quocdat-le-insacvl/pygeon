@@ -16,19 +16,32 @@ class Sorcerer(Perso):
         self.attack=0
         self.sPoints=0
         self.spells_slots=[0,0]
+        self.sort1=False
+        self.sort2=False
 
-    
-    
-
-
-    def get_class(self):
-        print(self.classe)
+    def levelupchange(self):
+        if super().levelupchange():
+            if self.level==1:
+                self.spells_slots[0]=2
+                self.sort1=True
+            elif self.level==2:
+                self.spells_slots[0]=3
+            elif self.level==3:
+                self.spells_slots[0]=4
+                self.spells_slots[1]=2
+                self.sort2=True
+            elif self.level==4:
+                self.spells_slots[1]=3
+            
+            if self.level>=2:
+                self.sPoints=self.level
+                self.attack=trunc(self.level/2)
 
     #################Sorts#################
     #Level1:
 
     def magic_missile(self):
-        "ce sort renvoi un generateur qui a la taille de son nombre de hit et qui fait des degats à chaque itérations"
+        "ce sort renvoi une liste de liste qui a la taille de son nombre de hit si le spell peut être lancé, spell lvl1"
         screenS=screenSave()
         listdeg=[]
         lvl_s=False
@@ -43,7 +56,7 @@ class Sorcerer(Perso):
             indice=collides(pygame.mouse.get_pos(),rect_list_choice)
             running,click=basic_checkevent(click)
             "vérifie si il reste des spells slots au joueur"
-            if self.spells_slots[0]!=0 or self.spells_slots[1]!=0:
+            if (self.spells_slots[0]!=0 or self.spells_slots[1]!=0) and self.actionP>0:
                 if click and indice!=-1:
                     if indice==0:
                         if self.spells_slots[0]==0:
@@ -52,6 +65,7 @@ class Sorcerer(Perso):
                             lvl_s=1
                             self.spells_slots[0]-=1
                             running=False
+                            self.actionP-=1
                     elif indice==1:
                         if self.spells_slots[1]==0:
                             running=board_error("Not enough spell slot for this lvl")
@@ -59,8 +73,9 @@ class Sorcerer(Perso):
                             lvl_s=2
                             self.spells_slots[1]-=1
                             running=False
+                            self.actionP-=1
             else:
-                running=board_error("no spell slot anymore")
+                running=board_error("no spell slot anymore or no action left")
         if lvl_s:
             for i in range(lvl_s):
                 """la liste prend la forme de liste de liste, chaque liste de liste est une action indépendente de la forme
@@ -69,23 +84,8 @@ class Sorcerer(Perso):
                     dc (si 0 pas de saving throw possible),type de saving thow (si 0 à dc 0 au type)]"""
                 listdeg.append([self.action.dice(4)+1,1,1,0,24,1,0,0]) 
         screen.blit(screenS,(0,0))
-        return listdeg
-
-    
-    def levelupchange(self):
-        if super().levelupchange():
-            if self.level==1:
-                self.spells_slots[0]=2
-            elif self.level==2:
-                self.spells_slots[0]=3
-            elif self.level==3:
-                self.spells_slots[0]=4
-                self.spells_slots[1]=2
-            elif self.level==4:
-                self.spells_slots[1]=3
-            if self.level>=2:
-                self.sPoints=self.level
-                self.attack=trunc(self.level/2)
+        if listdeg:
+            return listdeg
 
     def convertSP(self):
         "permet de convertir des sorcery points en spell slots"
@@ -100,29 +100,27 @@ class Sorcerer(Perso):
         running=True
         click=False
         "indice pour savoir si une action s'est réalisée"
-        i=False
         while running:
-            if self.sPoints>=2:
+            if self.sPoints>=2 and self.bonusAction>0:
                 indice=collides(pygame.mouse.get_pos(),choiceList)
                 running,click=basic_checkevent(click)
                 if(click and indice!=-1):
                     if indice==0:
                         self.spells_slots[0]+=1
                         self.sPoints-=2
+                        self.bonusAction-=1
                         running=False
-                        i=True
                     if indice==1:
                         if self.sPoints<3:
                             running=board_error("not enough sorcery points")
                         else:
                             self.spells_slots[1]+=1
                             self.sPoints-=3
+                            self.bonusAction-=1
                             running=False
-                            i=True
             else:
                 running=board_error("not enough point")
         screen.blit(screenS,(0,0))
-        return i
 
     def rest(self):
         super().rest()
@@ -150,10 +148,8 @@ class Sorcerer(Perso):
         pygame.display.flip()
         running=True
         click=False
-        "indice pour savoir si une action s'est réalisée"
-        i=False
         while running:
-            if self.spells_slots[0]!=0 or self.spells_slots[1]!=0:
+            if self.spells_slots[0]!=0 or self.spells_slots[1]!=0 and self.bonusAction>0:
                 indice=collides(pygame.mouse.get_pos(),choiceList)
                 running,click=basic_checkevent(click)
                 if(click and indice!=-1):
@@ -165,8 +161,8 @@ class Sorcerer(Perso):
                         else:
                             self.sPoints+=2
                             self.spells_slots[0]-=1
+                            self.bonusAction-=1
                             running=False
-                            i=True
                     if indice==1:
                         if self.level-self.sPoints<3:
                             running=board_error("cannot do that to much sorcery points")
@@ -175,22 +171,70 @@ class Sorcerer(Perso):
                         else:
                             self.sPoints+=3
                             self.spells_slots[1]-=1
+                            self.bonusAction-=1
                             running=False
-                            i=True
             else:
                 running=board_error("not enough point")
         screen.blit(screenS,(0,0))
-        return i
 
+    def firebolt(self):
+        "ce sort renvoi une liste de liste qui a la taille de son nombre de hit si le spell peut être lancé, cantrip"
+        listdeg=[]
+        """la liste prend la forme de liste de liste, chaque liste de liste est une action indépendente de la forme
+        [montant degat/soins,type (0=soins, 1=degats), le nombre de cible (ex 1=1 carré), la zone d'effet (1 carré ou 2 cône,
+        0 si l'élement précédent est 1),la range du sort (cible à 4 carrées max), la type de cible (0=soit même, 1=ennemies, 2=alliées),
+        dc (si 0 pas de saving throw possible),type de saving thow (si 0 à dc 0 au type)]"""
+        if self.actionP>0 or self.bonusAction>0:
+            listdeg.append([self.action.dice(10),1,1,0,24,1,0,0])
+            if self.bonusAction>0:
+                self.bonusAction-=1
+            else:
+                self.actionP-=1 
+            if self.level>=5:
+                listdeg.append([self.action.dice(10),1,1,0,24,1,0,0])
+        if listdeg:
+            return listdeg
+
+    def fireball(self):
+        "ce sort renvoi une liste de liste qui a la taille de son nombre de hit si le spell peut être lancé, spell lvl4"
+        listdeg=[]
+        if self.spells_slots[1]>0 and self.actionP>0:
+            """la liste prend la forme de liste de liste, chaque liste de liste est une action indépendente de la forme
+            [montant degat/soins,type (0=soins, 1=degats), le nombre de cible (ex 1=1 carré), la zone d'effet (1 carré ou 2 cône,
+            0 si l'élement précédent est 1),la range du sort (cible à 4 carrées max), la type de cible (0=soit même, 1=ennemies, 2=alliées),
+            dc (si 0 pas de saving throw possible),type de saving thow (si 0 à dc 0 au type),1 pour dex, 2 pour con,3 pour will]"""   
+            deg=self.action.dice(6)+self.action.dice(6)+self.action.dice(6)+self.action.dice(6)+self.action.dice(6)+self.action.dice(6) 
+            listdeg.append([deg,1,1,0,24,1,10+3+self.score("con"),1]) 
+            self.spells_slots[1]-=1
+        elif self.sort2==False:
+            running=True
+            screenS=screenSave()
+            while running:
+                running=board_error("this spell is not unlock for now")
+            screen.blit(screenS,(0,0))
+        else:
+            running=True
+            screenS=screenSave()
+            while running:
+                running=board_error("not enough spell slot or action to cast this spell")
+            screen.blit(screenS,(0,0))
+        if listdeg:
+            return listdeg
+    
+    def twined_spell(self):
+        if self.masterAction>0 and self.bonusAction>0:
+            self.Action=2
+            self.masterAction-=1
+            self.bonusAction-=1
+        else:
+            running=True
+            while running:
+                running=board_error("no bonus action or Master Action left")
+    
 
     """to do 
-
-    def convert_spell_slot(self):
-    def fireball(self):     |spell lvl4
-    def acid_splash(self):  
-    def True_strike(self):
-    def quickened_spell(self):
+    def acid_splash(self):  (optional)
+    def quickened_spell(self):  (optional)
     def Distant_spell(self): (optional)
-    def twined_spell(self): (optional)
     def learn_spell(self):"""
     
