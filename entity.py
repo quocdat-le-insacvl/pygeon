@@ -300,3 +300,23 @@ class Fog:
     def draw_fog(self):
         self.light_rect.center = (self.player.pos_x+self.player.img.get_width()//2, self.player.pos_y+self.player.img.get_height()//2)
         self.surface.blit(self.light_image, self.light_rect)
+        
+    
+class Text:
+    def __init__(self, game, text='text', color=WHITE, size_font=50, pos=[WIDTH//2 - 50, HEIGHT//2 - 50], font='freesansbold.ttf', life_time=2000):
+        # Call the parent class (Sprite) constructor
+        self.game = game
+        self.groups = game.texts
+        pygame.sprite.Sprite.__init__(self, self.groups)
+        self.spawn_time = pygame.time.get_ticks()
+        self.life_time = life_time
+        self.font = pygame.font.Font(font, size_font)
+        self.text = self.font.render(text, True, color)
+        self.pos = pos
+
+    def update(self):
+        if pygame.time.get_ticks() - self.spawn_time >= self.life_time:
+            self.kill()
+
+    def print_text(self):
+        self.game.screen.blit(self.text, self.pos)

@@ -210,6 +210,7 @@ class Game():
         self.zoom_map = False
         self.center_x, self.center_y = 0, 0
         self.list_mooving_entity = list_mooving_entity
+        self.screen = screen
     
 
     def main_game(self):
@@ -245,16 +246,15 @@ class Game():
         display_1.set_colorkey(BLACK)
         draw_interact = True
         frame = 1
+        self.player.add_game(self)
+        
         while running:
             if pygame.time.get_ticks() > time_line:
                 time_line += 160
                 frame = (frame)%6 +1 
-            for event in pygame.event.get():
-                if event.type == pygame.KEYDOWN:
-                    if event.key == pygame.K_q:
-                        print_skill()
-            pygame.display.update()
-            clock.tick(60)    
+
+            # pygame.display.update()
+            # clock.tick(60)    
 
 
             #""" If Press M : Zoom map === PAUSE"""
@@ -378,9 +378,14 @@ class Game():
                     if event.key == K_l:
                         self.map = map_2
                         self.map.init_map()
+                    if event.key == pygame.K_q:
+                        self.player.press_q = True
+                        
                 if event.type == KEYUP:
                     if event.key == K_m:
                         self.zoom_map = False
+                    if event.key == K_q:
+                        self.player.press_q = False
 
             self.player.move_player(self.map.dict_collision)
             self.player.animate_map(frame%2+1)
@@ -405,6 +410,10 @@ class Game():
             draw_text("FPS: %i, x : %i , y : %i" % (clock.get_fps(), self.player.pos_x,
                                                     self.player.pos_y), ColderWeather, WHITE, screen, 100, 100)
             
+            #### Skill
+            if self.player.press_q:
+                self.player.print_skill()
+
             
             pygame.display.update()
             clock.tick(64)

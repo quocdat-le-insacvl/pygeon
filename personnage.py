@@ -319,6 +319,20 @@ class Perso_game(Perso):
         self.mouvement = [False,False,False,False]
         self.deplacement = [0,0]
         self.interact_range = (10,10)
+        self.press_q = False 
+       
+        
+    def add_game(self, game):
+        self.game = game
+        ## Pour afficher
+        self.color = WHITE
+        size_font = 50
+        self.pos = [self.game.screen.get_width()//2 - 50,
+                    self.game.screen.get_height()//2 - 50]
+        font = 'freesansbold.ttf'
+        font = pygame.font.Font(font, size_font)
+        self.font = font
+        
     def refresh_animation_and_mouvement(self):
         if self.mouvement[0]:
             self.deplacement = [10,-5]
@@ -369,27 +383,34 @@ class Perso_game(Perso):
     def text_objects(text, font):
         textSurface = font.render(text, True, black)
         return textSurface, textSurface.get_rect()
-    def message_display(text):
-        largeText = pygame.font.Font('freesansbold.ttf',115)
-        TextSurf, TextRect = text_objects(text, largeText)
-        TextRect.center = ((LARGEUR/2),(LONGUEUR/2))
-        gameDisplay.blit(TextSurf, TextRect)
+    # def message_display(text):
+    #     largeText = pygame.font.Font('freesansbold.ttf',115)
+    #     TextSurf, TextRect = text_objects(text, largeText)
+    #     TextRect.center = ((LARGEUR/2),(LONGUEUR/2))
+    #     gameDisplay.blit(TextSurf, TextRect)
 
-        pygame.display.update()
+    #     pygame.display.update()
 
         
         
         
            
-    def print_skill(self, userInput):
+    def print_skill(self):
         #self.cooldown()
-        if (userInput[pygame.K_q] and self.cooldown_down_count == 0):
-            skillQ()
+        # if (self.cooldown_down_count <= 0):
+            # self.skillQ()
            # self.cooldown_down_count = 1
-        else:
-            message_display('cant use skill Q ')    
-    def skillQ():
-        message_display('Use skill Q')
+        # else:
+            # text = ' cant use skill Q'
+            # text = font.render(text, True, color)
+            # self.game.screen.blit(text, pos)
+        self.skillQ()
+        
+    def skillQ(self):
+        
+        text = 'Use skill Q'
+        text = self.font.render(text, True, self.color)
+        self.game.screen.blit(text, self.pos)
     #def skillW():
     #def skillE():
     
