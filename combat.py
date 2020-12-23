@@ -80,7 +80,7 @@ class Combat:
             list_case[i].in_case = x
             i+=1
         self.game.player.transform_display_for_combat()
-        list_case[59].in_case = self.game.player
+        list_case[self.game.player.n_case].in_case = self.game.player
 
         #VOIR TOUT LES MONSTRES
         list_case[0].in_case = list_mooving_entity[0]
@@ -156,9 +156,9 @@ class Combat:
             elif (not self.first_Entry and not self.checkIfTourPerso(self.compteur_tour) and not self.entered):
                 self.monstre_attack()
 
-            myfont = pygame.font.SysFont('Comic Sans MS', 70)
-            textsurface = myfont.render("{}".format(self.game.clock.get_fps()), False, (0, 0, 0))
-            screen.blit(textsurface, (300, 500))
+            # myfont = pygame.font.SysFont('Comic Sans MS', 70)
+            # textsurface = myfont.render("{}".format(self.game.clock.get_fps()), False, (0, 0, 0))
+            # screen.blit(textsurface, (300, 500))
             if (self.clic):
                 bouton2_cliqué = creation_img_text_click(image_boutton,"Attack",ColderWeather_small, WHITE, screen,click,300,150)
                 bouton3_cliqué = creation_img_text_click(image_boutton,"Mouvement",ColderWeather_small, WHITE, screen,click,300,250)
@@ -171,9 +171,9 @@ class Combat:
             #if not fin: #pour ne plus afficher le de une fois qu'il a terminé de tourner
             self.essai()
 
-            if current_selec != None:
-                current_selec.select(True)
-                current_selec.select_neighbour(list_case)
+            # if current_selec != None:
+            #     current_selec.select(True)
+            #     current_selec.select_neighbour(list_case)
             pygame.display.update()
             running,self.game.click = basic_checkevent(self.game.click)
 
@@ -193,7 +193,7 @@ class Combat:
                 self.activate = False
                 self.reset_compteur()
 
-                list_case[59].is_select = False
+                list_case[self.game.player.n_case].is_select = False
                 for i in range(5):
                     list_case[i].is_select = False
 
@@ -342,7 +342,8 @@ class Combat:
             self.clic = False
             self.attack()
         elif (b2 and pygame.mouse.get_pressed()[0]):
-            self.mouvement()
+            self.clic = False
+            self.mouvement_bas()
         elif (b3 and pygame.mouse.get_pressed()[0]):
             self.bonus_action()
         elif(b4 and pygame.mouse.get_pressed()[0]):
@@ -356,7 +357,7 @@ class Combat:
     def attack(self):
         global list_case
         self.bloc = True #######
-        list_case[59].is_select=True
+        list_case[self.game.player.n_case].is_select=True
         print("attack")
         self.diceevt.resume(20,i=4000)
         self.diceevt.resultat = generate_randint(1,20)
@@ -379,8 +380,45 @@ class Combat:
 
         self.activate = True
 
-    def mouvement(self):
+    def mouvement_direct(self):
+        global list_case
+        # print(list_case)
+        self.bloc = True
+        # list_case[self.game.player.n_case].in_case = None
+        # self.game.player.n_case -= 6
+        # list_case[self.game.player.n_case].in_case = self.game.player
+        # list_case[self.game.player.n_case].is_select = True
+        list_case[self.game.player.n_case].j += 1
+        list_case[self.game.player.n_case].i -= 1
+        list_case[self.game.player.n_case].in_case = self.game.player
+        self.message_final = Text(self,text="",life_time=2000) 
+        self.activate = True
         print("mouvement")
+
+    def mouvement_bas(self):
+        global list_case
+        self.bloc = True
+        if list_case[self.game.player.n_case].j < 7:
+            list_case[self.game.player.n_case].j += 1
+            list_case[self.game.player.n_case].in_case = self.game.player
+            list_case[self.game.player.n_case].is_select = True
+        else:
+            print("erreur mvt bas")
+        self.message_final = Text(self,text="",life_time=2000) 
+        # print(list_case[self.game.player.n_case].i, list_case[self.game.player.n_case].j)
+        self.activate = True
+
+    def mouvement_haut(self):
+        global list_case
+        self.bloc = True
+        if list_case[self.game.player.n_case].i > 3: #pour ne pas depasser la carte
+            list_case[self.game.player.n_case].i -= 1
+            list_case[self.game.player.n_case].in_case = self.game.player
+            list_case[self.game.player.n_case].is_select = True
+        else:
+            print("erreur")
+        self.message_final = Text(self,text="",life_time=2000) 
+        self.activate = True
 
     def bonus_action(self):
         print("bonus action")
