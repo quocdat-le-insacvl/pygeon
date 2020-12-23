@@ -148,10 +148,10 @@ class Combat:
                 else:
                     done = True #pour signaler que le de a termine de tourner
 
-            self.bouton1_cliqué = creation_img_text_click(image_boutton,"Choose what to do",ColderWeather_small, WHITE, screen,click,300,50)
+            bouton1_cliqué = creation_img_text_click(image_boutton,"Choose what to do",ColderWeather_small, WHITE, screen,click,300,50)
             #print("compteur tour: "+str(self.compteur_tour))
             
-            if (self.bouton1_cliqué and pygame.mouse.get_pressed()[0] and not self.first_Entry and self.checkIfTourPerso(self.compteur_tour) and not self.bloc):
+            if (bouton1_cliqué and pygame.mouse.get_pressed()[0] and not self.first_Entry and self.checkIfTourPerso(self.compteur_tour) and not self.bloc):
                 self.clic = True
             elif (not self.first_Entry and not self.checkIfTourPerso(self.compteur_tour) and not self.entered):
                 self.monstre_attack()
@@ -160,12 +160,12 @@ class Combat:
             textsurface = myfont.render("{}".format(self.game.clock.get_fps()), False, (0, 0, 0))
             screen.blit(textsurface, (300, 500))
             if (self.clic):
-                self.bouton2_cliqué = creation_img_text_click(image_boutton,"Attack",ColderWeather_small, WHITE, screen,click,300,150)
-                self.bouton3_cliqué = creation_img_text_click(image_boutton,"Mouvement",ColderWeather_small, WHITE, screen,click,300,250)
-                self.bouton4_cliqué = creation_img_text_click(image_boutton,"Bonus action",ColderWeather_small, WHITE, screen,click,300,350)
-                self.bouton5_cliqué = creation_img_text_click(image_boutton,"Contre attack",ColderWeather_small, WHITE, screen,click,300,450)
-                self.bouton6_cliqué = creation_img_text_click(image_boutton,"Nothing",ColderWeather_small, WHITE, screen,click,300,550)
-                self.check_bouttons(self.bouton2_cliqué,self.bouton3_cliqué,self.bouton4_cliqué,self.bouton5_cliqué,self.bouton6_cliqué)
+                bouton2_cliqué = creation_img_text_click(image_boutton,"Attack",ColderWeather_small, WHITE, screen,click,300,150)
+                bouton3_cliqué = creation_img_text_click(image_boutton,"Mouvement",ColderWeather_small, WHITE, screen,click,300,250)
+                bouton4_cliqué = creation_img_text_click(image_boutton,"Bonus action",ColderWeather_small, WHITE, screen,click,300,350)
+                bouton5_cliqué = creation_img_text_click(image_boutton,"Contre attack",ColderWeather_small, WHITE, screen,click,300,450)
+                bouton6_cliqué = creation_img_text_click(image_boutton,"Nothing",ColderWeather_small, WHITE, screen,click,300,550)
+                self.check_bouttons(bouton2_cliqué,bouton3_cliqué,bouton4_cliqué,bouton5_cliqué,bouton6_cliqué)
             
 
             #if not fin: #pour ne plus afficher le de une fois qu'il a terminé de tourner
