@@ -17,10 +17,19 @@ button=pygame.image.load(path.join(path_addon,'Menu\TextBTN_Medium.png'))
 buttonp=pygame.image.load(path.join(path_addon,'Menu\TextBTN_Medium_Pressed.png'))
 
 
-
-# LOAD avata for minimap 
+#LOAD avatar skill
+skillQ = pygame.image.load(path.join(path_addon,'skill_Q.png'))
+skillQ = pygame.transform.scale(skillQ, (45, 45))
+skillW = pygame.image.load(path.join(path_addon,'skill_W.png'))
+skillW = pygame.transform.scale(skillW, (45, 45))
+skillE = pygame.image.load(path.join(path_addon,'skill_E.png'))
+skillE = pygame.transform.scale(skillE, (45, 45))
+# LOAD avatar for minimap 
 ava_perso = pygame.image.load(path.join(path_ava, 'ava_perso.png'))
 ava_perso = pygame.transform.scale(ava_perso, (30, 30))
+#avatar for HUB
+avatarImg = pygame.image.load(path.join(path_ava, 'ava_perso.png'))
+avatarImg = pygame.transform.scale(ava_perso, (45, 45))
 rect_ava_perso = ava_perso.get_rect()
 pygame.draw.circle(ava_perso, HALF_RED,rect_ava_perso.center, radius=17, width=3)
 

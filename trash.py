@@ -17,7 +17,7 @@ from settings.load_img import *
 from settings.color import *
 from script import list_mooving_entity,list_static_entity,entity_2
 from fonction import *
-from personnage import Perso_game
+from personnage import *
 from seller_scripts import list_seller
 pygame.init()
 clock = pygame.time.Clock()
@@ -180,7 +180,26 @@ class Map():
     def print_building(self):
         for i in range(len(self.static_entity)):
             self.display.blit(self.static_entity[i].display,(self.static_entity[i].pos_x,self.static_entity[i].pos_y))
+#create 
+#HUD functions
+def draw_player_health(screen,x ,y , percent):
+    if percent < 0 :
+        percent = 0
+    BAR_LENGTH = 300
+    BAR_HEIGHT = 40
+    fill = percent * BAR_LENGTH
+    outline_rect = pygame.Rect(x, y, BAR_LENGTH, BAR_HEIGHT)
+    fill_rect = pygame.Rect(x, y, fill, BAR_HEIGHT)
+    if percent > 0.7:
+        color = GREEN
+    elif percent >0.4:
+        color = YELLOW
+    else:
+        color = RED
+    pygame.draw.rect(screen, color, fill_rect)
+    pygame.draw.rect(screen, WHITE, outline_rect, 2)
 
+       
 class Game():
     def __init__(self,player,map):
         self.x = 0
@@ -191,8 +210,10 @@ class Game():
         self.zoom_map = False
         self.center_x, self.center_y = 0, 0
         self.list_mooving_entity = list_mooving_entity
+    
 
     def main_game(self):
+        
         global time_line
         self.player.name = 'f'
         self.player.classe = 'l'
@@ -228,7 +249,13 @@ class Game():
             if pygame.time.get_ticks() > time_line:
                 time_line += 160
                 frame = (frame)%6 +1 
-                
+            for event in pygame.event.get():
+                if event.type == pygame.KEYDOWN:
+                    if event.key == pygame.K_q:
+                        print_skill()
+            pygame.display.update()
+            clock.tick(60)    
+
 
             #""" If Press M : Zoom map === PAUSE"""
             
@@ -300,7 +327,7 @@ class Game():
                 if entity.name == "test_demon":
                     entity.pos_y += 1
                     entity.pos_x += 3
-            #self.print_frog(player_rect,screen,case_connue,center_x,center_y)
+            #self.print_fog(player_rect,screen,case_connue,center_x,center_y)
 
             #screen.blit(player.mask_surface,(center_x+self.player.pos_x+20,center_y+self.player.pos_y+self.player.img.get_height()-15))
 
@@ -369,7 +396,12 @@ class Game():
             if show_characteresheet:
                 self.player.caracter_sheet()
                 show_characteresheet = False
-            
+            userInput = pygame.key.get_pressed()
+            screen.blit(avatarImg, (450, 800))
+            draw_player_health(screen, 500, 800, self.player.hp / self.player.hp_max)
+            screen.blit(skillQ, (500, 750))
+            screen.blit(skillW, (550, 750))
+            screen.blit(skillE, (600, 750))
             draw_text("FPS: %i, x : %i , y : %i" % (clock.get_fps(), self.player.pos_x,
                                                     self.player.pos_y), ColderWeather, WHITE, screen, 100, 100)
             
@@ -483,7 +515,7 @@ class Game():
         Le jeu crée un object Case(i,j) a partir d'une map dans un text (qui contient des W)
         Ensuite la boucle for x in list_case permet d'imprimer toute les cases sur le screen
         la boucle d'après permet de voir si la souris (le mask) overlap la case c'est a dire si la souris collide avec la case, si elle overlap le programme cherche l'object Case(i,j) et utilise sa fonction select pour faire un affichage visuel de la case choisi"""
-
+    
     def print_pause_menu(self):
         display = pygame.Surface((1980, 1000))
         display.set_colorkey(LIGHT_GREY)

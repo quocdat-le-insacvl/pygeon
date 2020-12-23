@@ -1,4 +1,5 @@
 import pygame
+import time
 from entity import Entity
 from settings.load_img import pixel_red, ava_perso
 from pygame.locals import *
@@ -357,6 +358,42 @@ class Perso_game(Perso):
             self.pos_y += self.deplacement[1]
         """def move_player():
         Permet de déplcer le player_rect de mouvement check si le joeurs ne collide pas avec un chamgement de caméra ou une entité"""
+    
+    #cooldown function
+    #def cooldown(self):
+       # if self.cooldown_down_count >= 20:
+        #    self.cooldown_down_count = 0
+        #elif self.cooldown_down_count > 0:
+         #   self.cooldown_down_count += 1 
+    #test print skill 
+    def text_objects(text, font):
+        textSurface = font.render(text, True, black)
+        return textSurface, textSurface.get_rect()
+    def message_display(text):
+        largeText = pygame.font.Font('freesansbold.ttf',115)
+        TextSurf, TextRect = text_objects(text, largeText)
+        TextRect.center = ((LARGEUR/2),(LONGUEUR/2))
+        gameDisplay.blit(TextSurf, TextRect)
+
+        pygame.display.update()
+
+        
+        
+        
+           
+    def print_skill(self, userInput):
+        #self.cooldown()
+        if (userInput[pygame.K_q] and self.cooldown_down_count == 0):
+            skillQ()
+           # self.cooldown_down_count = 1
+        else:
+            message_display('cant use skill Q ')    
+    def skillQ():
+        message_display('Use skill Q')
+    #def skillW():
+    #def skillE():
+    
+    
     def check_user(self,event):
         if event.type == KEYDOWN:
             if event.key == K_UP:
@@ -456,3 +493,12 @@ class Perso_game(Perso):
         self.pos_y -=2
     def deplacerBas(self):
         self.pos_y+=2
+    def health_bars(self):
+       
+        if self.hp > 7:
+            color = GREEN
+        elif self.hp >5:
+            color = YELLOW 
+        else:
+            color = RED
+        self.health_bar = pygame.Rect(0, 0, width, 7)
