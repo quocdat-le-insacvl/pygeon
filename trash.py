@@ -143,6 +143,7 @@ class Game():
         self.zoom_map = False
         self.center_x, self.center_y = 0, 0
         self.list_mooving_entity = list_mooving_entity
+        self.clock = clock
 
     def main_game(self):
         center_x,center_y=0,0

@@ -46,9 +46,8 @@ class Combat:
         self.message_final = Text(self,life_time = 0)
 
     def affichage(self):
-        global afficheoptions, fin, clic, firstEntry, n, done_monstre,activate, entered,list_case
-        global bouton_continue,bouton2_cliqué, bouton3_cliqué, bouton4_cliqué, bouton5_cliqué, bouton6_cliqué
-        afficheoptions, fin, clic, firstEntry, done_monstre, activate, entered = False, False, False, True, False, False, False
+        global n,list_case
+        self.afficheoptions,self.first_Entry, self.activate, self.entered = False,True, False, False
         running = True
         click = True
         pixel_mask = pygame.mask.from_surface(pixel_red)
@@ -92,6 +91,7 @@ class Combat:
 
         while running:
             self.angle += 10
+
 
             for text in self.texts:
                 text.update()
@@ -148,21 +148,24 @@ class Combat:
                 else:
                     done = True #pour signaler que le de a termine de tourner
 
-            bouton1_cliqué = creation_img_text_click(image_boutton,"Choose what to do",ColderWeather_small, WHITE, screen,click,300,50)
+            self.bouton1_cliqué = creation_img_text_click(image_boutton,"Choose what to do",ColderWeather_small, WHITE, screen,click,300,50)
             #print("compteur tour: "+str(self.compteur_tour))
             
-            if (bouton1_cliqué and pygame.mouse.get_pressed()[0] and not firstEntry and self.checkIfTourPerso(self.compteur_tour) and not self.bloc):
+            if (self.bouton1_cliqué and pygame.mouse.get_pressed()[0] and not self.first_Entry and self.checkIfTourPerso(self.compteur_tour) and not self.bloc):
                 self.clic = True
-            elif (not firstEntry and not self.checkIfTourPerso(self.compteur_tour) and not entered):
+            elif (not self.first_Entry and not self.checkIfTourPerso(self.compteur_tour) and not self.entered):
                 self.monstre_attack()
 
+            myfont = pygame.font.SysFont('Comic Sans MS', 70)
+            textsurface = myfont.render("{}".format(self.game.clock.get_fps()), False, (0, 0, 0))
+            screen.blit(textsurface, (300, 500))
             if (self.clic):
-                bouton2_cliqué = creation_img_text_click(image_boutton,"Attack",ColderWeather_small, WHITE, screen,click,300,150)
-                bouton3_cliqué = creation_img_text_click(image_boutton,"Mouvement",ColderWeather_small, WHITE, screen,click,300,250)
-                bouton4_cliqué = creation_img_text_click(image_boutton,"Bonus action",ColderWeather_small, WHITE, screen,click,300,350)
-                bouton5_cliqué = creation_img_text_click(image_boutton,"Contre attack",ColderWeather_small, WHITE, screen,click,300,450)
-                bouton6_cliqué = creation_img_text_click(image_boutton,"Nothing",ColderWeather_small, WHITE, screen,click,300,550)
-                self.check_bouttons(bouton2_cliqué,bouton3_cliqué,bouton4_cliqué,bouton5_cliqué,bouton6_cliqué)
+                self.bouton2_cliqué = creation_img_text_click(image_boutton,"Attack",ColderWeather_small, WHITE, screen,click,300,150)
+                self.bouton3_cliqué = creation_img_text_click(image_boutton,"Mouvement",ColderWeather_small, WHITE, screen,click,300,250)
+                self.bouton4_cliqué = creation_img_text_click(image_boutton,"Bonus action",ColderWeather_small, WHITE, screen,click,300,350)
+                self.bouton5_cliqué = creation_img_text_click(image_boutton,"Contre attack",ColderWeather_small, WHITE, screen,click,300,450)
+                self.bouton6_cliqué = creation_img_text_click(image_boutton,"Nothing",ColderWeather_small, WHITE, screen,click,300,550)
+                self.check_bouttons(self.bouton2_cliqué,self.bouton3_cliqué,self.bouton4_cliqué,self.bouton5_cliqué,self.bouton6_cliqué)
             
 
             #if not fin: #pour ne plus afficher le de une fois qu'il a terminé de tourner
@@ -183,11 +186,11 @@ class Combat:
             pygame.display.update()
             running, self.game.click = basic_checkevent(self.game.click)
             
-            if (self.message_final.update() and activate):
+            if (self.message_final.update() and self.activate):
                 print("message final")
-                entered = False
+                self.entered = False
                 self.compteur_tour += 1
-                activate = False
+                self.activate = False
                 self.reset_compteur()
 
                 list_case[59].is_select = False
@@ -200,7 +203,6 @@ class Combat:
   
 
     def check_conditions(self):
-        global firstEntry
         if self.n_entrees == 1:
             self.diceevt.resume(20,i=500)
             self.liste_tours.append([self.monstre.name, self.monstre.resultat,self.monstre])
@@ -217,7 +219,7 @@ class Combat:
             a = self.perso2.tour
             self.perso2.tour, self.perso3.tour = self.perso3.tour, a
         else:
-            if firstEntry:
+            if self.first_Entry:
                 self.liste_tours.append([self.perso3.name, self.perso3.resultat,self.perso3])
                 self.pause = True
                 print(self.liste_tours)
@@ -225,7 +227,7 @@ class Combat:
                 print(self.liste_tours)
                 for liste in self.liste_tours:
                     self.text_tour = self.text_tour + liste[0]+"\n"
-                firstEntry = False
+                self.first_Entry = False
                 self.message = Text(self,text=self.text,size_font=30,pos=[image_box.get_width(),20], life_time = 5000)
                 print(self.message.spawn_time)
                 self.message_tour = Text(self,text=self.text_tour,size_font=30,pos=[image_box.get_width(),50],life_time= 5000)
@@ -309,7 +311,7 @@ class Combat:
 
                 print("::"+str(self.diceevt.resultat))
                 self.stop = False
-                if firstEntry:
+                if self.first_Entry:
                     self.text = self.text + "\t"+self.tour+": "+str(self.diceevt.resultat) #self.message
                 #draw_text(self.message, ColderWeather_small, WHITE,screen, 100, 800)
                 self.check_conditions()
@@ -318,8 +320,7 @@ class Combat:
 
     #trier la liste des resultats
     def trier(self,l):
-        global afficheoptions
-        afficheoptions = True
+        self.afficheoptions = True
         for j in range(len(l)):
             iMax=0
             i=0
@@ -353,7 +354,7 @@ class Combat:
         return type(self.liste_tours[i][2]) == Perso
             
     def attack(self):
-        global activate,list_case
+        global list_case
         self.bloc = True #######
         list_case[59].is_select=True
         print("attack")
@@ -376,7 +377,7 @@ class Combat:
             print("in")
             self.degats()
 
-        activate = True
+        self.activate = True
 
     def mouvement(self):
         print("mouvement")
@@ -391,16 +392,16 @@ class Combat:
         print("contre attack")
 
     def monstre_attack(self):
-        global done_tourner, activate, entered, list_case
+        global list_case
 
         for i in range(5):
             list_case[i].is_select = True
 
-        entered = True
+        self.entered = True
         self.text_tour = "Tour des monstres:"
         # print("dice resultat "+str(self.diceevt.resultat_monstreatk))
         # print(str(self.perso1.hit)+str(self.perso2.hit)+str(self.perso3.hit))
-        done_tourner = False
+        self.done_tourner = False
 
         print("entrer"+str(self.stop))
         self.next_dice = False
@@ -409,24 +410,24 @@ class Combat:
         self.diceevt.resultat_monstreatk = generate_randint(1,20)
         self.bloc = True
         self.text = "Score du dice= "+str(self.diceevt.resultat_monstreatk) +" et bonus dex = "+str(bonus(self.monstre.DEX))+"->Score =  "+str(self.diceevt.resultat_monstreatk+bonus(self.monstre.DEX))
-        done_tourner = True
+        self.done_tourner = True
         print("resultat monstreatk "+str(self.diceevt.resultat_monstreatk))
 
-        if(self.diceevt.resultat_monstreatk+bonus(self.monstre.DEX) < self.perso1.ac and done_tourner):
+        if(self.diceevt.resultat_monstreatk+bonus(self.monstre.DEX) < self.perso1.ac and self.done_tourner):
             self.text_tour += " Perso1 missed,"
-        elif(self.diceevt.resultat_monstreatk+bonus(self.monstre.DEX) >= self.perso1.ac and done_tourner):
+        elif(self.diceevt.resultat_monstreatk+bonus(self.monstre.DEX) >= self.perso1.ac and self.done_tourner):
             self.text_tour += " Perso1 hit,"
             self.perso1.hit = True
             
-        if(self.diceevt.resultat_monstreatk+bonus(self.monstre.DEX) < self.perso2.ac and done_tourner):
+        if(self.diceevt.resultat_monstreatk+bonus(self.monstre.DEX) < self.perso2.ac and self.done_tourner):
             self.text_tour += " Perso2 missed,"
-        elif(self.diceevt.resultat_monstreatk+bonus(self.monstre.DEX) >= self.perso2.ac and done_tourner):
+        elif(self.diceevt.resultat_monstreatk+bonus(self.monstre.DEX) >= self.perso2.ac and self.done_tourner):
             self.text_tour += " Perso2 hit,"
             self.perso2.hit = True
             
-        if(self.diceevt.resultat_monstreatk+bonus(self.monstre.DEX) < self.perso3.ac and done_tourner):
+        if(self.diceevt.resultat_monstreatk+bonus(self.monstre.DEX) < self.perso3.ac and self.done_tourner):
             self.text_tour += " Perso3 missed."
-        elif(self.diceevt.resultat_monstreatk+bonus(self.monstre.DEX) >= self.perso3.ac and done_tourner):
+        elif(self.diceevt.resultat_monstreatk+bonus(self.monstre.DEX) >= self.perso3.ac and self.done_tourner):
             self.text_tour += " Perso3 hit."
             self.perso3.hit = True
 
@@ -434,16 +435,16 @@ class Combat:
         self.message_tour = Text(self,text=self.text_tour,size_font=30,pos=[image_box.get_width(),50],life_time= 10000, born = 5000)
         self.texts.add(self.message,self.message_tour) #####
 
-        if ((self.perso1.hit or self.perso2.hit or self.perso3.hit) and done_tourner):
+        if ((self.perso1.hit or self.perso2.hit or self.perso3.hit) and self.done_tourner):
             self.actdamage = True
             self.message_final = Text(self,text='',life_time=20000)
             self.degats()
-        elif(not(self.perso1.hit or self.perso2.hit or self.perso3.hit) and done_tourner):
+        elif(not(self.perso1.hit or self.perso2.hit or self.perso3.hit) and self.done_tourner):
             self.message_final = Text(self,text='',life_time=11000)
 
         print("self.message "+str(self.message.spawn_time))
         self.next_text = False
-        activate = True
+        self.activate = True
 
 
     def reset_compteur(self):
@@ -452,3 +453,4 @@ class Combat:
                         
 
 #j ai ajoute un attribut ac au perso et un dex au monstre
+
