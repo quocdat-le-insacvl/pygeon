@@ -1,11 +1,11 @@
 import pygame
-from settings.load_img import pixel_red, light_mask
+from settings.load_img import pixel_red, light_mask,collide_map,collide_monster
 from settings.screen import *
 from settings.color import *
 from settings.load_img import ava_perso
 class Entity():
 
-    def __init__(self,pos_x,pos_y,img,name,which_type,animation_dict = None,talking=None,size=(0,0),decalage = [0,0]):
+    def __init__(self,pos_x,pos_y,img,name,which_type,animation_dict = None,talking=None,size=(0,0),decalage = [0,0],size_collide_box=1):
         if size == (0,0):
             size = (img.get_width(),img.get_height())
         self.pos_x = pos_x
@@ -22,7 +22,7 @@ class Entity():
         self.animation_dict = animation_dict
         self.frame = 1
         self.talking = talking
-        self.interaction = [[self.pos_x,self.pos_y],[self.pos_x,self.pos_y],[self.pos_x,self.pos_y]]
+        self.interaction = [[self.pos_x,self.pos_y],[self.pos_x,self.pos_y],[self.pos_x,self.pos_y],[self.pos_x,self.pos_y]]
         self.type_animation = "idle"
         self.decalage_display = decalage
         self.avata = pygame.transform.scale(img, (30, 30))
@@ -30,11 +30,11 @@ class Entity():
         self.seen = False
         self.last_know_pos = (0, 0)
         self.shadow = img
+        self.collide_box = Collide_box(size_collide_box)
     def update_center(self):
         self.center = [self.pos_x + self.img.get_width()//2,self.pos_y + self.img.get_height()//2]
     def animate(self):
         if self.type_animation != "" and self.animation_dict != None :
-            print(1)
             animation = self.animation_dict[self.type_animation]
             self.frame += 0.05
             if self.frame > len(animation)+1:
@@ -44,12 +44,6 @@ class Entity():
                 self.display.blit(animation[ self.nom + "_" + self.type_animation + "_" + str(int(self.frame)) + ".png"],(self.img.get_width()//2-animation[ self.nom + "_" + self.type_animation + "_" + str(int(self.frame)) + ".png"].get_width()//2+150-int(self.img.get_width()//2)+self.decalage_display[0],self.img.get_height()-animation[ self.nom + "_" + self.type_animation + "_" + str(int(self.frame)) + ".png"].get_height()+300-self.img.get_height()+self.decalage_display[1]))
             else:
                 self.display.blit(animation[ self.type_animation + "_" + str(int(self.frame)) + ".png"],(self.img.get_width()//2-animation[ self.type_animation + "_" + str(int(self.frame)) + ".png"].get_width()//2+150-int(self.img.get_width()//2)+self.decalage_display[0],self.img.get_height()-animation[ self.type_animation + "_" + str(int(self.frame)) + ".png"].get_height()+300-self.img.get_height()+self.decalage_display[1]))
-
-    def update_interact(self):
-
-        self.interaction[0] = [int ( self.pos_x + 95 - pixel_red.get_width()//2 + self.img.get_width()//2 ) , int ( 47+self.pos_y+self.img.get_height()-pixel_red.get_height()//1.5)]
-        self.interaction[1] = [ int ( self.pos_x - pixel_red.get_width()//2 + self.img.get_width()//2 ), int ( 47*2+self.pos_y+self.img.get_height()-pixel_red.get_height()//1.5)]
-        self.interaction[2] = [ int ( self.pos_x - 95 - pixel_red.get_width()//2 + self.img.get_width()//2 ) ,int ( 47+self.pos_y+self.img.get_height()-pixel_red.get_height()//1.5)]
     def animate_map(self,frame):
         if self.type_animation != "" and self.animation_dict != None :
             animation = self.animation_dict[self.type_animation]
@@ -62,23 +56,11 @@ class Entity():
     def refresh_display(self):
         self.display.fill((0,0,0))
         self.display.set_colorkey((0,0,0))
-    def move_entity(self,mouvement,map,player):
-        pixel_mask = pygame.mask.from_surface(pixel_red) 
-        if map.collision.__contains__((self.pos_x- pixel_red.get_width()//2+self.img.get_width()//2,self.pos_y-int(pixel_red.get_height()//1.5)+self.img.get_height())):
-            map.collision.remove((self.pos_x- pixel_red.get_width()//2+self.img.get_width()//2,self.pos_y-int(pixel_red.get_height()//1.5)+self.img.get_height()))
-        if not player.masks.overlap(pixel_mask,((self.pos_x- pixel_red.get_width()//2+self.img.get_width()//2 + mouvement[0])-player.pos_x,self.pos_y-int(pixel_red.get_height()//1.5)+self.img.get_height()+ mouvement[1]-(player.pos_y+130))):
-            for x in self.interaction:
-                if map.collision_entity.__contains__((int(x[0]),int(x[1]))):
-                    map.collision_entity.remove((int(x[0]),int(x[1])))
-                map.collision_entity.append((int(x[0])+mouvement[0],int(x[1])+mouvement[1]))
-            map.collision.append((self.pos_x- pixel_red.get_width()//2+self.img.get_width()//2+ mouvement[0],self.pos_y-int(pixel_red.get_height()//1.5)+self.img.get_height()+ mouvement[1]))
+    def move_entity(self,mouvement,player):
+        if not player.masks.overlap(self.collide_box.mask,((self.collide_box.pos_x + mouvement[0])-player.pos_x,(self.collide_box.pos_y+ mouvement[1])-(player.pos_y+130))):
             self.pos_x += mouvement[0]
             self.pos_y += mouvement[1]
-            
-        else:
-            #collision.remove((self.pos_x+mouvement[0]+20,self.pos_y+mouvement[1]+130))
-            map.collision.append((self.pos_x- pixel_red.get_width()//2+self.img.get_width()//2,self.pos_y-int(pixel_red.get_height()//1.5)+self.img.get_height()))
-            
+            self.update_pos_collide()
         """def move_entity(self,entity,mouvement,collision_entity,collision,pieds_mask,joueurs):
         Permet de décplacer une entité, gère les cases d'intéraction de l'entité + collision avec joueurs, retourne soit l'entité modifié soit l'entité non modifié de mouvement"""
     def find_nearest_entity(self,list_entity):
@@ -92,8 +74,17 @@ class Entity():
         """def find_nearest_entity(self,player_rect,list_entity):
         Permet de trouver l'entité dans list_entity la plus proche de player_rect
         return Entity la plus proche de player_rect"""
-    
-    
+    def update_pos_collide(self):
+        self.collide_box.pos_x = int ( self.pos_x - self.collide_box.img_collide.get_width()//2 + self.img.get_width()//2 )
+        self.collide_box.pos_y = int ( self.pos_y + self.img.get_height() - self.collide_box.img_collide.get_height()//2)
+class Chest(Entity):
+    def __init__(self,pos_x,pos_y,img,name,which_type,inventaire):
+        super().__init__(pos_x,pos_y,img,name,which_type)
+        self.inventaire = inventaire
+        
+    def loot_chest(self):
+        self.inventaire.loot_chest()
+
 WIDTH = screen.get_width()
 HEIGHT = screen.get_height()
 MINIMAP_SCALE = 300
@@ -300,3 +291,13 @@ class Fog:
     def draw_fog(self):
         self.light_rect.center = (self.player.pos_x+self.player.img.get_width()//2, self.player.pos_y+self.player.img.get_height()//2)
         self.surface.blit(self.light_image, self.light_rect)
+
+class Collide_box():
+    def __init__(self,size=1):
+        self.size = size
+        self.img_collide = pygame.transform.scale(collide_monster,(190*self.size*2,190*self.size))
+        self.img_collide.set_colorkey(WHITE)
+        self.mask = pygame.mask.from_surface(self.img_collide)
+        self.pos_x = 0
+        self.pos_y = 0
+    

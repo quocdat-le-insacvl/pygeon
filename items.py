@@ -126,11 +126,6 @@ Mace12 = Weapon(1,1,1,"One Handed",item_index,image['W_Mace012.png'])
 Mace13 = Weapon(1,1,1,"One Handed",item_index,image['W_Mace013.png'])
 Mace14 = Weapon(1,1,1,"One Handed",item_index,image['W_Mace014.png'])
 
-    # GUN
-
-Gun1 = Weapon(1,1,1,"Gun",item_index,image['W_Gun001.png'])
-Gun2 = Weapon(1,1,1,"Gun",item_index,image['W_Gun002.png'])
-Gun3 = Weapon(1,1,1,"Gun",item_index,image['W_Gun003.png'])
 
     # FIST
 
@@ -438,11 +433,6 @@ Crystal3= Items(1,1,item_index,"Drop",image['I_Crystal03.png'])
 Coal = Items(1,1,item_index,"Drop",image['I_Coal.png'])
 Chest1= Items(1,1,item_index,"Drop",image['I_Chest01.png'])
 Chest2= Items(1,1,item_index,"Drop",image['I_Chest02.png'])
-Cannon1= Items(1,1,item_index,"Drop",image['I_Cannon01.png'])
-Cannon2= Items(1,1,item_index,"Drop",image['I_Cannon02.png'])
-Cannon3= Items(1,1,item_index,"Drop",image['I_Cannon03.png'])
-Cannon4= Items(1,1,item_index,"Drop",image['I_Cannon04.png'])
-Cannon5= Items(1,1,item_index,"Drop",image['I_Cannon05.png'])
 
 # BOUFFE
 I_C_YellowPepper = Consomable(1,1,item_index,"FOOD",image['I_C_YellowPepper.png'])
@@ -559,4 +549,5 @@ W_Throw002 = Weapon(1,1,1,"W_Throw",item_index,image['W_Throw002.png'])
 W_Throw003 = Weapon(1,1,1,"W_Throw",item_index,image['W_Throw003.png'])
 W_Throw004 = Weapon(1,1,1,"W_Throw",item_index,image['W_Throw004.png'])
 W_Throw05 = Weapon(1,1,1,"W_Throw",item_index,image['W_Throw05.png'])
+
 

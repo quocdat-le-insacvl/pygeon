@@ -19,7 +19,7 @@ class Inventaire():
         self.nb_items = 0
         self.backpack = dict()
         self.poid_actuel = 0
-        self.poid_max = 100
+        self.poid_max = 20000000
         self.have_object = False
         self.last_moove = 0
         self.mouse_slot = self.nb_x*self.nb_y
@@ -46,12 +46,15 @@ class Inventaire():
                 self.nb_items -=1
                 self.poid_actuel -= piece.wheight
 
-    def print_inventory_bis(self,pos_x,pos_y,main=True,mouse=False,print_poids=True):
-        display = pygame.Surface((500,400))
+    def print_inventory_bis(self,pos_x,pos_y,main=True,mouse=False,print_poids=True,print_info_on_mouse = False):
+        display = pygame.Surface((60*(self.nb_x+2),60*(self.nb_y+2)))
         x=display.get_width()//2
         y_=display.get_height()//2
-        display.blit(pygame.transform.scale(img_inventaire,(500,400)),(0,0))
+        display.blit(pygame.transform.scale(img_inventaire,(x*2,y_*2)),(0,0))
         display.set_colorkey(BLACK)
+
+
+
         display_about_items = pygame.Surface((350,200))
         display_about_items.blit(pygame.transform.scale(img_inventaire,(350,200)),(0,0))
         display_about_items.set_colorkey(BLACK)
@@ -76,6 +79,11 @@ class Inventaire():
         i=0
         i=1
         screen.blit(display,(pos_x,pos_y))
+        #AFFICHER L INVENTAIRE SUR L ECRAN
+        for i in range(self.nb_x*self.nb_y):
+            if self.backpack[i] != None :
+                screen.blit(key[self.backpack[i]].wpn_img,(self.bouton_test[i].x+pos_x, self.bouton_test[i].y+pos_y))
+
         if self.last_items_select != None:
             display_info_items = pygame.Surface((350,200))
             display_info_items.blit(pygame.transform.scale(img_inventaire,(350,200)),(0,0))
@@ -105,22 +113,34 @@ class Inventaire():
                         if total_size > 270:
                             ligne +=30
                             total_size = 30
-                screen.blit(display_about_items,(pos_x+250,pos_y-200))
+                if not print_info_on_mouse:
+                    screen.blit(display_about_items,(pos_x+250,pos_y-200))
+                else:
+                    screen.blit(display_about_items,(mx+350,my))
             else:
                 screen.blit(display_about_items,(pos_x+250,pos_y-200))
-            
-            screen.blit(display_info_items,(pos_x-100,pos_y-200))
-            screen.blit(pygame.transform.scale(key[self.last_items_select].wpn_img,(75,75)),(pos_x-100+10,pos_y-200+10))
+            if not print_info_on_mouse:
+                screen.blit(display_info_items,(pos_x-100,pos_y-200))
+                screen.blit(pygame.transform.scale(key[self.last_items_select].wpn_img,(75,75)),(pos_x-100+10,pos_y-200+10))
+            else:
+                screen.blit(display_info_items,(mx,my))
+                screen.blit(pygame.transform.scale(key[self.last_items_select].wpn_img,(75,75)),(mx+10,my+10))
+                
+        # AFFICHER POIDS INVENTAIRE
+        
         if print_poids:
             display_poids = pygame.Surface((200,50))
             display_poids.blit(pygame.transform.scale(img_inventaire,(200,50)),(0,0))
             display_poids.set_colorkey(BLACK)
             draw_text("Poids : %i / %i"%(self.poid_actuel,self.poid_max),ColderWeather_small,WHITE,display_poids,10,5)
-            screen.blit(display_poids,(pos_x,pos_y+400))
+            screen.blit(display_poids,(pos_x,pos_y+y_*2))
         i=0
-        for i in range(self.nb_x*self.nb_y):
-            if self.backpack[i] != None :
-                screen.blit(key[self.backpack[i]].wpn_img,(self.bouton_test[i].x+pos_x, self.bouton_test[i].y+pos_y))
+
+       
+
+
+        # SI MAIN AFFICHER L INVENTAIRE SELECTIONNER SUR LA SOURIS
+
         if main:
             if self.backpack[mouse_slot] != None :
                 self.have_object = True
@@ -131,6 +151,9 @@ class Inventaire():
         while self.backpack[i] != None:
             i += 1
         self.last_moove = i
+
+        # SI RIEN DANS LA MAIN D AUTRE INVENTAIRE, DRAG AND DROP CLASSIQUE
+
         if not mouse:
             for i in range(self.nb_x*self.nb_y):
                 if self.bouton_test[i].collidepoint(mx_display,my_display):
@@ -176,8 +199,8 @@ class Inventaire():
             j = random.randint(0,len(Droppable))
             self.ajouteritems(Droppable[j])
 class Shop(Entity):
-    def __init__(self,inventory,pos_x,pos_y,img,name,which_type,animation_dict=None,talking=None,size=(0,0)):
-        Entity.__init__(self,pos_x,pos_y,img,name,which_type,animation_dict,talking,size)
+    def __init__(self,inventory,pos_x,pos_y,img,name,which_type,animation_dict=None,talking=None,size=(0,0),size_collide_box=1):
+        Entity.__init__(self,pos_x,pos_y,img,name,which_type,animation_dict,talking,size,size_collide_box=1)
         self.show = True
         self.inventory = inventory
     def print_shop(self,perso,click,just_print = False):

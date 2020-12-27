@@ -21,6 +21,7 @@ screen.fill((255,255,255))
 pygame.display.flip()
 #perso = Personnage(screen)
 donjon = Donjon(2,screen,player)
+
 #donjon.load("test1.txt")
 donjon.creationDonjon()
 donjon.affichageDonjon()

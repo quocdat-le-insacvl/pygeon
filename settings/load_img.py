@@ -195,3 +195,4 @@ def board_init(i=0):
     if i==1:
         return pygame.image.load(path.join(path_menu,r'UI board Large stone.png')).convert_alpha()
 
+collide_monster = pygame.image.load(path.join(path_addon,"test_collide_monster.png"))

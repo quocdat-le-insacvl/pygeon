@@ -47,8 +47,10 @@ def create_text_click(text,font,color,display,click,x=0,y=0):
 """def creation img_text_click
     Crée un bouton (pygame Rect) par rapport a une image passez en paramettre et l'affiche a l'endroit demandé
     return True si l'utilisateur click sur le bouton"""
-def creation_img_text_click(img,text,font,color,display,click,x=0,y=0,button=1,left=0,right=0,Click = True):
+def creation_img_text_click(img,text,font,color,display,click,x=0,y=0,button=1,left=0,right=0,Click = True,transform=False):
         text_width, text_height = font.size(text)
+        if transform:
+            img = pygame.transform.scale(img,(text_width+50,text_height+10))
         if img.get_width() < text_width:
             img = pygame.transform.scale(img,(text_width+50,img.get_height()))
         if(left):
@@ -135,7 +137,7 @@ def basic_checkevent(click):
 """def load_game
     Affiche le menu de Sauvegarde et permet de sauvegarder "perso" dans un fichier choisit par l'utilisateur ou à l'inverse de charger un perso provenant de sauvegarde
     return perso Donné charger de sauvegarde 1 / Ou perso d'entré si juste sauvegarder"""
-def load_game(click,perso):
+def load_game(click,perso,display_fog):
         running = True
         Choose = False
         click=False
@@ -170,49 +172,46 @@ def load_game(click,perso):
                     inter = mon_depickler.load()
                     draw_text("Sauvegarde 1",ColderWeather,LIGHT_GREY,display,button_save_1.width//2-text_width//4,100+text_height//4)
                     draw_text("Nom : %s"%(inter.name),ColderWeather,LIGHT_GREY,display,button_save_1.width//2-text_width//4,200+text_height)
-                    if bouton_click(button_save_1,display,click):
+            else : draw_text("VIDE",ColderWeather,LIGHT_GREY,display,button_save_1.width//2-text_width//4,100+text_height//4)
+            if bouton_click(button_save_1,display,click):
                         Choose = True
                         num = 1
                         choose_path = path + 'sauvegarde'
-            else : draw_text("VIDE",ColderWeather,LIGHT_GREY,display,button_save_1.width//2-text_width//4,100+text_height//4)
 
             if os.path.getsize(os.path.join(path_save, 'sauvegarde2')) > 0 :
                 with open(os.path.join(path_save, 'sauvegarde2'),'rb') as fichier:
                     mon_depickler = pickle.Unpickler(fichier)
                     inter = mon_depickler.load()
                     draw_text("Sauvegarde 2",ColderWeather,LIGHT_GREY,display,(100-text_width//2+(display.get_width()//2-100)//2)+display.get_width()//2-100,100+text_height//4)
-                    draw_text("Nom : %s"%(inter.name),ColderWeather,LIGHT_GREY,display,(100-text_width//2+(display.get_width()//2-100)//2)+display.get_width()//2-100,200+text_height)
-                    if bouton_click(button_save_2,display,click):
+                    draw_text("Nom : %s"%(inter.name),ColderWeather,LIGHT_GREY,display,(100-text_width//2+(display.get_width()//2-100)//2)+display.get_width()//2-100,200+text_height) 
+            else : draw_text("VIDE",ColderWeather,LIGHT_GREY,display,button_save_1.width//2-text_width//4,100+text_height//4)
+            if bouton_click(button_save_2,display,click):
                         Choose = True
                         num = 2
                         choose_path = path + 'sauvegarde2'
-            else : draw_text("VIDE",ColderWeather,LIGHT_GREY,display,button_save_1.width//2-text_width//4,100+text_height//4)
-
             if os.path.getsize(os.path.join(path_save, 'sauvegarde3')) > 0 :
                 with open(os.path.join(path_save, 'sauvegarde3'),'rb') as fichier:
                     mon_depickler = pickle.Unpickler(fichier)
                     inter = mon_depickler.load()
                     draw_text("Sauvegarde 3",ColderWeather,LIGHT_GREY,display,100-text_width//2+(display.get_width()//2-100)//2,text_height//4+display.get_height()//2)
                     draw_text("Nom : %s"%(inter.name),ColderWeather,LIGHT_GREY,display,100-text_width//2+(display.get_width()//2-100)//2,text_height//4+display.get_height()//2+200)
-                    if bouton_click(button_save_3,display,click):
+                    
+            else : draw_text("VIDE",ColderWeather,LIGHT_GREY,display,button_save_1.width//2-text_width//4,100+text_height//4)
+            if bouton_click(button_save_3,display,click):
                         Choose = True
                         num = 3
                         choose_path = path + 'sauvegarde3'
-            else : draw_text("VIDE",ColderWeather,LIGHT_GREY,display,button_save_1.width//2-text_width//4,100+text_height//4)
-
             if os.path.getsize(os.path.join(path_save, 'sauvegarde4')) > 0 :
                 with open(os.path.join(path_save, 'sauvegarde4'),'rb') as fichier:
                     mon_depickler = pickle.Unpickler(fichier)
                     inter = mon_depickler.load()
                     draw_text("Sauvegarde 4",ColderWeather,LIGHT_GREY,display,(100-text_width//2+(display.get_width()//2-100)//2)+display.get_width()//2-100,text_height//4+display.get_height()//2)
                     draw_text("Nom : %s"%(inter.name),ColderWeather,LIGHT_GREY,display,(100-text_width//2+(display.get_width()//2-100)//2)+display.get_width()//2-100,text_height//4+display.get_height()//2+200)
-                    if bouton_click(button_save_4,display,click):
+            else : draw_text("VIDE",ColderWeather,LIGHT_GREY,display,button_save_1.width//2-text_width//4,100+text_height//4)
+            if bouton_click(button_save_4,display,click):
                         Choose = True
                         num = 4
                         choose_path = path + 'sauvegarde4'
-            else : draw_text("VIDE",ColderWeather,LIGHT_GREY,display,button_save_1.width//2-text_width//4,100+text_height//4)
-
-
             if (Choose):
                 if creation_img_text_click(img_next,"Sauvegarder",ColderWeather,WHITE,display,click,0,0,right=1):
                     if perso.name == None:
@@ -224,6 +223,7 @@ def load_game(click,perso):
                             with open(choose_path,'wb') as fichier:
                                 mon_pickler = pickle.Pickler(fichier)
                                 mon_pickler.dump(perso)
+                            pygame.image.save(display_fog,path+'fog_'+str(num)+'.png')
 
                 if creation_img_text_click(img_next,"Charger",ColderWeather,WHITE,display,click,0,0,left=1):
                     click = False
@@ -231,7 +231,7 @@ def load_game(click,perso):
                         with open(choose_path,'rb') as fichier:
                             mon_depickler = pickle.Unpickler(fichier)
                             perso = mon_depickler.load()
-                        return perso
+                        return perso, pygame.image.load(os.path.join(path_save,'fog_'+str(num) + '.png'))
 
             screen.blit(pygame.transform.scale(display,WINDOWS_SIZE),(0,0))
             running,click = basic_checkevent(click)
@@ -374,6 +374,33 @@ def print_mooving_entity(game, display,list_entity,center_x,center_y):
             display.blit(entity.shadow, (entity.last_know_pos[0] +
                                          center_x, entity.last_know_pos[1] + center_y))
 
+def well_print_on_display(display,text,pos_x=0,pos_y=0,color=WHITE):
+    lenght_text,y_use = ColderWeather_small.size(text)
+    if lenght_text > display.get_width():
+        text_word = text.split(' ')
+        total_size = 30
+        ligne = 30
+        for i in range (len(text_word)):
+            draw_text(text_word[i],ColderWeather_small,color,display,total_size,ligne)
+            total_size += ColderWeather_small.size(text_word[i])[0] + ColderWeather_small.size(" ")[0]
+            if total_size > display.get_width()-70:
+                ligne += y_use + 30
+                total_size = 30
+        return display
+    else:
+        draw_text(text,ColderWeather_small,color,display,30,30)
+        return display
 
 
-
+def print_turn_batlle(list_turn):
+    display = pygame.Surface((250,500))
+    display.blit(pygame.transform.scale(img_inventaire,(250,500)),(0,0))
+    i = 0
+    for i in range(4):
+        pygame.draw.rect(display,(0,0,1),(20,110*i+30,200,100),1)
+    screen.blit(display,(0,0))
+    i=1
+    for x in list_turn:
+        screen.blit(pygame.transform.scale(x.avata,(200,100)),(20,470-110*i))
+        i+=1
+            

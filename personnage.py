@@ -20,6 +20,57 @@ buttonp_ini=validation_button_pressed
 buttona,buttons,buttonpa,buttonps=init_buttonsas()
 confirm,confirmp=confirm_button()
 
+class Perso_saveable(): # INTERDICTION DE METTRE DES PYGAMES SURFACE SEULEMENT DES VARIABLES 
+    def __init__(self):
+        self.classe = ""
+        self.level = 1
+        self.xp=0
+        self.hp = 0
+        self.hp_max = 0
+        self.proficiency=0
+        self.attack=0
+        self.feet=0
+        self.STR = 0
+        self.DEX = 0
+        self.CON = 0
+        self.INT = 0
+        self.WIS = 0
+        self.CHA = 0
+        self.argent = 0
+        self.poid_actuel = 0
+        self.poid_max = 0
+        self.difficulty = 10
+        self.inventaire = 0
+        self.pos_x = 0
+        self.pos_y = 0
+        self.armor = dict()
+        for i in range(0,6):     # 0 : HEAD 1 : TORSE 2 : COUE  3 BOTTE 4 : MAIN GAUCHE : 5 MAIN DROITE
+            self.armor[i] = None
+    def load_player(self,perso):
+        self.name = perso.name
+        self.classe = perso.classe
+        self.level = perso.level
+        self.xp= perso.xp  
+        self.hp = perso.hp
+        self.hp_max = perso.hp_max
+        self.proficiency= perso.proficiency
+        self.attack= perso.attack
+        self.feet= perso.feet
+        self.STR = perso.STR
+        self.DEX = perso.DEX
+        self.CON = perso.CON
+        self.INT = perso.INT
+        self.WIS = perso.WIS
+        self.CHA = perso.CHA
+        self.inventaire = perso.inventaire
+        self.argent = perso.argent
+        self.poid_actuel = perso.poid_actuel
+        self.poid_max = perso.poid_max
+        self.difficulty = perso.difficulty
+        self.inventaire = perso.inventaire
+        self.armor = perso.armor
+        self.pos_x = perso.pos_x
+        self.pos_y = perso.pos_y
 class Perso(Entity):
     def __init__(self,STR=8,DEX=8,CON=8,INT=8,WIS=8,CHA=8,hp=10,hp_max=10,inventaire=10,name=None,classe=None,level=0,xp=0,hit_dice=0,argent=0,player_animation = None):
         super().__init__(100,100,pygame.transform.scale(pygame.image.load(path.join(path_addon,'Image/perso.png')),(96,147)),name,"Player",animation_dict=player_animation)
@@ -49,6 +100,7 @@ class Perso(Entity):
         self.poid_actuel = 0
         self.poid_max = 300
         self.competencesList=[]
+        self.bouton_comp = dict()
         self.skills=[0,0,0,0,0,0,0]
         ### Actions during the game ###
         
@@ -57,11 +109,35 @@ class Perso(Entity):
         self.difficulty = 10
         self.inventaire = inventaire
         self.armor = dict()
+        self.crew_mate = []
         for i in range(0,6):     # 0 : HEAD 1 : TORSE 2 : COUE  3 BOTTE 4 : MAIN GAUCHE : 5 MAIN DROITE
             self.armor[i] = None
         ### Pictures ###
-        self.lvl_up_img=pygame.transform.scale(pygame.image.load(path.join(path_addon,'Image/lvl_up.png')),(WINDOWS_SIZE[0]//20,WINDOWS_SIZE[1]//20))
         self.avata = ava_perso
+    def load_player(self,perso_saveable):
+        self.name = perso_saveable.name
+        self.classe = perso_saveable.classe
+        self.level = perso_saveable.level
+        self.xp= perso_saveable.xp  
+        self.hp = perso_saveable.hp
+        self.hp_max = perso_saveable.hp_max
+        self.proficiency= perso_saveable.proficiency
+        self.attack= perso_saveable.attack
+        self.feet= perso_saveable.feet
+        self.STR = perso_saveable.STR
+        self.DEX = perso_saveable.DEX
+        self.CON = perso_saveable.CON
+        self.INT = perso_saveable.INT
+        self.WIS = perso_saveable.WIS
+        self.CHA = perso_saveable.CHA
+        self.inventaire = perso_saveable.inventaire
+        self.argent = perso_saveable.argent
+        self.poid_actuel = perso_saveable.poid_actuel
+        self.poid_max = perso_saveable.poid_max
+        self.difficulty = perso_saveable.difficulty
+        self.armor = perso_saveable.armor
+        self.pos_x = perso_saveable.pos_x
+        self.pos_y = perso_saveable.pos_y
     ####### Def lvl ########
     def levelupchange(self):
         #manage the level up of the caracter
@@ -97,7 +173,7 @@ class Perso(Entity):
         #manage the display of the lvl up (private)
         temp=pygame.Surface(WINDOWS_SIZE)
         temp.blit(screen,(0,0))
-        screen.blit(self.lvl_up_img,(self.pos_x+100,self.pos_y))
+        screen.blit(pygame.transform.scale(pygame.image.load(path.join(path_addon,'Image/lvl_up.png')),(WINDOWS_SIZE[0]//20,WINDOWS_SIZE[1]//20)),(self.pos_x+100,self.pos_y))
         time=pygame.time.get_ticks()
         pygame.display.flip()
         while(pygame.time.get_ticks()<time+1000):
@@ -107,18 +183,12 @@ class Perso(Entity):
                     pygame.quit()
         screen.blit(temp, (0,0))
         pygame.display.flip()
-
-
-
     ####### End lvl def #######
-
     def ability_score(self,caracteristique):
         #permet d'augmenter ou de diminuer ses chances de réussir une action
         #STR=0, DEX=1, CON=2, INT=3, WIS=4, CHA=5
 
         return (self.stats[caracteristique]-10)//2
-
-
     # def stats_up(self,stat,facteur,temps):
     #     #STR=1, DEX=2, CON=3, INT=4, WIS=5, CHA=6
     #     #facteur c'est le multiplicateur, temps c'est le nombre de tours que la modification prend effet : 0 rend l'effet permanent
@@ -307,7 +377,7 @@ class Perso(Entity):
 class Perso_game(Perso):
     def __init__(self,STR,DEX,CON,INT,WIS,CHA,hp,hp_max,inventaire,img,pos_x,pos_y,player_animation = None ,argent = 0,name=None,classe=None,level=1,xp=0):
         #Entity.__init__(self,pos_x,pos_y,img,name,"Player",animation_dict=player_animation)
-        Perso.__init__(self,STR,DEX,CON,INT,WIS,CHA,hp,hp_max,inventaire,player_animation=player_animation)
+        Perso.__init__(self,STR,DEX,CON,INT,WIS,CHA,hp,hp_max,inventaire,player_animation=player_animation,name=name)
         self.case_connue = []
         self.mask_surface = pygame.Surface((img.get_width()-40,10))
         self.mask_surface.fill((255,0,0))
@@ -334,7 +404,7 @@ class Perso_game(Perso):
         else:
             self.deplacement = [0,0]
             self.type_animation = "idle"     
-    def move_player(self,dict_collision):
+    def move_player(self,dict_collision,list_with_collide,list_monster):
         self.refresh_animation_and_mouvement()
         self.swap = False
         self.entity_near = False
@@ -343,9 +413,18 @@ class Perso_game(Perso):
         for x in dict_collision['change_camera_entity']:
             if pixel_mask.overlap(self.masks,((self.pos_x+self.deplacement[0]+10)-x[0],(self.pos_y+self.deplacement[1]+self.img.get_height()-15)-x[1])):
                 self.swap_entity = True
-        for x in dict_collision['collision_entity']:
+        '''for x in list_mooving_entity:
+            if x.collide_box.mask.overlap(self.masks,(self.pos_x+self.deplacement[0]+10)-x[0],(self.pos_y+self.deplacement[1]+self.img.get_height()-15)-x[1]):
+                self.entity_near = True'''
+        '''for x in dict_collision['collision_entity']:
             if pixel_mask.overlap(self.masks,((self.pos_x+self.deplacement[0]+10)-x[0],(self.pos_y+self.deplacement[1]+self.img.get_height()-15)-x[1])):
+                self.entity_near = True'''
+        for x in list_with_collide:
+            if x.collide_box.mask.overlap(self.masks,((self.pos_x+self.deplacement[0]+10)-x.collide_box.pos_x,(self.pos_y+self.deplacement[1]+self.img.get_height()-15)-x.collide_box.pos_y)):
                 self.entity_near = True
+        for x in list_monster:
+            if x.collide_box_interact.mask.overlap(self.masks,((self.pos_x+self.deplacement[0]+10)-x.collide_box_interact.pos_x,(self.pos_y+self.deplacement[1]+self.img.get_height()-15)-x.collide_box_interact.pos_y)):
+                return x 
         for x in dict_collision['collision_change_camera']:
             if pixel_mask.overlap(self.masks,((self.pos_x+self.deplacement[0]+10)-x[0],(self.pos_y+self.deplacement[1]+self.img.get_height()-15)-x[1])):
                 self.swap = True
@@ -355,6 +434,7 @@ class Perso_game(Perso):
         if possible:
             self.pos_x += self.deplacement[0]
             self.pos_y += self.deplacement[1]
+            return None
         """def move_player():
         Permet de déplcer le player_rect de mouvement check si le joeurs ne collide pas avec un chamgement de caméra ou une entité"""
     def check_user(self,event):
@@ -448,11 +528,26 @@ class Perso_game(Perso):
         if self.inventaire.backpack[mouse_slot] != None:
             screen.blit(key[self.inventaire.backpack[mouse_slot]].wpn_img,(mx,my))
     def deplacerDroite(self):
-        self.pos_x+=2
-        
+        self.pos_x+=2    
     def deplacerGauche(self):
         self.pos_x -=2
     def deplacerHaut(self):
         self.pos_y -=2
     def deplacerBas(self):
         self.pos_y+=2
+    def spell_bar(self):
+        screen.blit(pygame.transform.scale(img_inventaire,(500,100)),(screen.get_width()//2-250,screen.get_height()-95))
+        i = 0
+        mx,my = pygame.mouse.get_pos()
+        for i in range(5):
+            self.bouton_comp[i] = pygame.Rect(85*i+screen.get_width()//2-200, screen.get_height()-80, 75, 75)
+            pygame.draw.rect(screen,(0,0,1),self.bouton_comp[i],1)
+            if self.bouton_comp[i].collidepoint(mx,my):
+                pygame.draw.rect(screen,(255,0,0),self.bouton_comp[i])
+        i=0
+        for i in range(len(self.competencesList)):
+            screen.blit(pygame.transform.scale(self.competencesList[i].img,(75,75)),(85*i+screen.get_width()//2-200,screen.get_height()-80))
+        
+        
+
+
