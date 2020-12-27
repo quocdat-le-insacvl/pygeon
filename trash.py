@@ -15,7 +15,7 @@ from settings.screen import *
 from settings.police import Drifftype, ColderWeather, Rumbletumble, coeff, coeff1, coeff2, ColderWeather_small
 from settings.load_img import *
 from settings.color import *
-from script import player_for_save,player_3,list_mooving_entity,list_static_entity,player_2
+from script import player_for_save,player_3,list_static_entity,player_2
 from fonction import *
 from personnage import Perso_game
 from seller_scripts import list_seller
@@ -241,7 +241,7 @@ class Game():
         self.fog = Fog(self)
         self.zoom_map = False
         self.center_x, self.center_y = 0, 0
-        self.list_mooving_entity = list_mooving_entity
+        self.list_mooving_entity = self.map.list_monster
 
     def main_game(self):
         global time_line
@@ -254,7 +254,6 @@ class Game():
         interact = False
         pause_menu = False
         running = True
-        list_mooving_entity[0].update_pos_collide()
 
         for x in list_seller:
             x.update_pos_collide()

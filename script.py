@@ -67,6 +67,8 @@ tavern_2 = Entity(9250-tavern_img.get_width()//2,175-tavern_img.get_height()//2,
 tavern_3 = Entity(7350-tavern_img.get_width()//2,1125-tavern_img.get_height()//2,tavern_img,"Tavern","Building")
 tavern_4 = Entity(11060-tavern_img.get_width()//2,1080-tavern_img.get_height()//2,tavern_img,"Tavern","Building")
 tavern_5 = Entity(10540+380,1790-tavern_img.get_height()//2+270,tavern2_img,"Tavern","Building")
+
+list_static_entity = []
 '''
 wizard = Entity(9000,800,wizard_hide["wizard_idle_1.png"],"wizard","Monster",wizard_animation,size=(300,300))
 wizard_2 = Entity(9000,500,wizard_hide["wizard_idle_1.png"],"wizard","Monster",wizard_animation,size=(300,300))
@@ -79,7 +81,6 @@ monster_test_2 = Monster(9250,785,wizard_hide["wizard_idle_1.png"],"wizard","Mon
 
 
 
-list_static_entity = []
 list_static_entity.append(tavern_1)
 list_static_entity.append(tavern_2)
 list_static_entity.append(tavern_3)
