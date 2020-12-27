@@ -10,6 +10,7 @@ from settings.load_img import *
 from settings.color import *
 from fonction import *
 from trash import Game
+from custum_map_ import Map_editor
 key = list(Wikitem.keys())
 
 clock = pygame.time.Clock()
@@ -64,6 +65,7 @@ class Menu():
     def main_menu(self):
         running = True
         display = pygame.Surface((1980,1000))
+        first_blit=True
         while running:
             # SETUP BACKGROUNDS POLICE
             printbackgrounds(display)
@@ -72,7 +74,7 @@ class Menu():
             draw_text('Projet Pygeon', Drifftype, GREY, display, display.get_width()//2 - text_width // 2, display.get_height()//6)
 
             if create_text_click('Play',Drifftype,GREY,display,self.click,display.get_width()//2,display.get_height()//3):
-                self.play()
+                self.map_creator()
             if create_text_click('Charger',Drifftype,GREY,display,self.click,display.get_width()//2,display.get_height()//2.1):
                 self.perso = load_game(self.click,self.perso)
             if create_text_click('Option',Drifftype,GREY,display,self.click,display.get_width()//2,display.get_height()//1.6):
@@ -82,10 +84,80 @@ class Menu():
             # REFRESH + END EVENT
             screen.blit(pygame.transform.scale(display,WINDOWS_SIZE),(0,0))
             running = self.checkevent()
+            if not first_blit:pygame.display.update()
+            first_blit = transition(2,screen.copy(),first_blit)
+    def intermediaire_play(self):
+        display = pygame.Surface((1980,1000))
+        running = True
+        self.click = False
+        while running:
+            # SETUP BACKGROUNDS POLICE
+            printbackgrounds(display)
+            # CHOISIR UN MENU : CREATION BOUTON / AFFICHAGE
+            text_width, text_height = Drifftype.size("Projet Pygeon")
+            draw_text('Projet Pygeon', Drifftype, GREY, display, display.get_width()//2 - text_width // 2, display.get_height()//6)
+            if create_text_click('Campaign',Drifftype,GREY,display,self.click,display.get_width()//2,display.get_height()//3):
+                self.play()
+            if create_text_click('Create Campaign',Drifftype,GREY,display,self.click,display.get_width()//2,display.get_height()//2.1):
+                self.map_creator()
+            if create_text_click('Quit',Drifftype,GREY,display,self.click,display.get_width()//2,display.get_height()//1.3):
+                sys.Quit()
+            # REFRESH + END EVENT
+            screen.blit(pygame.transform.scale(display,WINDOWS_SIZE),(0,0))
+            running = self.checkevent()
             pygame.display.update()
+    def map_creator(self):
+        # Choisir Largueur
+        display = pygame.Surface((1980,1000))
+        running = True
+        self.click = False
+        longueur,largeur = 0,0
+        first_blit = True
+        while running:
+            printbackgrounds(display)
+            
+            text_width, text_height = ColderWeather.size("Choisir une longueur")
+            draw_text('Choisir une LONGUEUR', ColderWeather, GREY, display, display.get_width()//4 - text_width // 2.5, display.get_height()//6)
+            bouton_longueur = pygame.Rect(display.get_width()//4 - text_width // 2.5, display.get_height()//6+1.5*text_height,text_width, text_height)
+            pygame.draw.rect(display,(150,150,150),bouton_longueur,1)
+
+            if bouton_click(bouton_longueur,display,self.click):
+                longueur = self.checkclaviernum((display.get_width()//4 - text_width // 2.5),(display.get_height()//6+1.5*text_height),display,bouton_longueur)
+
+            draw_text(str(longueur),ColderWeather,WHITE,display,display.get_width()//4 - text_width // 2.5, display.get_height()//6+1.5*text_height)
+
+            text_width, text_height = ColderWeather.size("Choisir une Largeur")
+            draw_text('Choisir une largeur', ColderWeather, GREY, display, display.get_width()//4 - text_width // 2.5, display.get_height()//2)
+            bouton_longueur = pygame.Rect(display.get_width()//4 - text_width // 2.5, display.get_height()//2+1.5*text_height,text_width, text_height)
+            pygame.draw.rect(display,(150,150,150),bouton_longueur,1)
+
+            if bouton_click(bouton_longueur,display,self.click):
+                largeur = self.checkclaviernum((display.get_width()//4 - text_width // 2.5),(display.get_height()//2+1.5*text_height),display,bouton_longueur)
+
+            draw_text(str(largeur),ColderWeather,WHITE,display,display.get_width()//4 - text_width // 2.5, display.get_height()//2+1.5*text_height)
+
+            if longueur != 0 and largeur != 0:
+                if creation_img_text_click(img_next,"Suivant",ColderWeather,WHITE,display,self.click,right=1):
+                    map_editor = Map_editor(longueur,largeur)
+                    map_editor.print_menu_editor()
+                    self.play()
+            
+            screen.blit(pygame.transform.scale(display,WINDOWS_SIZE),(0,0))
+
+            if not first_blit:pygame.display.update()
+            first_blit = transition(1,screen.copy(),first_blit)
+            
+            running = self.checkevent()
+            
+        # Choisir Longueur
+
+
+
     def play(self) :
         running = True
+        self.click = False
         display = pygame.Surface((1980,1024))
+        first_blit = False
         while running:
             # SETUP BACKGROUNDS POLICE
             printbackgrounds(display)
@@ -172,10 +244,12 @@ class Menu():
             # REFRESH + END EVENT
             screen.blit(pygame.transform.scale(display,WINDOWS_SIZE),(0,0))
             running = self.checkevent()
-            pygame.display.update()
+            if not first_blit:pygame.display.update()
+            first_blit = transition(2,screen.copy(),first_blit)
     def option(self):
         running = True
         display = pygame.Surface((1980,1020))
+        first_blit = True
         while running:
             global LONGUEUR
             global LARGEUR
@@ -223,7 +297,8 @@ class Menu():
             # Partie son
             screen.blit(pygame.transform.scale(display,WINDOWS_SIZE),(0,0))
             running = self.checkevent()
-            pygame.display.update()
+            if not first_blit:pygame.display.update()
+            first_blit = transition(2,screen.copy(),first_blit)
     def affichage_set_point(self,x,y,cap,display):
 
         # CREATION/AFFICHAGE : BOUTON + et -
@@ -342,4 +417,4 @@ class Menu():
             pygame.display.update()
 
 menu = Menu(player)
-menu.game_loop()
+menu.map_creator()

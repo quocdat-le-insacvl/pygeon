@@ -1,18 +1,21 @@
 import pickle,os
 from pygame.locals import *
+from settings import police,color
 from settings.screen import *
-from settings.police import Drifftype,ColderWeather,Rumbletumble,coeff,coeff1,coeff2,ColderWeather_small
+from settings.police import *
 from settings.load_img import *
 from settings.color import *
 import random
+import time
+# from script import demon_shadow
 
 
 ### Fixing path
 path_pygeon = os.path.dirname(__file__)
 path_save = os.path.join(path_pygeon, 'Save')
-# path_addon = os.path.join(path_pygeon, 'Addon')
+path_addon = os.path.join(path_pygeon, 'Addon')
 # path_son = os.path.join(path_addon, 'Son')
-# path_police = os.path.join(path_addon, 'Police')
+path_police = os.path.join(path_addon, 'Police')
 # path_menu = os.path.join(path_addon, 'Menu')
 # path_demon_walk = os.path.join(path_addon, 'demon_walk')
 # path_seller = os.path.join(path_addon, 'seller')
@@ -22,6 +25,12 @@ path_save = os.path.join(path_pygeon, 'Save')
 """def draw_text
     Affiche un text avec la police (font) avec la couleur (color) sur un pygame surface (surface) a la position x , y"""
 def draw_text(text, font, color, surface, x, y):
+    if color=="bl":
+        color=BLACK
+    if color=="b":
+        color=BROWN
+    if color=="y":
+        color=YELLOW
     textobj = font.render(text, 1, color)
     textrect = textobj.get_rect()
     textrect.topleft = (x, y)
@@ -38,8 +47,10 @@ def create_text_click(text,font,color,display,click,x=0,y=0):
 """def creation img_text_click
     Crée un bouton (pygame Rect) par rapport a une image passez en paramettre et l'affiche a l'endroit demandé
     return True si l'utilisateur click sur le bouton"""
-def creation_img_text_click(img,text,font,color,display,click,x=0,y=0,button=1,left=0,right=0,Click = True):
+def creation_img_text_click(img,text,font,color,display,click,x=0,y=0,button=1,left=0,right=0,Click = True,transform=False):
         text_width, text_height = font.size(text)
+        if transform:
+            img = pygame.transform.scale(img,(text_width+50,text_height+10))
         if img.get_width() < text_width:
             img = pygame.transform.scale(img,(text_width+50,img.get_height()))
         if(left):
@@ -63,7 +74,7 @@ def creation_img_text_click(img,text,font,color,display,click,x=0,y=0,button=1,l
 """def validation_screen
     Affiche un message (text) pour valider une action / lancer une autre
     return True si click sur bouton suivant"""
-def Validation_screen(text,display,click):
+def Validation_screen(text,display,click,choice=False):
         running = True
         while running:
             # Backgrounds :
@@ -76,8 +87,14 @@ def Validation_screen(text,display,click):
             text_width, text_height = ColderWeather_small.size(text)
             draw_text(text,ColderWeather_small,WHITE,display,display.get_width()//2-text_width//2,display.get_height()//2-text_height//2-img_backgrounds_warning.get_height()//2)
             pygame.display.update()
-            if creation_img_text_click(validation_button,"Valider",ColderWeather,WHITE,display,click,display.get_width()//2,display.get_height()//2):
-                return True
+            if not choice :
+                if creation_img_text_click(validation_button,"Valider",ColderWeather,WHITE,display,click,display.get_width()//2,display.get_height()//2):
+                    return True
+            else:
+                if creation_img_text_click(validation_button,"Oui",ColderWeather,WHITE,display,click,display.get_width()//2-200,display.get_height()//2):
+                    return True
+                elif creation_img_text_click(validation_button,"Non",ColderWeather,WHITE,display,click,display.get_width()//2+200,display.get_height()//2):
+                    return False
             screen.blit(pygame.transform.scale(display,WINDOWS_SIZE),(0,0))
             running,click = basic_checkevent(click)
             pygame.display.update()
@@ -120,12 +137,13 @@ def basic_checkevent(click):
 """def load_game
     Affiche le menu de Sauvegarde et permet de sauvegarder "perso" dans un fichier choisit par l'utilisateur ou à l'inverse de charger un perso provenant de sauvegarde
     return perso Donné charger de sauvegarde 1 / Ou perso d'entré si juste sauvegarder"""
-def load_game(click,perso):
+def load_game(click,perso,display_fog):
         running = True
         Choose = False
         click=False
         num = 0
         display = pygame.Surface((1980,1024))
+        first_blit = True
         while running:
 
             printbackgrounds(display)
@@ -154,49 +172,46 @@ def load_game(click,perso):
                     inter = mon_depickler.load()
                     draw_text("Sauvegarde 1",ColderWeather,LIGHT_GREY,display,button_save_1.width//2-text_width//4,100+text_height//4)
                     draw_text("Nom : %s"%(inter.name),ColderWeather,LIGHT_GREY,display,button_save_1.width//2-text_width//4,200+text_height)
-                    if bouton_click(button_save_1,display,click):
+            else : draw_text("VIDE",ColderWeather,LIGHT_GREY,display,button_save_1.width//2-text_width//4,100+text_height//4)
+            if bouton_click(button_save_1,display,click):
                         Choose = True
                         num = 1
                         choose_path = path + 'sauvegarde'
-            else : draw_text("VIDE",ColderWeather,LIGHT_GREY,display,button_save_1.width//2-text_width//4,100+text_height//4)
 
             if os.path.getsize(os.path.join(path_save, 'sauvegarde2')) > 0 :
                 with open(os.path.join(path_save, 'sauvegarde2'),'rb') as fichier:
                     mon_depickler = pickle.Unpickler(fichier)
                     inter = mon_depickler.load()
                     draw_text("Sauvegarde 2",ColderWeather,LIGHT_GREY,display,(100-text_width//2+(display.get_width()//2-100)//2)+display.get_width()//2-100,100+text_height//4)
-                    draw_text("Nom : %s"%(inter.name),ColderWeather,LIGHT_GREY,display,(100-text_width//2+(display.get_width()//2-100)//2)+display.get_width()//2-100,200+text_height)
-                    if bouton_click(button_save_2,display,click):
+                    draw_text("Nom : %s"%(inter.name),ColderWeather,LIGHT_GREY,display,(100-text_width//2+(display.get_width()//2-100)//2)+display.get_width()//2-100,200+text_height) 
+            else : draw_text("VIDE",ColderWeather,LIGHT_GREY,display,button_save_1.width//2-text_width//4,100+text_height//4)
+            if bouton_click(button_save_2,display,click):
                         Choose = True
                         num = 2
                         choose_path = path + 'sauvegarde2'
-            else : draw_text("VIDE",ColderWeather,LIGHT_GREY,display,button_save_1.width//2-text_width//4,100+text_height//4)
-
             if os.path.getsize(os.path.join(path_save, 'sauvegarde3')) > 0 :
                 with open(os.path.join(path_save, 'sauvegarde3'),'rb') as fichier:
                     mon_depickler = pickle.Unpickler(fichier)
                     inter = mon_depickler.load()
                     draw_text("Sauvegarde 3",ColderWeather,LIGHT_GREY,display,100-text_width//2+(display.get_width()//2-100)//2,text_height//4+display.get_height()//2)
                     draw_text("Nom : %s"%(inter.name),ColderWeather,LIGHT_GREY,display,100-text_width//2+(display.get_width()//2-100)//2,text_height//4+display.get_height()//2+200)
-                    if bouton_click(button_save_3,display,click):
+                    
+            else : draw_text("VIDE",ColderWeather,LIGHT_GREY,display,button_save_1.width//2-text_width//4,100+text_height//4)
+            if bouton_click(button_save_3,display,click):
                         Choose = True
                         num = 3
                         choose_path = path + 'sauvegarde3'
-            else : draw_text("VIDE",ColderWeather,LIGHT_GREY,display,button_save_1.width//2-text_width//4,100+text_height//4)
-
             if os.path.getsize(os.path.join(path_save, 'sauvegarde4')) > 0 :
                 with open(os.path.join(path_save, 'sauvegarde4'),'rb') as fichier:
                     mon_depickler = pickle.Unpickler(fichier)
                     inter = mon_depickler.load()
                     draw_text("Sauvegarde 4",ColderWeather,LIGHT_GREY,display,(100-text_width//2+(display.get_width()//2-100)//2)+display.get_width()//2-100,text_height//4+display.get_height()//2)
                     draw_text("Nom : %s"%(inter.name),ColderWeather,LIGHT_GREY,display,(100-text_width//2+(display.get_width()//2-100)//2)+display.get_width()//2-100,text_height//4+display.get_height()//2+200)
-                    if bouton_click(button_save_4,display,click):
+            else : draw_text("VIDE",ColderWeather,LIGHT_GREY,display,button_save_1.width//2-text_width//4,100+text_height//4)
+            if bouton_click(button_save_4,display,click):
                         Choose = True
                         num = 4
                         choose_path = path + 'sauvegarde4'
-            else : draw_text("VIDE",ColderWeather,LIGHT_GREY,display,button_save_1.width//2-text_width//4,100+text_height//4)
-
-
             if (Choose):
                 if creation_img_text_click(img_next,"Sauvegarder",ColderWeather,WHITE,display,click,0,0,right=1):
                     if perso.name == None:
@@ -208,6 +223,7 @@ def load_game(click,perso):
                             with open(choose_path,'wb') as fichier:
                                 mon_pickler = pickle.Pickler(fichier)
                                 mon_pickler.dump(perso)
+                            pygame.image.save(display_fog,path+'fog_'+str(num)+'.png')
 
                 if creation_img_text_click(img_next,"Charger",ColderWeather,WHITE,display,click,0,0,left=1):
                     click = False
@@ -215,11 +231,29 @@ def load_game(click,perso):
                         with open(choose_path,'rb') as fichier:
                             mon_depickler = pickle.Unpickler(fichier)
                             perso = mon_depickler.load()
-                        return perso
+                        return perso, pygame.image.load(os.path.join(path_save,'fog_'+str(num) + '.png'))
 
             screen.blit(pygame.transform.scale(display,WINDOWS_SIZE),(0,0))
             running,click = basic_checkevent(click)
+            if not first_blit:pygame.display.update()
+            first_blit = transition(5,screen.copy(),first_blit)
+
+def transition(ms,capture_screen,first_blit):
+    if first_blit:
+        transition = pygame.Surface((screen.get_width(),screen.get_height()))
+        transition.fill((0,0,0))
+        for x in range(255):
+            transition.set_alpha(255-x)
+            screen.blit(capture_screen,(0,0))
+            screen.blit(transition,(0,0))
             pygame.display.update()
+            pygame.time.wait(ms)
+    screen.blit(capture_screen,(0,0))
+    return False
+
+
+
+
 
 """ def load_map
     Chargement de la carte, crée une nouvelle ligne a chaque \n
@@ -240,54 +274,133 @@ def load_map(path):
         Return collision_change_camera List de position pour pixel (bloc de collision) permet de changer l'affichage
         Return tree_position List de postion des Arbres
         Return collision_entity List de position pour pixel_red (bloc de collision) permet l'interaction avec les entitées fixes"""
-
-
-"""Def print_nature
-    Affiche les arbre sur le display
-    return Display avec les arbres"""
-def print_nature(Map,display,tree_position,all = True):
-    cubesize=190
-    i=0
-    if all:
-        for layer in Map:
-            j=0
-            for tile in layer:
-                x = (j-i)*cubesize//2+9000
-                y = (j+i)*cubesize//4
-                if Map[i][j] != None:
-                    if Map[i][j] == '2' :
-                        n = random.randint(1,4)
-                        display.blit(tree["tree_" + str(2) + ".png"],(x,y-200))
-                    if Map[i][j] == '7':
-                        #collision.append((x,y))
-                        display.blit(fence_1,(x,y-50))
-                    if Map[i][j] == '9':
-                        display.blit(fence_2,(x,y-50))
-                j+=1
-
-"""def print_static_entity
-    Affiche les entités static sur le display"""
-def print_static_entity(display,list_entity):
-    for i in range(len(list_entity)):
-        display.blit(list_entity[i].display,(list_entity[i].pos_x,list_entity[i].pos_y))
 """def print_mooving_entity
     Affiche les entités non static sur le display"""
-def print_mooving_entity(display,list_entity,center_x,center_y):
-    for i in range(len(list_entity)):
-        display.blit(list_entity[i].display,(list_entity[i].pos_x+center_x,list_entity[i].pos_y+center_y))
 
 
-#combat
-def bonus(attribut): #pour assigner a chaque attribut les pts bonus correspondants
-        if attribut == 1:
-            return -5
-        else:
-            b, i = -5, 1
-            while i <= attribut:
-                if i%2 == 0:
-                    b += 1
-                i += 1
-            return b
+def exit_checkevent(event):
+    if event.type == pygame.QUIT:
+        pygame.quit()
+    if event.type == pygame.KEYDOWN:
+        if event.key == pygame.K_ESCAPE:
+            return False
+    return True
 
-def generate_randint(a,b):
-    return random.randint(a,b)
+def wgrey(police,msg):
+    return police.render(msg, True, color.LIGHT_GREY)
+def wbrown(police,msg):
+    return police.render(msg, True, color.BROWN)
+def wred(police,msg):
+    return police.render(msg, True, color.RED)
+def wyellow(police,msg):
+    return police.render(msg, True, color.YELLOW)
+
+
+def replace_rect(rectsurface,rect):
+    """cette fonction permet de replacer un rectangle blit sur une surface sur les coordonnées du screen
+       (evidemment si la surface est scale ou reblit les coordonnées ne sont plus valides)"""
+    rect.x=rect.x+rectsurface.x
+    rect.y=rect.y+rectsurface.y
+    return rect
+
+def init_buttonsas():
+    #initialise les boutons + et -
+    add=wbrown(astxt,"+")
+    buttonpa=pygame.transform.scale(buttonp, (70, add.get_height()))
+    buttonps=pygame.transform.scale(buttonp, (70, add.get_height()))
+    buttonpa.blit(add,(buttonpa.get_width()//2-add.get_width()//2,buttonpa.get_height()//2-add.get_height()/2))
+    sub=wbrown(astxt,"-")
+    buttonps.blit(sub,(buttonps.get_width()//2-sub.get_width()//2,buttonps.get_height()//2-sub.get_height()/2))
+    buttonAdd=pygame.transform.scale(button, (70, add.get_height()))
+    buttonSub=pygame.transform.scale(button, (70, add.get_height()))
+    buttonAdd.blit(add,(buttonAdd.get_width()//2-add.get_width()//2,buttonAdd.get_height()//2-add.get_height()/2))
+    buttonSub.blit(sub,(buttonSub.get_width()//2-sub.get_width()//2,buttonSub.get_height()//2-sub.get_height()/2))
+    return buttonAdd,buttonSub,buttonpa,buttonps
+
+def confirm_button():
+    t=wbrown(title,"CONFIRM")
+    confirm=pygame.transform.scale(button, (t.get_width()+20, t.get_height()))
+    confirmp=pygame.transform.scale(buttonp, (t.get_width()+20, t.get_height()))
+    confirm.blit(t, (10,5))
+    confirmp.blit(t, (10,5)) 
+    return confirm,confirmp
+
+def board_with_msg(message):
+    #take a message as argument (string) and creat a board wich is returned
+    assert(len(message)<35 and type(message)==str), "message invalid in boarb_with_message"
+    text2=police.Outrun_future.render(message,True,color.RED)
+    board=pygame.transform.scale(pygame.image.load(r"Addon\Menu\UI board Small  parchment.png"),(text2.get_width()+200,text2.get_height()*4))
+    board.blit(text2,(board.get_width()//2-text2.get_width()//2,text2.get_height()+20))
+    return board
+
+
+def choices(board,choices):
+    assert(type(board)==pygame.Surface), "choices need a surface"
+    assert(len(choices)<=5), "to much choice"
+    assert((type(n)==pygame.Surface for n in choices)), "the choices are an img (surface)"
+    for n in range(len(choices)):
+        choices[n]=pygame.transform.scale(choices[n], (board.get_width()//(len(choices)+1), board.get_height()//3))
+        board.blit(choices[n],(choices[n].get_width()//(len(choices)+1)*(n+1)+choices[n].get_width()*n,board.get_height()-choices[n].get_height()-30))
+    return board
+
+
+def screenSave():
+    #save the current screen on a surface wich is returned
+    screensave=pygame.Surface(WINDOWS_SIZE)
+    screensave.blit(screen,(0,0))
+    return screensave
+
+def print_mooving_entity(game, display,list_entity,center_x,center_y):
+    for entity in list_entity:
+        # Dat's note : 
+        # if hidden, check if him go out of the zone visible
+        # Check if the monster in the fog => he is hidden !
+        # Use try to prevent the entity who is out of the map 
+        try : 
+            # Dat's note : 
+            # if hidden, check if him go out of the zone visible
+            # Check if the monster in the fog => he is hidden !
+            if game.fog.surface.get_at((entity.pos_x, entity.pos_y)) != NIGHT_COLOR:
+                entity.is_hidden = False
+                entity.seen = True
+                display.blit(entity.display, (entity.pos_x + center_x, entity.pos_y+center_y))
+                entity.last_know_pos = (entity.pos_x, entity.pos_y)
+            else:
+                entity.is_hidden = True
+        except:
+            print("Error of entity : ", entity.name, entity , " out of the map !")
+        # If he was seen but now he is hidden => draw his shadow (by the last position)
+        if entity.seen and entity.is_hidden:
+            display.blit(entity.shadow, (entity.last_know_pos[0] +
+                                         center_x, entity.last_know_pos[1] + center_y))
+
+def well_print_on_display(display,text,pos_x=0,pos_y=0,color=WHITE):
+    lenght_text,y_use = ColderWeather_small.size(text)
+    if lenght_text > display.get_width():
+        text_word = text.split(' ')
+        total_size = 30
+        ligne = 30
+        for i in range (len(text_word)):
+            draw_text(text_word[i],ColderWeather_small,color,display,total_size,ligne)
+            total_size += ColderWeather_small.size(text_word[i])[0] + ColderWeather_small.size(" ")[0]
+            if total_size > display.get_width()-70:
+                ligne += y_use + 30
+                total_size = 30
+        return display
+    else:
+        draw_text(text,ColderWeather_small,color,display,30,30)
+        return display
+
+
+def print_turn_batlle(list_turn):
+    display = pygame.Surface((250,500))
+    display.blit(pygame.transform.scale(img_inventaire,(250,500)),(0,0))
+    i = 0
+    for i in range(4):
+        pygame.draw.rect(display,(0,0,1),(20,110*i+30,200,100),1)
+    screen.blit(display,(0,0))
+    i=1
+    for x in list_turn:
+        screen.blit(pygame.transform.scale(x.avata,(200,100)),(20,470-110*i))
+        i+=1
+            

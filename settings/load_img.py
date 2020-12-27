@@ -12,6 +12,12 @@ path_menu = path.join(path_addon, 'Menu')
 path_ava = path.join(path_addon, 'avata')
 path_light = path.join(path_addon, 'Light')
 
+
+button=pygame.image.load(path.join(path_addon,'Menu\TextBTN_Medium.png'))
+buttonp=pygame.image.load(path.join(path_addon,'Menu\TextBTN_Medium_Pressed.png'))
+
+
+
 # LOAD avata for minimap 
 ava_perso = pygame.image.load(path.join(path_ava, 'ava_perso.png'))
 ava_perso = pygame.transform.scale(ava_perso, (30, 30))
@@ -21,36 +27,48 @@ pygame.draw.circle(ava_perso, HALF_RED,rect_ava_perso.center, radius=17, width=3
 # Fog
 light_mask = pygame.image.load(path.join(path_light, 'light_medium.png')).convert_alpha()
 
-img_next = pygame.image.load(path.join(path_menu,'TextBTN_Big.png'))
-menu_background = pygame.image.load(path.join(path_menu, 'UI board Large Set.png'))
-title = pygame.image.load(path.join(path_menu,'IRONY TITLE  empty.png'))
-img_description = pygame.image.load(path.join(path_menu, 'UI board Large stone.png'))
-img_backgrounds_warning = pygame.image.load(path.join(path_menu, 'UI board Small  parchment.png'))
+img_next = pygame.image.load(path.join(path_menu,'TextBTN_Big.png')).convert_alpha()
+menu_background = pygame.image.load(path.join(path_menu, 'UI board Large Set.png')).convert_alpha()
+#title = pygame.image.load(path.join(path_menu,'IRONY TITLE  empty.png')).convert_alpha()
+img_description = pygame.image.load(path.join(path_menu, 'UI board Large stone.png')).convert_alpha()
+img_backgrounds_warning = pygame.image.load(path.join(path_menu, 'UI board Small  parchment.png')).convert_alpha()
 img_inventaire  = pygame.image.load(path.join(path_menu, 'UI board Large  parchment.png')).convert_alpha()
-exclamation = pygame.image.load(path.join(path_menu, 'Exclamation_Gray.png'))
-validation_button = pygame.image.load(path.join(path_menu, 'TextBTN_Medium.png'))
-img_support_warning = pygame.image.load(path.join(path_menu, 'UI board Small  stone.png'))
-img_pressed = pygame.image.load(path.join(path_menu, 'TextBTN_Big.png'))
+exclamation = pygame.image.load(path.join(path_menu, 'Exclamation_Gray.png')).convert_alpha()
+validation_button = pygame.image.load(path.join(path_menu, 'TextBTN_Medium.png')).convert_alpha()
+validation_button_pressed = pygame.image.load(path.join(path_menu, 'TextBTN_Medium_Pressed.png')).convert_alpha()
+img_support_warning = pygame.image.load(path.join(path_menu, 'UI board Small  stone.png')).convert_alpha()
+img_pressed = pygame.image.load(path.join(path_menu, 'TextBTN_Big.png')).convert_alpha()
 
 # INTRO MENU IMG
 path_intro_menu = path.join(path_menu, 'Intro_menu')
-D = pygame.image.load(path.join(path_intro_menu, 'menu1.png'))
-DD = pygame.image.load(path.join(path_intro_menu, 'D&D.png'))
-DK = pygame.image.load(path.join(path_intro_menu, 'f11.png'))
+D = pygame.image.load(path.join(path_intro_menu, 'menu1.png')).convert_alpha()
+DD = pygame.image.load(path.join(path_intro_menu, 'D&D.png')).convert_alpha()
+DK = pygame.image.load(path.join(path_intro_menu, 'f11.png')).convert_alpha()
 
 # SOL
 
 pixel_red = pygame.image.load(path.join(path_addon, 'Collide.png')).convert()
 pixel_red = pygame.transform.scale(pixel_red,(200,120))
 pixel_red.set_colorkey((255,255,255))
+
+collide_map = pygame.image.load(path.join(path_addon,'map_collide.png')).convert()
+
+
+
 board_medium = pygame.image.load(path.join(path_menu,'UI board Medium  parchment.png'))
 
 end_game = pygame.image.load(path.join(path_addon, 'end_game.png')).convert_alpha()
 end_game = pygame.transform.scale(end_game,(200,200))
+
 road = pygame.image.load(path.join(path_addon, 'floor.PNG')).convert_alpha()
 road = pygame.transform.scale(road,(200,110))
 road.set_colorkey((255,255,255))
-
+wall = pygame.image.load(path.join(path_addon,"test.png")).convert_alpha()
+wall= pygame.transform.scale(wall,(200,205))
+wall.set_colorkey((255,255,255))
+void = pygame.image.load(path.join(path_addon,"66.png")).convert_alpha()
+void = pygame.transform.scale(void,(200,200))
+void.set_colorkey((255,255,255))
 
 idle =dict(image_loader(path.join(path_addon, 'idle/')))
 transform_image(idle)
@@ -76,48 +94,45 @@ transform_image(grass,0,200,200)
 tree = dict(image_loader(path.join(path_addon, 'Tree/')))
 transform_image(tree,1,0,80)
 
-seller_1_hide = dict(image_loader(path.join(path_addon, 'seller/')))
+seller_1_hide = dict(image_loader(path.join(path_addon, 'seller/seller_5/')))
 transform_image(seller_1_hide,3)
 seller_1_animation = dict()
 seller_1_animation["idle"] = seller_1_hide
 
 
 
-wizard_hide = dict(image_loader('Addon/Wizard Pack/idle/'))
+wizard_hide = dict(image_loader(path.join(path_addon,'Wizard Pack/idle/')))
 transform_image(wizard_hide,2)
-wizard_attack = dict(image_loader('Addon/Wizard Pack/attack/'))
+wizard_attack = dict(image_loader(path.join(path_addon,'Wizard Pack/attack/')))
 transform_image(wizard_attack,2)
-wizard_walk = dict(image_loader('Addon/Wizard Pack/walk/'))
+wizard_walk = dict(image_loader(path.join(path_addon,'Wizard Pack/walk/')))
 transform_image(wizard_walk,2.3)
 wizard_animation = dict()
 wizard_animation["idle"] = wizard_hide
 wizard_animation["attack"] = wizard_attack
 wizard_animation["walk"] = wizard_walk
 
-
-
-squelton_idle = dict(image_loader('Addon/squeleton_idle/'))
+squelton_idle = dict(image_loader(path.join(path_addon,'squeleton_idle/')))
 transform_image(squelton_idle,5)
 squelton_animation = dict()
 squelton_animation["idle"] = squelton_idle
 
-squelton_walk = dict(image_loader('Addon/squeleton_walk/'))
+squelton_walk = dict(image_loader(path.join(path_addon,'squeleton_walk/')))
 transform_image(squelton_walk,5)
 squelton_animation["walk"] = squelton_walk
 
-squelton_attack = dict(image_loader('Addon/squeleton_attack/'))
+squelton_attack = dict(image_loader(path.join(path_addon,'squeleton_attack/')))
 transform_image(squelton_attack,5)
 squelton_animation["attack"] = squelton_attack
 
-dark_wizard_idle = dict(image_loader('Addon/dark_wizard_idle/'))
+dark_wizard_idle = dict(image_loader(path.join(path_addon,'dark_wizard_idle/')))
 transform_image(dark_wizard_idle,3)
 dark_wizard_animation = dict()
-dark_wizard_walk = dict(image_loader('Addon/dark_wizard_walk/'))
+dark_wizard_walk = dict(image_loader(path.join(path_addon,'dark_wizard_walk/')))
 transform_image(dark_wizard_walk,3)
 
-dark_wizard_attack = dict(image_loader('Addon/dark_wizard_attack/'))
+dark_wizard_attack = dict(image_loader(path.join(path_addon,'dark_wizard_attack/')))
 transform_image(dark_wizard_attack,3)
-
 dark_wizard_animation["idle"] = dark_wizard_idle
 dark_wizard_animation["walk"] = dark_wizard_walk
 dark_wizard_animation["attack"] = dark_wizard_attack
@@ -151,14 +166,6 @@ transform_image(demon_1_attack,4.5)
 demon_1_animation["attack"] = demon_1_attack
 
 
-
-
-
-
-
-
-
-
 fence_1 = pygame.image.load(path.join(path_addon, 'fence_1.png'))
 fence_1 = pygame.transform.scale(fence_1,(200,200))
 fence_2 = pygame.image.load(path.join(path_addon, 'fence_2.png'))
@@ -183,3 +190,13 @@ rune_1 = pygame.image.load(path.join(path_addon, "rune_2.png")).convert_alpha()
 image_boutton = pygame.image.load(getcwd()+'\\Addon\\Menu\\TextBTN_Small.png')
 image_box = pygame.image.load(getcwd()+'\\Addon\\UI board Small Set.png')
 image_boutton1 = pygame.image.load(getcwd()+'\\Addon\\Menu\\TextBTN_XSmall.png')
+floor_tavern = pygame.image.load(path.join(path_addon,'floor_tavern.png')).convert_alpha()
+floor_tavern = pygame.transform.scale(floor_tavern,(floor_tavern.get_width(),floor_tavern.get_width()//2))
+def board_init(i=0):
+    # create a board and return it, take in arguments the size (tuple) of the board
+    if i==0:
+        return pygame.image.load(path.join(path_menu, r'UI board Large  parchment.png')).convert_alpha()
+    if i==1:
+        return pygame.image.load(path.join(path_menu,r'UI board Large stone.png')).convert_alpha()
+
+collide_monster = pygame.image.load(path.join(path_addon,"test_collide_monster.png"))

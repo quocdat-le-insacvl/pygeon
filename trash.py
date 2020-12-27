@@ -15,24 +15,37 @@ from settings.screen import *
 from settings.police import Drifftype, ColderWeather, Rumbletumble, coeff, coeff1, coeff2, ColderWeather_small
 from settings.load_img import *
 from settings.color import *
-from script import list_mooving_entity,list_static_entity,entity_2
+from script import player_for_save,player_3,list_static_entity,player_2
 from fonction import *
 from personnage import Perso_game
 from case import *
 from combat import *
+from seller_scripts import list_seller
+from monster import Monster
+from custum_map_ import list_entity_animation
 pygame.init()
 clock = pygame.time.Clock()
-
+time_line = pygame.time.get_ticks()
 """ Une chose intéréssant que je viens d'apprendre : Il faut utiliser toujours .convert() ou .conver_alpha() 
 quand on load les images pour la question de performance
 """
+dict_img_monstre = dict()
+dict_img_monstre['1']= list_entity_animation[0]
+dict_img_monstre['2']= list_entity_animation[1]
+dict_img_monstre['3']= list_entity_animation[2]
+dict_img_monstre['4']= list_entity_animation[3]
+dict_img_monstre['5']= list_entity_animation[4]
 
 """Anthony j'ai mis la classe Case dans un fichier tout seul qui s'apelle case.py car j en ai besoin et j ai importé le fichier la"""
 
 
 class Map():
-    def __init__(self,path,list_static_entity):
+    def __init__(self,path,path_deco,path_monstre,list_static_entity,cubesize=190):
         self.path = path
+        self.path_deco = path_deco
+        self.path_monster = path_monstre
+        self.map_decoration = load_map(path_deco)
+        self.all_monstre = load_map(path_monstre)
         self.collision = []
         self.collision_change_camera = []
         self.collision_entity = []
@@ -41,13 +54,14 @@ class Map():
         self.map = load_map(path)
         self.display = pygame.Surface((18000,10000))
         self.display_tree = pygame.Surface((18000,10000))
-        self.cubesize = 190
+        self.cubesize = cubesize
         self.static_entity = list_static_entity
-        self.mooving_entity = list_mooving_entity
+        self.list_monster = []
         self.dict_collision = dict()
         
     def load_map(self):
         self.map = load_map(self.path)
+        self.map_decoration = load_map(self.path_deco)
         self.collision = []
         self.collision_change_camera = []
         self.collision_entity = []
@@ -60,11 +74,16 @@ class Map():
         self.print_ground()
         self.print_building()
         self.print_tree()
+        self.init_monster()
         self.dict_collision["change_camera_entity"] = self.change_camera_entity
         self.dict_collision["collision_entity"] = self.collision_entity
         self.dict_collision["collision"] = self.collision
         self.dict_collision["collision_change_camera"] = self.collision_change_camera
         #self.display.blit(self.display_tree,(0,0))
+    def init_monster(self):
+        for x in self.all_monstre:
+            if len(x) !=0:
+                self.list_monster.append(Monster(int(x[0]),int(x[1]),dict_img_monstre[x[2]],"",x[2],size_collide_box=4))
     def print_ground(self):
         i=0
         for layer in self.map:
@@ -73,7 +92,7 @@ class Map():
                 x = (j-i)*self.cubesize//2+9000
                 y = (j+i)*self.cubesize//4
                 if self.map[i][j] != None:
-                    if self.map[i][j] == '1' or self.map[i][j] == '2' :
+                    '''if self.map[i][j] == '1' or self.map[i][j] == '2' :
                         n = random.randint(1,5)
                         self.display.blit(grass['grass_' + str(n) + '.png'],(x,y))
                     if self.map[i][j] == '2' :
@@ -83,6 +102,9 @@ class Map():
                         self.collision_change_camera.append(((j-i+1)*self.cubesize//2+9000,(j+i-3)*self.cubesize//4))
                         self.collision_change_camera.append(((j-i-1)*self.cubesize//2+9000,(j+i-3)*self.cubesize//4))
                         self.collision_change_camera.append(((j-i)*self.cubesize//2+9000,(j+i-4)*self.cubesize//4))
+                        self.collision_change_camera.append(((j-i+1)*self.cubesize//2+9000,(j+i-5)*self.cubesize//4))
+                        self.collision_change_camera.append(((j-i)*self.cubesize//2+9000,(j+i-5)*self.cubesize//4))
+
                         self.collision.append((x,y))
                         self.tree_position.append((x,y))
                         self.display.blit(pixel_red,(((j-i-1)*self.cubesize//2+9000,(j+i+1)*self.cubesize//4)))
@@ -104,6 +126,31 @@ class Map():
                         n = random.randint(1,5)
                         self.display.blit(grass['grass_' + str(n) + '.png'],(x,y))
                         self.change_camera_entity.append((x,y))
+                    if self.map[i][j] == 'a':
+                        self.collision.append((x,y))
+                        self.display.blit(wall,(x,y-100))
+                    if self.map[i][j] == 'b':
+                        self.display.blit(void,(x,y-100))'''
+                    if self.map[i][j] == '1':
+                        self.collision.append((x,y))
+                        self.display.blit(void,(x,y))
+                    if self.map[i][j] == '2':
+                        self.display.blit(road,(x,y))
+                    if self.map[i][j] == '3':
+                        n = random.randint(1,5)
+                        self.display.blit(grass['grass_red_' + str(n) + '.png'],(x,y))
+                    if self.map[i][j] == '4':
+                        n = random.randint(1,5)
+                        self.display.blit(grass['grass_' + str(n) + '.png'],(x,y))
+                    if self.map[i][j] == '5':
+                        n = random.randint(1,5)
+                        self.display.blit(grass['grass_light_green_' + str(n) + '.png'],(x,y))
+                    if self.map[i][j] == '6':
+                        n = random.randint(1,5)
+                        self.display.blit(grass['grass_yellow_' + str(n) + '.png'],(x,y))
+                    if self.map[i][j] == '7':
+                        n = random.randint(1,5)
+                        self.display.blit(grass['grass_blue_' + str(n) + '.png'],(x,y))
                 j+=1
             i+=1
         i=0
@@ -114,18 +161,34 @@ class Map():
             for tile in layer:
                 x = (j-i)*self.cubesize//2+9000
                 y = (j+i)*self.cubesize//4
-                if self.map[i][j] != None:
-                    if self.map[i][j] == '2' :
+                if self.map_decoration[i][j] != None:
+                    if self.map_decoration[i][j] == 'a' :
+                        self.collision_change_camera.append(((j-i+1)*self.cubesize//2+9000,(j+i-1)*self.cubesize//4))
+                        self.collision_change_camera.append(((j-i)*self.cubesize//2+9000,(j+i-2)*self.cubesize//4))
+                        self.collision_change_camera.append(((j-i-1)*self.cubesize//2+9000,(j+i-1)*self.cubesize//4))
+                        self.collision_change_camera.append(((j-i+1)*self.cubesize//2+9000,(j+i-3)*self.cubesize//4))
+                        self.collision_change_camera.append(((j-i-1)*self.cubesize//2+9000,(j+i-3)*self.cubesize//4))
+                        self.collision_change_camera.append(((j-i)*self.cubesize//2+9000,(j+i-4)*self.cubesize//4))
+                        self.collision_change_camera.append(((j-i+1)*self.cubesize//2+9000,(j+i-5)*self.cubesize//4))
+                        self.collision_change_camera.append(((j-i)*self.cubesize//2+9000,(j+i-5)*self.cubesize//4))
+                        self.collision.append((x,y))
+                        self.tree_position.append((x,y))
                         n = random.randint(1,10)
                         self.display_tree.blit(tree["tree_" + str(n) + ".png"],(x,y-250))
                         self.display.blit(tree["tree_" + str(n) + ".png"],(x,y-250))
-                    if self.map[i][j] == '7':
-                        #collision.append((x,y))
+                    if self.map_decoration[i][j] == 'b':
+                        self.collision.append((x,y))
+                        self.collision.append(((j-i+1)*self.cubesize//2+9000,(j+i+1)*self.cubesize//4))
                         self.display_tree.blit(fence_1,(x,y-50))
                         self.display.blit(fence_1,(x,y-50))
-                    if self.map[i][j] == '9':
+                    if self.map_decoration[i][j] == 'c':
+                        self.collision.append((x,y))
+                        self.collision.append(((j-i-1)*self.cubesize//2+9000,(j+i+1)*self.cubesize//4))
                         self.display_tree.blit(fence_2,(x,y-50))
                         self.display.blit(fence_2,(x,y-50))
+                    if self.map_decoration[i][j] == 'd':
+                        self.collision.append((x,y))
+                        self.display.blit(wall,(x,y-100))
                 j+=1
             i+=1
         i=0
@@ -142,10 +205,14 @@ class Game():
         self.fog = Fog(self)
         self.zoom_map = False
         self.center_x, self.center_y = 0, 0
-        self.list_mooving_entity = list_mooving_entity
+        # self.list_mooving_entity = list_mooving_entity
         self.clock = clock
+        self.list_mooving_entity = self.map.list_monster
 
     def main_game(self):
+        global time_line
+        self.player.name = 'gh'
+        self.player.classe = 'l'
         center_x,center_y=0,0
         '''Set de toute les variables d'actions'''
         transition = pygame.Surface((screen.get_width(),screen.get_height()))
@@ -153,16 +220,44 @@ class Game():
         interact = False
         pause_menu = False
         running = True
+
+        for x in list_seller:
+            x.update_pos_collide()
+            self.map.display.blit(x.img,(x.pos_x,x.pos_y))
         n= 1
         f=0
         g=0
-
+        is_talking = False
+        self.player.pos_x = 8680
+        self.player.pos_y = 800
+        self.player.crew_mate[0].pos_x = 8680
+        self.player.crew_mate[0].pos_y = 1000
+        self.player.crew_mate[1].pos_x = 8680
+        self.player.crew_mate[1].pos_y = 1100
         ### Minimap
         self.minimap = Minimap(self, self.map.display)
+        for x in self.map.list_monster:
+            inter_x = x.pos_x
+            inter_y = x.pos_y
+            x.pos_x,x.pos_y = (inter_y-inter_x)*190//2+9000,(inter_y+inter_x)*190//4
+            x.init()
+        for x in self.map.list_monster:
+            x.set_group_monster(self.map.list_monster)
         ###
         show_inventory = False
+        show_characteresheet = False
+        display_1 = pygame.Surface((1980,1080))
+        display_1.set_colorkey(BLACK)
+        draw_interact = True
+        frame = 1
+        nb_crew = 0
         while running:
+            if pygame.time.get_ticks() > time_line:
+                time_line += 160
+                frame = (frame)%6 +1 
+
             #""" If Press M : Zoom map === PAUSE"""
+            
             if self.zoom_map:
                 screen.fill(BLACK)
                 self.minimap.zoom_minimap()
@@ -187,9 +282,10 @@ class Game():
             if self.player.swap:
                  # Print nature, map, tree ...
                 screen.blit(self.map.display,(center_x,center_y))
-                screen.blit(rune_1,(11000+center_x,3000+center_y))
                 # Print animation player
-                screen.blit(self.player.display,(center_x+self.player.pos_x,center_y+self.player.pos_y))
+                screen.blit(self.player.img,(center_x+self.player.pos_x,center_y+self.player.pos_y))
+                for x in self.player.crew_mate:
+                    screen.blit(x.img,(center_x+x.pos_x,center_y+x.pos_y))
                 screen.blit(self.map.display_tree,(center_x,center_y))
                 # Print FOG
                 screen.blit(self.fog.surface, (center_x, center_y),
@@ -197,18 +293,22 @@ class Game():
             else:
                 # Print nature, map, tree ...
                 screen.blit(self.map.display,(center_x,center_y))
-                screen.blit(rune_1,(11000+center_x,3000+center_y))
                 # Print animation player
-                screen.blit(self.player.display,(center_x+self.player.pos_x,center_y+self.player.pos_y))
+                screen.blit(self.player.img,(center_x+self.player.pos_x,center_y+self.player.pos_y))
+                for x in self.player.crew_mate:
+                    screen.blit(x.img,(center_x+x.pos_x,center_y+x.pos_y))
                 # Print FOG
                 screen.blit(self.fog.surface, (center_x, center_y),
                             special_flags=pygame.BLEND_MULT)
             if self.player.swap_entity:
                 entity_re_print = self.player.find_nearest_entity(list_static_entity)
-                screen.blit(entity_re_print.display,(entity_re_print.pos_x+center_x,entity_re_print.pos_y+center_y))
+                screen.blit(entity_re_print.img,(entity_re_print.pos_x+center_x,entity_re_print.pos_y+center_y))
+            
+            #screen.blit(rune_1,(11000+center_x,3000+center_y))
+
             '''Actualiser case interaction + animations'''
-            #self.player.animate_map()
-            # for x in list_mooving_entity:
+            
+            #for x in list_mooving_entity:
             #     x.animate_map()
             #     x.update_interact()
 
@@ -222,30 +322,36 @@ class Game():
             #     list_mooving_entity[2].move_entity([-2,1],self.map,self.player)
             # if f == 300:
             #     f=0
-            
-            #print_mooving_entity(screen,list_mooving_entity,center_x,center_y)
+            #for x in list_mooving_entity:
+            #    x.animate_map(frame)
+            print_mooving_entity(self, screen,self.map.list_monster,center_x,center_y)
+            for x in self.map.list_monster:
+                x.moove_patrouille(self.player,self.map.list_monster)
+            #self.map.list_monster[0].moove_patrouille(self.player,self.map.list_monster)
             
 
+            '''for entity in self.list_mooving_entity:
+                if entity.name == "test_demon":
+                    entity.pos_y += 1
+                    entity.pos_x += 3'''
             #self.print_frog(player_rect,screen,case_connue,center_x,center_y)
 
             #screen.blit(player.mask_surface,(center_x+self.player.pos_x+20,center_y+self.player.pos_y+self.player.img.get_height()-15))
 
             '''Action si contact avec entité'''
             if self.player.entity_near:
-                entity = self.player.find_nearest_entity(list_mooving_entity)
-                draw_text("Press I for interact %s"%entity.name,ColderWeather,WHITE,screen,500,500)
-                if entity.type == "Monster":
-                    list_monster = []
-                    list_monster.append(entity)
-                    self.print_combat_screen(list_monster)
+                entity = self.player.find_nearest_entity(list_seller)
+                if draw_interact: draw_text("Press I for interact %s"%entity.name,ColderWeather,WHITE,screen,500,500)
                 if interact:
-                    self.interact(entity)
+                    draw_interact = False
+                    is_talking = self.interact(entity,is_talking)
                     self.player.mouvement = [False,False,False,False]
-                    interact = False
-
+            else:
+                draw_interact = True
+        
             '''Set caméra / player pos pour sauvegarde'''
-            center_x -= (self.player.pos_x + center_x - 900+self.player.img.get_width()//2)//20
-            center_y -= (self.player.pos_y + center_y - 540+self.player.img.get_height()//2) //20
+            center_x -= (self.player.pos_x + center_x - 900)//20
+            center_y -= (self.player.pos_y + center_y - 540) //20
             
             self.center_x = center_x 
             self.center_y = center_y
@@ -262,7 +368,7 @@ class Game():
                     sys.exit()
                 if event.type == KEYDOWN:
                     if event.key == K_i:
-                        interact = True
+                        interact = not interact
                     if event.key == K_m:
                         self.zoom_map = True
                     if event.key == K_j:
@@ -270,12 +376,29 @@ class Game():
                     """if event.key == K_ESCAPE:
                         self.map.load_map()
                         self.map.init_map()"""
-
+                    if event.key == K_u:
+                        show_characteresheet = not show_characteresheet
+                    if event.key == K_l:
+                        self.map = map_2
+                        self.map.init_map()
+                    if event.key == K_v:
+                        
+                        self.player = self.player.crew_mate[0]
+                        self.fog.player = self.player
+                        nb_crew+=1
+                        if nb_crew ==2:
+                            nb_crew = 0
+                        #pygame.image.save(self.fog.surface,'test_fog.png')
+                    if event.key == K_ESCAPE:
+                        self.print_pause_menu()
                 if event.type == KEYUP:
                     if event.key == K_m:
                         self.zoom_map = False
 
-            self.player.move_player(self.map.dict_collision)
+            monstre = self.player.move_player(self.map.dict_collision,list_seller,self.map.list_monster)
+            if monstre != None:
+                self.print_combat_screen(monstre.group_monster)
+            self.player.animate_map(frame%2+1)
             """
             if g != 255:
                 for x in range(255):
@@ -283,12 +406,15 @@ class Game():
                     transition.set_alpha(int(255-f))
                 screen.blit(transition,(0,0))"""
             if show_inventory:
-                self.player.print_equipement(100,100)
+                self.player.print_equipement(100,100,500,500)
                 #pack_bis.loot_inventory(1000,500,self.player.inventaire)
-
-            draw_text("FPS: %i, x : %i , y : %i" % (clock.get_fps(), self.player.pos_x,
-                                                    self.player.pos_y), ColderWeather, WHITE, screen, 100, 100)
+            if show_characteresheet:
+                self.player.caracter_sheet()
+                show_characteresheet = False
             
+            draw_text("FPS: %i, x : %i , y : %i,nb_monstre = %i" % (clock.get_fps(),self.player.pos_x,self.player.pos_y
+                                                    ,len(self.map.list_monster[0].group_monster)), ColderWeather, WHITE, screen, 100, 100)
+            self.player.spell_bar()
             pygame.display.update()
             clock.tick(64)
 
@@ -318,19 +444,15 @@ class Game():
                     list_case.append(Case(i, j))
                 j += 1
             i += 1
-        i = 0
+        i = 10
         for x in list_monstre:
-            list_case[10].in_case = x
+            list_case[i].in_case = x
             i+=1
         self.player.transform_display_for_combat()
-        list_case[59].in_case = self.player
 
-        #VOIR TOUT LES MONSTRES
-        list_case[0].in_case = list_mooving_entity[0]
-        list_case[1].in_case = list_mooving_entity[1]
-        list_case[2].in_case = list_mooving_entity[2]
-        list_case[3].in_case = list_mooving_entity[3]
-        list_case[4].in_case = list_mooving_entity[4]
+        list_case[59].in_case = self.player
+        list_case[60].in_case = self.player.crew_mate[0]
+        list_case[61].in_case = self.player.crew_mate[1]
         while running:
             mx, my = pygame.mouse.get_pos()
             screen.fill(LIGHT_GREY)
@@ -409,7 +531,11 @@ class Game():
             if create_text_click("Resume", Drifftype, GREY, display, self.click, display.get_width()//2, display.get_height()//3):
                 break
             if create_text_click('Sauvegarder', Drifftype, GREY, display, self.click, display.get_width()//2, display.get_height()//2.1):
-                load_game(self.click, self.player)
+                global player_for_save
+                player_for_save.load_player(self.player)
+                player_for_save,self.fog.surface = load_game(self.click, player_for_save,self.fog.surface)
+                print(player_for_save.name)
+                self.player.load_player(player_for_save)
             if create_text_click('Quit', Drifftype, GREY, display, self.click, display.get_width()//2, display.get_height()//1.6):
                 if Validation_screen("Voulez-vous quittez sans sauvegarder ?", display, self.click):
                     sys.exit()
@@ -418,50 +544,58 @@ class Game():
             running, self.click = basic_checkevent(self.click)
         self.click = False
         """Affiche un menu pause classique"""
-
-    def ligne_colonne(self, pos_x, pos_y):
-        return [math.trunc(1/(2*190)*(4*pos_y-2*(pos_x-9000))), math.trunc(1/(2*190)*(4*pos_y+2*(pos_x-9000)))]
-        """Retourne la ligne et la colonne en fonction de la position"""
-    def print_frog(self,rect,display,case_connue,center_x,center_y):
-        #display.fill(LIGHT_GREY)
-        ligne_colonne = self.ligne_colonne(rect.x,+rect.y+135)
-        for j in range(-5,5,1):
-            for i in range(-5,5,1):
-                if not case_connue.__contains__([ligne_colonne[0]+i,ligne_colonne[1]+j]) :
-                   case_connue.append([ligne_colonne[0]+i,ligne_colonne[1]+j])
-        j,i = 0,0
-        for j in range(-13,13,1):
-            for i in range(-13,13,1):
-                if not case_connue.__contains__([ligne_colonne[0]+i,ligne_colonne[1]+j]) :
-                   display.blit(pixel_red,(((ligne_colonne[1]+j-ligne_colonne[0]-i)*190//2+9000+center_x,(ligne_colonne[1]+j+ligne_colonne[0]+i)*190//4+center_y)))
-        """Actualise les case_connues de joueur et affiche les cases map seulement sur les cases non connue de joueur
-        le brouillard n'est actualiser que sur la surface de Screnne et pas sur tout la map"""
-    def interact(self,entity):
+    def load_fog(self,display_fog):
+        self.fog.display = display_fog
+    def interact(self,entity,is_talking):
         display_talk = pygame.Surface((1800,1080))
         display_talk.set_colorkey((0,0,0))
         if entity.type == "Seller":
             if entity.talking != None:
-                if Validation_screen(entity.talking,display_talk,self.click):
+                if is_talking == True or Validation_screen(entity.talking,display_talk,self.click):
+                    is_talking = True
                     entity.print_shop(self.player,self.click)
                 screen.blit(display_talk,(0,0))
-
+        return is_talking
 
 #player_direct = Perso(0,0,0,0,0,0,0,0,0,[])
 # game = Game(player_direct)
 # while True:
 #     game.main_game()
 
-map_1 = Map("map.txt",list_static_entity)
+map_1 = Map("map_generator.txt","map_generator_deco.txt","map_generator_monstre.txt",list_static_entity)
 map_1.init_map()
+#map_2 = Map(r"tavern_1",[])
+#map_2.init_map()
+
+player.crew_mate.append(player_2)
+player.crew_mate.append(player_3)
+
+player_2.crew_mate.append(player_3)
+player_2.crew_mate.append(player)
+
+player_3.crew_mate.append(player)
+player_3.crew_mate.append(player_2)
+
+
 game = Game(player,map_1)
-c = Combat(game,[])
-c.affichage()
+# c = Combat(game,[])
+# c.affichage()
+
 #game.main_game()
 #running = True
 #click = False
 #while running:
+game.main_game()
+#game.print_combat_screen([entity_2])
+
+"""running = True
+click = False
+while running:
 #    screen.blit(map_1.display,(-8000,0))
-#    pygame.display.update()
-#    running,click= basic_checkevent(click)
+    print(player_3.name)
+    player_5 = load_game(click,player_5)
+    print(player_5.STR)
+    pygame.display.update()
+    running,click= basic_checkevent(click)"""
 #game.main_game()# Pour lancer la carte
 #game.print_combat_screen([]) #pour lancer le plateau combat

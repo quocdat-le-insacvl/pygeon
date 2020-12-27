@@ -1,6 +1,6 @@
 import pygame
 
-LONGUEUR = 1800
+LONGUEUR = 1700
 LARGEUR = 1080
 WINDOWS_SIZE = (LONGUEUR,LARGEUR)
 screen = pygame.display.set_mode((LONGUEUR, LARGEUR),pygame.RESIZABLE,32)
