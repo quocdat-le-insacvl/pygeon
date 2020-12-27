@@ -61,6 +61,8 @@ class Perso_game(Perso,Entity):
         self.mouvement = [False,False,False,False]
         self.deplacement = [0,0]
         self.n_case = 59
+        self.n_mvt = 1
+        self.nbre_direct = 0
     def refresh_animation_and_mouvement(self):
         if self.mouvement[0]:
             self.deplacement = [10,-5]

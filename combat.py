@@ -34,16 +34,17 @@ class Combat:
         self.player = self.game.player
         self.n_entrees = 0
         self.liste_tours = [] #liste de listes
-        self.compteur_tour = 0 #pour faire le parcours des tours
+        self.compteur_tour, self.compteur_mouvement = 0, 0 #pour faire le parcours des tours
         self.text="Score: "
         self.text_tour = "Tour: "
         self.message = Text(self,text="Generation des tours ...",size_font=30,pos=[image_box.get_width()+50,20],life_time=5000)
         self.texts.add(self.message)
         self.diceevt.all_dices.add(self.diceevt.dice)
-        self.next_dice, self.next_text= False, False
+        self.next_dice, self.next_text, self.player_mvt, self.player_nbmvt= False, False, False, False
         self.clic, self.bloc = False, False #pour les bouttons
         self.temps = pygame.time.get_ticks()
         self.message_final = Text(self,life_time = 0)
+        self.player.nbre_direct = 0
 
     def affichage(self):
         global n,list_case
@@ -166,8 +167,9 @@ class Combat:
                 bouton5_cliqué = creation_img_text_click(image_boutton,"Contre attack",ColderWeather_small, WHITE, screen,click,300,450)
                 bouton6_cliqué = creation_img_text_click(image_boutton,"Nothing",ColderWeather_small, WHITE, screen,click,300,550)
                 self.check_bouttons(bouton2_cliqué,bouton3_cliqué,bouton4_cliqué,bouton5_cliqué,bouton6_cliqué)
-            
 
+            self.check_bouttons_mvt()
+            
             #if not fin: #pour ne plus afficher le de une fois qu'il a terminé de tourner
             self.essai()
 
@@ -236,7 +238,6 @@ class Combat:
      
 
     def degats(self):
-        print("degatsssss")
         if (not self.checkIfTourPerso(self.compteur_tour)):
             self.diceevt.resume(self.monstre.n_de,i= 12000,birthday_time= 10000)
             self.message = Text(self,text="generation des degats...",size_font=30,pos=[image_box.get_width(),20], life_time = 13000, born = 10000)
@@ -260,7 +261,6 @@ class Combat:
             self.text_tour += " Perso 1 hp="+str(self.perso1.hp)+" "+" Perso 2 hp="+str(self.perso2.hp)+" "+" Perso 3 hp="+str(self.perso3.hp)+" "
             self.message = Text(self,text=self.text,size_font=30,pos=[image_box.get_width(),20], life_time = 19000, born = 13000)
             self.message_tour = Text(self,text=self.text_tour,size_font=30,pos=[image_box.get_width(),50],life_time= 19000, born = 13000)
-            print("dernier self.message "+str(self.message.spawn_time))
             self.texts.add(self.message,self.message_tour) #####
 
   
@@ -281,8 +281,6 @@ class Combat:
             self.message_tour = Text(self,text=self.text_tour,size_font=30,pos=[image_box.get_width(),50],life_time= 18000, born = 14000)
             print("dernier self.message "+str(self.message.spawn_time))
             self.texts.add(self.message,self.message_tour) #####
-        print(type(self.liste_tours[self.compteur_tour][2]))
-
 
     def essai(self): #fonction responsable de l'affichage du de
         if not self.fincombat:
@@ -331,6 +329,8 @@ class Combat:
             l[iMax],l[len(l)-1-j]=l[len(l)-j-1],l[iMax]
 
     def check_bouttons(self,b1,b2,b3,b4,b5): #ajouter une condition pour le click sur la map (qd les cases deviennent rouge)
+        global click
+        click = True
         # if((b1 or b2 or b3 or b4 or b5) and pygame.mouse.get_pressed()[0]):
         #     print("OKKKKKKKKKK "+str(type(self.liste_tours[self.compteur_tour][2]) == Perso)+'b1 '+str(b1))
         #     self.clic = False #pour annuler l affichage de ces 5 bouttons
@@ -342,14 +342,30 @@ class Combat:
             self.clic = False
             self.attack()
         elif (b2 and pygame.mouse.get_pressed()[0]):
-            self.clic = False
-            self.mouvement_bas()
+            self.player_nbmvt = True
+            self.player_mvt = True
         elif (b3 and pygame.mouse.get_pressed()[0]):
             self.bonus_action()
         elif(b4 and pygame.mouse.get_pressed()[0]):
             self.contre_attack()
         elif(b5 and pygame.mouse.get_pressed()[0]):
             self.nothing()
+
+    def check_bouttons_mvt(self):
+        if self.player_nbmvt:
+            self.bouton1_nbmvt_cliqué = creation_img_text_click(image_boutton1,"1 move",ColderWeather_small, WHITE, screen,click,550,250)
+            self.bouton2_nbmvt_cliqué = creation_img_text_click(image_boutton1,"2 moves",ColderWeather_small, WHITE, screen,click,550,300)
+            self.bouton3_nbmvt_cliqué = creation_img_text_click(image_boutton1,"3 moves",ColderWeather_small, WHITE, screen,click,550,350)
+            self.bouton4_nbmvt_cliqué = creation_img_text_click(image_boutton1,"4 moves",ColderWeather_small, WHITE, screen,click,550,400)
+            self.bouton5_nbmvt_cliqué = creation_img_text_click(image_boutton1,"5 moves",ColderWeather_small, WHITE, screen,click,550,450)
+            self.nbre_mvt()
+        
+        if self.player_mvt:
+            self.bouton1_mvt_cliqué = creation_img_text_click(image_boutton,"Haut",ColderWeather_small, WHITE, screen,click,550,1000)
+            self.bouton2_mvt_cliqué = creation_img_text_click(image_boutton,"Direct",ColderWeather_small, WHITE, screen,click,750,1000)
+            self.bouton3_mvt_cliqué = creation_img_text_click(image_boutton,"Bas",ColderWeather_small, WHITE, screen,click,950,1000)
+            self.mouvement()
+
 
     def checkIfTourPerso(self,i):
         return type(self.liste_tours[i][2]) == Perso
@@ -358,7 +374,6 @@ class Combat:
         global list_case
         self.bloc = True #######
         list_case[self.game.player.n_case].is_select=True
-        print("attack")
         self.diceevt.resume(20,i=4000)
         self.diceevt.resultat = generate_randint(1,20)
         self.text = "Score du de: "+str(self.diceevt.resultat)+" et bonus DEX: "+str(bonus(self.liste_tours[self.compteur_tour][2].DEX)) + " Score: "+str(self.diceevt.resultat+bonus(self.liste_tours[self.compteur_tour][2].DEX))
@@ -375,35 +390,85 @@ class Combat:
         self.texts.add(self.message,self.message_tour)
 
         if self.actdamage:
-            print("in")
             self.degats()
 
         self.activate = True
+
+    def nbre_mvt(self):
+        self.compteur_mouvement = 0
+        if(self.bouton1_nbmvt_cliqué and pygame.mouse.get_pressed()[0]):
+            self.player.n_mvt = 1
+            self.player_nbmvt,self.clic = False, False
+        elif(self.bouton2_nbmvt_cliqué and pygame.mouse.get_pressed()[0]):
+            self.player.n_mvt = 2
+            self.player_nbmvt, self.clic = False, False
+        elif(self.bouton3_nbmvt_cliqué and pygame.mouse.get_pressed()[0]):
+            self.player.n_mvt = 3
+            self.player_nbmvt,self.clic = False,False
+        elif(self.bouton4_nbmvt_cliqué and pygame.mouse.get_pressed()[0]):
+            self.player.n_mvt = 4
+            self.player_nbmvt,self.clic = False,False
+        elif(self.bouton5_nbmvt_cliqué and pygame.mouse.get_pressed()[0]):
+            self.player.n_mvt = 5
+            self.player_nbmvt,self.clic = False,False
+
+    def mouvement(self):
+        print("compteur mouvement "+str(self.compteur_mouvement))
+        if (self.bouton1_mvt_cliqué and pygame.mouse.get_pressed()[0] ):
+            while self.compteur_mouvement < self.player.n_mvt:
+                self.mouvement_haut()
+        elif (self.bouton2_mvt_cliqué and pygame.mouse.get_pressed()[0]):
+            while self.compteur_mouvement < self.player.n_mvt:
+                self.mouvement_direct()
+        elif (self.bouton3_mvt_cliqué and pygame.mouse.get_pressed()[0]):
+            while self.compteur_mouvement < self.player.n_mvt:
+                self.mouvement_bas()
+
+        if (self.compteur_mouvement >= self.player.n_mvt):
+            self.player_mvt = False
 
     def mouvement_direct(self):
         global list_case
         # print(list_case)
         self.bloc = True
+        self.compteur_mouvement += 1
+        i, j = list_case[self.game.player.n_case].i + 1, list_case[self.game.player.n_case].j - 1
+        print(list_case[self.game.player.n_case].j, list_case[self.game.player.n_case].i)
         # list_case[self.game.player.n_case].in_case = None
         # self.game.player.n_case -= 6
         # list_case[self.game.player.n_case].in_case = self.game.player
         # list_case[self.game.player.n_case].is_select = True
-        list_case[self.game.player.n_case].j += 1
-        list_case[self.game.player.n_case].i -= 1
-        list_case[self.game.player.n_case].in_case = self.game.player
+        if (self.player.nbre_direct < 6):
+            self.player.nbre_direct += 1
+            list_case[self.game.player.n_case].j += 1
+            list_case[self.game.player.n_case].i -= 1
+            list_case[self.game.player.n_case].in_case = self.game.player
+            list_case[self.game.player.n_case].is_select = True
+        else:
+            print("erreur mvt direct")
+            self.message = Text(self,text="Erreur vous avez depasse la limite",color = RED, size_font=30,pos=[image_box.get_width()+50,20],life_time=2000)
+            self.texts.add(self.message)
+            list_case[self.game.player.n_case].is_select = True
         self.message_final = Text(self,text="",life_time=2000) 
         self.activate = True
-        print("mouvement")
 
     def mouvement_bas(self):
         global list_case
         self.bloc = True
-        if list_case[self.game.player.n_case].j < 7:
-            list_case[self.game.player.n_case].j += 1
-            list_case[self.game.player.n_case].in_case = self.game.player
+        self.compteur_mouvement += 1
+        print("nbre_direct "+str(self.player.nbre_direct))
+        print("mvt bas ",list_case[self.game.player.n_case].j, list_case[self.game.player.n_case].i)
+        if ((list_case[self.game.player.n_case].j == 4 + self.player.nbre_direct) and ((list_case[self.game.player.n_case].i == 12-self.player.nbre_direct) or (list_case[self.game.player.n_case].i == 10 - self.player.nbre_direct))): #pour ne pas depasser la carte
+            print("erreur mvt bas")
+            self.message = Text(self,text="Erreur vous avez depasse la limite",color = RED, size_font=30,pos=[image_box.get_width()+50,20],life_time=2000)
+            self.texts.add(self.message)
             list_case[self.game.player.n_case].is_select = True
         else:
-            print("erreur mvt bas")
+            list_case[self.game.player.n_case].j += 1
+            list_case[self.game.player.n_case].i += 1
+            list_case[self.game.player.n_case].in_case = self.game.player
+            list_case[self.game.player.n_case].is_select = True
+
         self.message_final = Text(self,text="",life_time=2000) 
         # print(list_case[self.game.player.n_case].i, list_case[self.game.player.n_case].j)
         self.activate = True
@@ -411,12 +476,21 @@ class Combat:
     def mouvement_haut(self):
         global list_case
         self.bloc = True
-        if list_case[self.game.player.n_case].i > 3: #pour ne pas depasser la carte
+        self.compteur_mouvement += 1
+        print("mvt haut ",list_case[self.game.player.n_case].j, list_case[self.game.player.n_case].i)
+        print("nbre_direct "+str(self.player.nbre_direct))
+        if ((list_case[self.game.player.n_case].i == 6-self.player.nbre_direct) and ((list_case[self.game.player.n_case].j == self.player.nbre_direct) or (list_case[self.game.player.n_case].j == self.player.nbre_direct-2))): #pour ne pas depasser la carte
+            print("erreur mvt haut")
+            self.message = Text(self,text="Erreur vous avez depasse la limite",color = RED, size_font=30,pos=[image_box.get_width()+50,20],life_time=2000)
+            self.texts.add(self.message)
+            list_case[self.game.player.n_case].is_select = True
+
+        else:
             list_case[self.game.player.n_case].i -= 1
+            list_case[self.game.player.n_case].j -= 1
             list_case[self.game.player.n_case].in_case = self.game.player
             list_case[self.game.player.n_case].is_select = True
-        else:
-            print("erreur")
+
         self.message_final = Text(self,text="",life_time=2000) 
         self.activate = True
 
