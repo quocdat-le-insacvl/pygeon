@@ -13,9 +13,7 @@ while running:
     pygame.display.flip()
     for event in pygame.event.get():
         if event.type==pygame.MOUSEBUTTONDOWN:
-            print(interface.perso.actionP)
-            print(interface.perso.fireball())
-            print(interface.perso.actionP)
+            interface.perso.caracter_sheet()
         if event.type == pygame.KEYDOWN:
             if event.key==pygame.K_ESCAPE:
                 running=False

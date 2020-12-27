@@ -223,7 +223,7 @@ class Sorcerer(Perso):
         if listdeg:
             return listdeg
     
-    def twined_spell(self):
+    def quick_spell(self):
         if self.masterAction>0 and self.bonusAction>0:
             self.Action=2
             self.masterAction-=1
@@ -237,6 +237,5 @@ class Sorcerer(Perso):
     """to do 
     def acid_splash(self):  (optional)
     def quickened_spell(self):  (optional)
-    def Distant_spell(self): (optional)
-    def learn_spell(self):"""
+    def Distant_spell(self): (optional)"""
     

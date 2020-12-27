@@ -46,7 +46,6 @@ def choices_clickable(board,choices,rectboard=pygame.Rect((0,0),(0,0))):
     """prend en argument un liste de choix et un board, les appliquent sur ce dernier,
      si l'on veut recuperer des rects valides donner rectboard en argument"""
     assert(type(board)==pygame.Surface), "choices need a surface"
-    assert(len(choices)<=5), "to much choice"
     assert((type(n)==pygame.Surface for n in choices)), "the choices are an img (surface)"
     listrect=[]
     for n in range(len(choices)):

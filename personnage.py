@@ -83,13 +83,14 @@ class Perso(Entity):
             if self.level==2: 
                 print("level2")
                 self.chose_skill=True
+                self.choseSkill()
             elif self.level==3: 
                 print("level3")
             ######Global bonus for the level 4######
             elif self.level==4: 
                 print("level4")
                 self.master=True
-                self.masterAction=False
+                self.masterAction=1
             elif self.level==5: 
                 print("level5")
                 self.proficiency=3
@@ -149,6 +150,8 @@ class Perso(Entity):
         self.hp+=self.level*self.action.dice(self.hit_dice)
         if self.hp>self.hp_max:
             self.hp=self.hp_max
+        if self.level=4:
+            self.masterAction=1
 
     def update_hp_bar(self,surface):
         bar_color=(113,255,51)
@@ -218,6 +221,8 @@ class Perso(Entity):
         Blist=self.buttons_init(board,rectboard)
         rect_confirm=self.confirm(board,rectboard,av)
         board1=self.boardSkill(board.copy(),av)
+        if self.chose_skill==True:
+            self.choseSkill()
         while running:
             "actualise le board avec les skills points et les buttons si un changement a été fait"
             board1=self.boardSkill(board.copy(),av)
@@ -318,3 +323,33 @@ class Perso(Entity):
 
     def passTurn(self):
         self.actionP=0
+    
+    def choseSkill(self):
+        """affiche un tableau qui permet de choisir un skill"""
+        screenS=screenSave()
+        board=board_with_msg("chose a skill between str dex con int wis cha")
+        s=wred(subtitle,"str ")
+        d=wred(subtitle,"dex ")
+        co=wred(subtitle,"con ")
+        i=wred(subtitle,"int ")
+        w=wred(subtitle,"wis ")
+        ch=wred(subtitle,"cha ")
+        board_rect=pygame.Rect(screen.get_width()//8,screen.get_height()//8,0,0)
+        list_choice=choices_clickable(board,[s,d,co,i,w,ch],board_rect)
+        board_rect=screen.blit(board,(screen.get_width()//8,screen.get_height()//8))
+        pygame.display.flip()
+        running=True
+        click=False
+        while running:
+            indice=collides(pygame.mouse.get_pos(), list_choice)
+            running,click=basic_checkevent(click)
+            if click==True:
+                if board_rect.collidepoint(pygame.mouse.get_pos())!=True:
+                    running=False
+                elif indice!=-1:
+                    self.skills[indice]=1
+                    self.chose_skill=False
+                    running=False
+        screen.blit(screenS,(0,0))
+
+
