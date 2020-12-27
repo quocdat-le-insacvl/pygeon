@@ -439,17 +439,23 @@ class Combat:
         # list_case[self.game.player.n_case].in_case = self.game.player
         # list_case[self.game.player.n_case].is_select = True
         if (self.player.nbre_direct < 6):
-            self.player.nbre_direct += 1
-            list_case[self.game.player.n_case].j += 1
-            list_case[self.game.player.n_case].i -= 1
-            list_case[self.game.player.n_case].in_case = self.game.player
-            list_case[self.game.player.n_case].is_select = True
+            if self.check_case(list_case[self.game.player.n_case].i-1,list_case[self.game.player.n_case].j+1):
+                self.player.nbre_direct += 1
+                list_case[self.game.player.n_case].j += 1
+                list_case[self.game.player.n_case].i -= 1
+                list_case[self.game.player.n_case].in_case = self.game.player
+                list_case[self.game.player.n_case].is_select = True
+            else:
+                print("erreur mvt direct")
+                self.message = Text(self,text="Erreur quelqu'un se trouve deja dans cette case",color = RED, size_font=30,pos=[image_box.get_width()+50,20],life_time=4000)
+                self.texts.add(self.message)
+                list_case[self.game.player.n_case].is_select = True 
         else:
             print("erreur mvt direct")
-            self.message = Text(self,text="Erreur vous avez depasse la limite",color = RED, size_font=30,pos=[image_box.get_width()+50,20],life_time=2000)
+            self.message = Text(self,text="Erreur vous avez depasse la limite",color = RED, size_font=30,pos=[image_box.get_width()+50,20],life_time=4000)
             self.texts.add(self.message)
             list_case[self.game.player.n_case].is_select = True
-        self.message_final = Text(self,text="",life_time=2000) 
+        self.message_final = Text(self,text="",life_time=4000) 
         self.activate = True
 
     def mouvement_bas(self):
@@ -460,16 +466,20 @@ class Combat:
         print("mvt bas ",list_case[self.game.player.n_case].j, list_case[self.game.player.n_case].i)
         if ((list_case[self.game.player.n_case].j == 4 + self.player.nbre_direct) and ((list_case[self.game.player.n_case].i == 12-self.player.nbre_direct) or (list_case[self.game.player.n_case].i == 10 - self.player.nbre_direct))): #pour ne pas depasser la carte
             print("erreur mvt bas")
-            self.message = Text(self,text="Erreur vous avez depasse la limite",color = RED, size_font=30,pos=[image_box.get_width()+50,20],life_time=2000)
+            self.message = Text(self,text="Erreur vous avez depasse la limite",color = RED, size_font=30,pos=[image_box.get_width()+50,20],life_time=4000)
             self.texts.add(self.message)
             list_case[self.game.player.n_case].is_select = True
         else:
-            list_case[self.game.player.n_case].j += 1
-            list_case[self.game.player.n_case].i += 1
-            list_case[self.game.player.n_case].in_case = self.game.player
-            list_case[self.game.player.n_case].is_select = True
-
-        self.message_final = Text(self,text="",life_time=2000) 
+            if self.check_case(list_case[self.game.player.n_case].i+1,list_case[self.game.player.n_case].j+1):
+                list_case[self.game.player.n_case].j += 1
+                list_case[self.game.player.n_case].i += 1
+                list_case[self.game.player.n_case].in_case = self.game.player
+                list_case[self.game.player.n_case].is_select = True
+            else:
+                self.message = Text(self,text="Erreur quelqu'un se trouve deja dans cette case",color = RED, size_font=30,pos=[image_box.get_width()+50,20],life_time=4000)
+                self.texts.add(self.message)
+                list_case[self.game.player.n_case].is_select = True 
+        self.message_final = Text(self,text="",life_time=4000) 
         # print(list_case[self.game.player.n_case].i, list_case[self.game.player.n_case].j)
         self.activate = True
 
@@ -486,13 +496,29 @@ class Combat:
             list_case[self.game.player.n_case].is_select = True
 
         else:
-            list_case[self.game.player.n_case].i -= 1
-            list_case[self.game.player.n_case].j -= 1
-            list_case[self.game.player.n_case].in_case = self.game.player
-            list_case[self.game.player.n_case].is_select = True
-
-        self.message_final = Text(self,text="",life_time=2000) 
+            if self.check_case(list_case[self.game.player.n_case].i-1,list_case[self.game.player.n_case].j-1):
+                list_case[self.game.player.n_case].i -= 1
+                list_case[self.game.player.n_case].j -= 1
+                list_case[self.game.player.n_case].in_case = self.game.player
+                list_case[self.game.player.n_case].is_select = True
+            else:
+                self.message = Text(self,text="Erreur quelqu'un se trouve deja dans cette case",color = RED, size_font=30,pos=[image_box.get_width()+50,20],life_time=4000)
+                self.texts.add(self.message)
+                list_case[self.game.player.n_case].is_select = True 
+        self.message_final = Text(self,text="",life_time=4000) 
         self.activate = True
+
+    #voir si la case se trouvant dans une ligne et une colonne precises contient un monstre ou un perso 
+    def check_case(self,ligne,colonne):
+        global list_case
+
+        for case in list_case:
+            if (case.i == ligne and case.j == colonne):
+                if case.in_case != None:
+                    return False
+                return True
+        return False 
+
 
     def bonus_action(self):
         print("bonus action")
