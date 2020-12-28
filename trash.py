@@ -26,6 +26,7 @@ time_line = pygame.time.get_ticks()
 quand on load les images pour la question de performance
 """
 
+
 class Case():
     def __init__(self, i, j):
         self.in_case = None
@@ -198,8 +199,16 @@ def draw_player_health(screen,x ,y , percent):
         color = RED
     pygame.draw.rect(screen, color, fill_rect)
     pygame.draw.rect(screen, WHITE, outline_rect, 2)
-
-       
+def draw_cooldown(screen,x ,y , percent):
+    if percent < 0:
+        percent = 0
+    BAR_LEN = 50
+    BAR_HEI = 20
+    fill = percent * BAR_LEN
+    outline_rect = pygame.Rect(x, y, BAR_LEN, BAR_HEI)
+    fill_rect = pygame.Rect(x, y, fill, BAR_HEI)
+    pygame.draw.rect(screen, GREEN, fill_rect)
+    pygame.draw.rect(screen, WHITE, outline_rect, 2)       
 class Game():
     def __init__(self,player,map):
         self.x = 0
@@ -378,14 +387,16 @@ class Game():
                     if event.key == K_l:
                         self.map = map_2
                         self.map.init_map()
-                    if event.key == pygame.K_q:
+                    if event.key == pygame.K_q :
                         self.player.press_q = True
+                        time_down = pygame.time.get_ticks()
                         
                 if event.type == KEYUP:
                     if event.key == K_m:
                         self.zoom_map = False
                     if event.key == K_q:
                         self.player.press_q = False
+                        time_elapsed = (pygame.time.get_ticks()- time_down)/1000.0 
 
             self.player.move_player(self.map.dict_collision)
             self.player.animate_map(frame%2+1)
@@ -404,6 +415,7 @@ class Game():
             userInput = pygame.key.get_pressed()
             screen.blit(avatarImg, (450, 800))
             draw_player_health(screen, 500, 800, self.player.hp / self.player.hp_max)
+            draw_cooldown(screen, 500, 710, time_elapsed / cooldown)
             screen.blit(skillQ, (500, 750))
             screen.blit(skillW, (550, 750))
             screen.blit(skillE, (600, 750))

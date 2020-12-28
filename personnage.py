@@ -9,6 +9,7 @@ from settings.screen import screen
 from fonction import *
 from settings.police import *
 key = list(Wikitem.keys())
+clock = pygame.time.Clock()
 pixel_mask = pygame.mask.from_surface(pixel_red)
 
 path_pygeon = os.path.dirname(__file__)
@@ -407,10 +408,19 @@ class Perso_game(Perso):
         self.skillQ()
         
     def skillQ(self):
-        
-        text = 'Use skill Q'
-        text = self.font.render(text, True, self.color)
-        self.game.screen.blit(text, self.pos)
+        time_down = 0.0
+        time_elapsed = 0.0
+        cooldown = 10.0
+        if (time_elapsed > cooldown):
+            text = 'Use skill Q'
+            text = self.font.render(text, True, self.color)
+            self.game.screen.blit(text, self.pos)
+        else:
+            text = 'Cant use skill Q'
+            text = self.font.render(text, True, self.color)
+            self.game.screen.blit(text, self.pos)
+    #def cooldownQ(self):
+
     #def skillW():
     #def skillE():
     
