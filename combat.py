@@ -52,6 +52,7 @@ class Combat:
         self.temps = pygame.time.get_ticks()
         self.message_final = Text(self, life_time=0)
         self.player.nbre_direct = 0
+        self.get_num = False
 
     def affichage(self):
         global n, list_case
@@ -389,6 +390,7 @@ class Combat:
 
     def check_bouttons_mvt(self):
         if self.player_nbmvt:
+            self.get_num = False
             self.bouton1_nbmvt_cliqué = creation_img_text_click(
                 image_boutton1, "1 move", ColderWeather_small, WHITE, screen, click, 550, 250)
             self.bouton2_nbmvt_cliqué = creation_img_text_click(
@@ -401,7 +403,7 @@ class Combat:
                 image_boutton1, "5 moves", ColderWeather_small, WHITE, screen, click, 550, 450)
             self.nbre_mvt()
 
-        if self.player_mvt:
+        if (self.player_mvt and self.get_num):
             self.bouton1_mvt_cliqué = creation_img_text_click(
                 image_boutton, "Haut", ColderWeather_small, WHITE, screen, click, 550, 1000)
             self.bouton2_mvt_cliqué = creation_img_text_click(
@@ -444,19 +446,19 @@ class Combat:
         self.compteur_mouvement = 0
         if(self.bouton1_nbmvt_cliqué and pygame.mouse.get_pressed()[0]):
             self.player.n_mvt = 1
-            self.player_nbmvt, self.clic = False, False
+            self.player_nbmvt, self.clic, self.get_num = False, False, True
         elif(self.bouton2_nbmvt_cliqué and pygame.mouse.get_pressed()[0]):
             self.player.n_mvt = 2
-            self.player_nbmvt, self.clic = False, False
+            self.player_nbmvt, self.clic, self.get_num = False, False, True
         elif(self.bouton3_nbmvt_cliqué and pygame.mouse.get_pressed()[0]):
             self.player.n_mvt = 3
-            self.player_nbmvt, self.clic = False, False
+            self.player_nbmvt, self.clic, self.get_num = False, False, True
         elif(self.bouton4_nbmvt_cliqué and pygame.mouse.get_pressed()[0]):
             self.player.n_mvt = 4
-            self.player_nbmvt, self.clic = False, False
+            self.player_nbmvt, self.clic, self.get_num = False, False, True
         elif(self.bouton5_nbmvt_cliqué and pygame.mouse.get_pressed()[0]):
             self.player.n_mvt = 5
-            self.player_nbmvt, self.clic = False, False
+            self.player_nbmvt, self.clic, self.get_num = False, False, True
 
     def mouvement(self):
         print("compteur mouvement "+str(self.compteur_mouvement))
