@@ -18,6 +18,8 @@ from settings.color import *
 from script import player_for_save,player_3,list_static_entity,player_2
 from fonction import *
 from personnage import Perso_game
+from case import *
+from combat import *
 from seller_scripts import list_seller
 from monster import Monster
 from custum_map_ import list_entity_animation
@@ -34,46 +36,7 @@ dict_img_monstre['3']= list_entity_animation[2]
 dict_img_monstre['4']= list_entity_animation[3]
 dict_img_monstre['5']= list_entity_animation[4]
 
-class Case():
-    def __init__(self, i, j):
-        self.in_case = None
-        self.display = pygame.Surface(
-            (pixel_red.get_width(), pixel_red.get_height()))
-        self.display.blit(case, (0, 0))
-        self.display.set_colorkey(BLACK)
-        self.i = i
-        self.j = j
-        self.is_select = False
-
-    def print_contains(self):
-        if self.in_case != None:
-            #screen.blit(self.in_case.display,(self.cordo()[0]+self.in_case.display.get_width()//2,self.cordo()[1]-self.in_case.display.get_height()//2))
-            screen.blit(self.in_case.display,(self.cordo()[0]-self.in_case.img.get_width()//2,self.cordo()[1]-self.in_case.display.get_height()+self.in_case.img.get_height()//2+self.in_case.decalage_display[1]))
-    def cordo(self):
-        return ((self.j-self.i)*(pixel_red.get_width()+45)//2+screen.get_width()//2-pixel_red.get_width()//2, (self.j+self.i)*(pixel_red.get_width()+45)//4-100)
-
-    def select(self, is_select):
-        if is_select:
-            screen.blit(case_select, self.cordo())
-            self.is_select = True
-        else:
-            self.display.blit(case, (0, 0))
-            screen.blit(self.display, (0, 0))
-            self.is_select = False
-
-    def select_neighbour(self, list_case):
-        # if self.in_case != None:
-        for x in list_case:
-            x.is_select = False
-            if x.j == self.j and x.i == self.i - 1:
-                x.select(True)
-            if x.j == self.j and x.i == self.i + 1:
-                x.select(True)
-            if x.i == self.i and x.j == self.j - 1:
-                x.select(True)
-            if x.i == self.i and x.j == self.j + 1:
-                x.select(True)
-    # def print_sort(self,list_case):
+"""Anthony j'ai mis la classe Case dans un fichier tout seul qui s'apelle case.py car j en ai besoin et j ai importé le fichier la"""
 
 
 class Map():
@@ -95,6 +58,7 @@ class Map():
         self.static_entity = list_static_entity
         self.list_monster = []
         self.dict_collision = dict()
+        
     def load_map(self):
         self.map = load_map(self.path)
         self.map_decoration = load_map(self.path_deco)
@@ -241,6 +205,8 @@ class Game():
         self.fog = Fog(self)
         self.zoom_map = False
         self.center_x, self.center_y = 0, 0
+        # self.list_mooving_entity = list_mooving_entity
+        self.clock = clock
         self.list_mooving_entity = self.map.list_monster
 
     def main_game(self):
@@ -591,7 +557,7 @@ class Game():
                 screen.blit(display_talk,(0,0))
         return is_talking
 
-# player_direct = Perso(0,0,0,0,0,0,0,0,0)
+#player_direct = Perso(0,0,0,0,0,0,0,0,0,[])
 # game = Game(player_direct)
 # while True:
 #     game.main_game()
@@ -612,6 +578,13 @@ player_3.crew_mate.append(player_2)
 
 
 game = Game(player,map_1)
+# c = Combat(game,[])
+# c.affichage()
+
+#game.main_game()
+#running = True
+#click = False
+#while running:
 game.main_game()
 #game.print_combat_screen([entity_2])
 
