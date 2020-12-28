@@ -69,7 +69,7 @@ tavern_4 = Entity(11060-tavern_img.get_width()//2,1080-tavern_img.get_height()//
 tavern_5 = Entity(10540+380,1790-tavern_img.get_height()//2+270,tavern2_img,"Tavern","Building")
 
 list_static_entity = []
-'''
+
 wizard = Entity(9000,800,wizard_hide["wizard_idle_1.png"],"wizard","Monster",wizard_animation,size=(300,300))
 wizard_2 = Entity(9000,500,wizard_hide["wizard_idle_1.png"],"wizard","Monster",wizard_animation,size=(300,300))
 squelton_1 = Entity(9250,685,wizard_hide["wizard_idle_1.png"],"wizard","Monster",wizard_animation,size=(300,300))
@@ -92,10 +92,10 @@ list_mooving_entity = []
 list_mooving_entity.append(monster_test)
 list_mooving_entity.append(monster_test_2)
 
-running = True
-click = False
-while running:
-    #player.spell_bar()
-    print_turn_batlle([squelton_2,entity_2])
-    running,click = basic_checkevent(click)
-    pygame.display.update()'''
+# running = True
+# click = False
+# while running:
+#     #player.spell_bar()
+#     print_turn_batlle([squelton_2,entity_2])
+#     running,click = basic_checkevent(click)
+#     pygame.display.update()

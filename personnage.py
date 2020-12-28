@@ -114,6 +114,10 @@ class Perso(Entity):
             self.armor[i] = None
         ### Pictures ###
         self.avata = ava_perso
+        self.tour = False
+        self.resultat = 0
+        self.n_de = 6
+        
     def load_player(self,perso_saveable):
         self.name = perso_saveable.name
         self.classe = perso_saveable.classe

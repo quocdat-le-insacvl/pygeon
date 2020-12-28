@@ -562,30 +562,33 @@ class Game():
 # while True:
 #     game.main_game()
 
-map_1 = Map("map_generator.txt","map_generator_deco.txt","map_generator_monstre.txt",list_static_entity)
+# map_1 = Map("map_generator.txt","map_generator_deco.txt","map_generator_monstre.txt",list_static_entity)
+# map_1.init_map()
+# #map_2 = Map(r"tavern_1",[])
+# #map_2.init_map()
+
+# player.crew_mate.append(player_2)
+# player.crew_mate.append(player_3)
+
+# player_2.crew_mate.append(player_3)
+# player_2.crew_mate.append(player)
+
+# player_3.crew_mate.append(player)
+# player_3.crew_mate.append(player_2)
+
+map_1 = Map("map1.txt","map_generator_deco.txt","map_generator_monstre.txt",list_static_entity)
+
+# map_1 = Map("map.txt", list_static_entity)
 map_1.init_map()
-#map_2 = Map(r"tavern_1",[])
-#map_2.init_map()
-
-player.crew_mate.append(player_2)
-player.crew_mate.append(player_3)
-
-player_2.crew_mate.append(player_3)
-player_2.crew_mate.append(player)
-
-player_3.crew_mate.append(player)
-player_3.crew_mate.append(player_2)
-
-
 game = Game(player,map_1)
-# c = Combat(game,[])
-# c.affichage()
+c = Combat(game,[])
+c.affichage()
 
 #game.main_game()
 #running = True
 #click = False
 #while running:
-game.main_game()
+# game.main_game()
 #game.print_combat_screen([entity_2])
 
 """running = True

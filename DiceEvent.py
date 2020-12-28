@@ -1,6 +1,5 @@
 import pygame as pg
 from Dice import Dice
-from fonction import generate_randint
 
 class DiceEvent:
 
