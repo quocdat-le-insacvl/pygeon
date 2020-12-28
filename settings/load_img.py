@@ -175,13 +175,16 @@ path_background = path.join(path_addon, 'Background')
 
 fond = pygame.image.load(path.join(path_background, 'wine-wang-sunshineforest-1.jpg'))
 fond = pygame.transform.scale(fond,WINDOWS_SIZE)
+fond.set_colorkey(BLACK)
+
 case = pygame.image.load(path.join(path_addon, 'case.png'))
 case = pygame.transform.scale(case,(pixel_red.get_width(),pixel_red.get_height()))
+case.set_colorkey(BLACK)
 
 case_select = pygame.image.load(path.join(path_addon, 'case_select.png'))
 case_select = pygame.transform.scale(case_select,(pixel_red.get_width(),pixel_red.get_height()))
 case_select.set_colorkey((255,255,255))
-case_select.set_alpha(100)
+#case_select.set_alpha(100)
 
 rune = pygame.image.load(path.join(path_addon, "rune_1.png")).convert_alpha()
 rune_1 = pygame.image.load(path.join(path_addon, "rune_2.png")).convert_alpha()
