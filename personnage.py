@@ -578,6 +578,6 @@ img_perso = pygame.transform.scale(pygame.image.load(
     path.join(path_addon, 'Image/perso.png')), (96, 147))
 
 perso_stealth = pygame.transform.scale(pygame.image.load(
-    path.join(path_addon, 'Image/stealth.png')), (96, 147))
+    path.join(path_addon, 'Image/real_stealth.png')), (96, 147))
 
 
