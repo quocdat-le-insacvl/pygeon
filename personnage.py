@@ -107,6 +107,7 @@ class Perso(Entity):
         self.bouton_comp = dict()
         # self.skills=[0,0,0,0,0,0,0]
         self.skills = []
+        self.visible = True 
 
         ### Actions during the game ###
         
@@ -443,7 +444,7 @@ class Perso_game(Perso):
             if x.collide_box.mask.overlap(self.masks,((self.pos_x+self.deplacement[0]+10)-x.collide_box.pos_x,(self.pos_y+self.deplacement[1]+self.img.get_height()-15)-x.collide_box.pos_y)):
                 self.entity_near = True
         for x in list_monster:
-            if x.collide_box_interact.mask.overlap(self.masks,((self.pos_x+self.deplacement[0]+10)-x.collide_box_interact.pos_x,(self.pos_y+self.deplacement[1]+self.img.get_height()-15)-x.collide_box_interact.pos_y)):
+            if x.collide_box_interact.mask.overlap(self.masks,((self.pos_x+self.deplacement[0]+10)-x.collide_box_interact.pos_x,(self.pos_y+self.deplacement[1]+self.img.get_height()-15)-x.collide_box_interact.pos_y)) and self.visible:
                 return x 
         for x in dict_collision['collision_change_camera']:
             if pixel_mask.overlap(self.masks,((self.pos_x+self.deplacement[0]+10)-x[0],(self.pos_y+self.deplacement[1]+self.img.get_height()-15)-x[1])):

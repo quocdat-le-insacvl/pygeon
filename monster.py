@@ -62,6 +62,16 @@ class Monster(Entity):
                 else:
                     self.pos_x += (self.collide_patrouille.pos_x+self.collide_patrouille.img_collide.get_width()//2 - self.pos_x)//400
                     self.pos_y += (self.collide_patrouille.pos_y+self.collide_patrouille.img_collide.get_height()//2 - self.pos_y)//400
+        elif not player.visible:
+            if self.collide_patrouille.mask.overlap(self.collide_box_interact.mask,((self.collide_box_interact.pos_x + self.mouvement[0])-self.collide_patrouille.pos_x,(self.collide_box_interact.pos_y+ self.mouvement[1])-self.collide_patrouille.pos_y)):
+                self.pos_x += self.mouvement[0]
+                self.pos_y += self.mouvement[1]
+            else:
+                if self.collide_patrouille.mask.overlap(self.collide_box_interact.mask,((self.collide_box_interact.pos_x)-self.collide_patrouille.pos_x,(self.collide_box_interact.pos_y)-self.collide_patrouille.pos_y)):
+                    self.change_direction = 100
+                else:
+                    self.pos_x += (self.collide_patrouille.pos_x+self.collide_patrouille.img_collide.get_width()//2 - self.pos_x)//400
+                    self.pos_y += (self.collide_patrouille.pos_y+self.collide_patrouille.img_collide.get_height()//2 - self.pos_y)//400
         else:
             if not self.is_aggresive :
                 for x in self.group_monster:

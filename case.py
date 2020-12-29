@@ -50,7 +50,11 @@ class Case():
                     x.select(True)
                 if x.j+i == self.j and x.i-i == self.i:
                     x.select(True)
-
+    def print_effect(self,list_case):
+        for x in list_case:
+            x.select(False)
+            if x.j-3 == self.j and x.i+3 == self.i:
+                x.select_neighbour(list_case)
     def checkIfSelected(self):
         if self.is_select:
             screen.blit(case_select, self.cordo())

@@ -685,11 +685,11 @@ player_3.crew_mate.append(player_2)
 
 
 map_1.init_map()
-
 game = Game(player,map_1)
-#
 c = Combat(game,[])
 c.affichage()
+player.skills.append(Stealth(game))
+player.skills.append(Perception(game))
 game.main_game()
 #running = True
 #click = False

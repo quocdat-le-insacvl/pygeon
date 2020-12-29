@@ -41,10 +41,10 @@ class Stealth:
             self.available = False
             self.last_spawn_time = pygame.time.get_ticks()
             self.casting = True
-            self.visible = False
-            
+            self.player.visible = False
+            '''
             for monster in self.game.list_mooving_entity:
-                monster.is_aggresive = False
+                monster.is_aggresive = False'''
 
     def use(self):
         self.player.img = self.perso_stealth
@@ -54,9 +54,9 @@ class Stealth:
 
     def unuse(self):
         self.player.img = self.player_image
-        self.visible = True
-        for monster in self.game.list_mooving_entity:
-            monster.is_aggresive = True
+        self.player.visible = True
+        '''for monster in self.game.list_mooving_entity:
+            monster.is_aggresive = True'''
     
 
 class Perception:

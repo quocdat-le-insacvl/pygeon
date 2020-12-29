@@ -187,7 +187,8 @@ class Combat:
 
             if current_selec != None:
                 current_selec.select(True)
-                current_selec.select_neighbour(list_case)
+                #current_selec.select_neighbour(list_case)
+                current_selec.print_effect(list_case)
             for x in list_case:
                 x.print_contains()
             running, self.game.click = basic_checkevent(self.game.click)
