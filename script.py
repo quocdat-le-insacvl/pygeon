@@ -47,7 +47,7 @@ tavern_img = pygame.image.load(path.join(path_addon, 'tavern_1.png')).convert_al
 tavern_img = pygame.transform.scale(tavern_img,(int(1.8*tavern_img.get_width()),int(1.8*tavern_img.get_height())))
 tavern_2_img = pygame.image.load(path.join(path_addon, 'tavern_2.png')).convert_alpha()
 tavern_2_img = pygame.transform.scale(tavern_2_img,(int(1.7*tavern_2_img.get_width()),int(1.7*tavern_2_img.get_height())))
-demon = pygame.image.load(path.join(path_demon_walk, 'demon_walk_1.png')).convert_alpha()
+demon = pygame.image.load(path.join(path_demon_walk, 'walk_1.png')).convert_alpha()
 demon = pygame.transform.scale(demon,(10*demon.get_width(),10*demon.get_height()))
 
 tavern2_img = pygame.image.load(path.join(path_addon, 'medieval-tavern_00000.png')).convert_alpha()
@@ -56,7 +56,7 @@ tavern2_img = pygame.transform.scale(tavern2_img,(2*tavern2_img.get_width(),2*ta
 test_demon = Entity(7180, 1940, demon, 'test_demon', 'Monster',
                   demon_1_animation, size=(500, 400), decalage=[60, 0])
 demon_shadow = pygame.image.load(
-    path.join(path_demon_walk, 'demon_shadow.png')).convert_alpha()
+    path.join(path_addon, 'demon_shadow.png')).convert_alpha()
 demon_shadow = pygame.transform.scale(
     demon_shadow, (10*demon_shadow.get_width(), 10*demon_shadow.get_height()))
 test_demon.shadow = demon_shadow
@@ -70,27 +70,17 @@ tavern_5 = Entity(10540+380,1790-tavern_img.get_height()//2+270,tavern2_img,"Tav
 
 list_static_entity = []
 
-wizard = Entity(9000,800,wizard_hide["wizard_idle_1.png"],"wizard","Monster",wizard_animation,size=(300,300))
-wizard_2 = Entity(9000,500,wizard_hide["wizard_idle_1.png"],"wizard","Monster",wizard_animation,size=(300,300))
-squelton_1 = Entity(9250,685,wizard_hide["wizard_idle_1.png"],"wizard","Monster",wizard_animation,size=(300,300))
-dark_wizard = Entity(10000,400,dark_wizard_idle["dark_wizard_idle_1.png"],"dark_wizard","Monster",dark_wizard_animation,size=(500,500),decalage=[70,60])
 
 
-monster_test = Monster(9250,685,wizard_hide["wizard_idle_1.png"],"wizard","Monster",wizard_animation,size=(300,300),size_collide_box=4)
-monster_test_2 = Monster(9250,785,wizard_hide["wizard_idle_1.png"],"wizard","Monster",wizard_animation,size=(300,300),size_collide_box=4)
-
-
-
+"""
 list_static_entity.append(tavern_1)
 list_static_entity.append(tavern_2)
 list_static_entity.append(tavern_3)
 list_static_entity.append(tavern_4)
-list_static_entity.append(tavern_5)
+list_static_entity.append(tavern_5)"""
 
 list_mooving_entity = []
 
-list_mooving_entity.append(monster_test)
-list_mooving_entity.append(monster_test_2)
 
 # running = True
 # click = False

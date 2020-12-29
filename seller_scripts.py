@@ -121,13 +121,16 @@ list_seller.append(seller_2)
 list_seller.append(seller_3)
 list_seller.append(seller_4)
 list_seller.append(seller_5)
-'''
-all_items = Inventaire(23,16)
+
+'''all_items = Inventaire(18,16)
+loot_inv = Inventaire(7,7)
 for x in key:
-    all_items.ajouteritems(x)
+    if x.wpn_name != "Sort":
+        all_items.ajouteritems(x)
 running = True
 click = False
 while running:
-    all_items.print_inventory_bis(0,0,print_info_on_mouse=True)
+    #all_items.print_inventory_bis(0,0,print_info_on_mouse=True)
+    all_items.loot_inventory(0,0,18*65,0,loot_inv,print_info_on_mouse=True)
     running,click = basic_checkevent(click)
     pygame.display.update()'''

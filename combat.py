@@ -95,12 +95,6 @@ class Combat:
         self.game.player.transform_display_for_combat()
         list_case[self.game.player.n_case].in_case = self.game.player
 
-        #VOIR TOUT LES MONSTRES
-        list_case[0].in_case = list_mooving_entity[0]
-        # list_case[1].in_case = list_mooving_entity[1]
-        # list_case[2].in_case = list_mooving_entity[2]
-        # list_case[3].in_case = list_mooving_entity[3]
-        # list_case[4].in_case = list_mooving_entity[4]
 
         while running:
 

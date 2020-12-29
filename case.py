@@ -19,7 +19,9 @@ class Case():
     def print_contains(self):
         if self.in_case != None:
             #screen.blit(self.in_case.display,(self.cordo()[0]+self.in_case.display.get_width()//2,self.cordo()[1]-self.in_case.display.get_height()//2))
-            screen.blit(self.in_case.display,(self.cordo()[0]-self.in_case.img.get_width()//2,self.cordo()[1]-self.in_case.display.get_height()+self.in_case.img.get_height()//2+self.in_case.decalage_display[1]))
+            flip = pygame.transform.flip(self.in_case.display,True,False)
+            flip.set_colorkey(BLACK)
+            screen.blit(flip,(self.cordo()[0]-self.in_case.display.get_width()//2,self.cordo()[1]-self.in_case.display.get_height()//2+self.in_case.decalage[1]))
     def cordo(self):
         return ((self.j-self.i)*(pixel_red.get_width()+45)//2+screen.get_width()//2-pixel_red.get_width()//2, (self.j+self.i)*(pixel_red.get_width()+45)//4-100)
 
@@ -44,7 +46,6 @@ class Case():
                 x.select(True)
             if x.i == self.i and x.j == self.j + 1:
                 x.select(True)
-    # def print_sort(self,list_case):
 
     def checkIfSelected(self):
         if self.is_select:

@@ -203,3 +203,22 @@ def board_init(i=0):
         return pygame.image.load(path.join(path_menu,r'UI board Large stone.png')).convert_alpha()
 
 collide_monster = pygame.image.load(path.join(path_addon,"test_collide_monster.png"))
+
+chair = pygame.image.load(path.join(path_addon,"chair.png")).convert_alpha()
+chair = pygame.transform.scale(chair,(95,2*95))
+chair_2 = pygame.image.load(path.join(path_addon,"chair_2.png")).convert_alpha()
+chair_2 = pygame.transform.scale(chair_2,(95,2*95))
+chair_3 = pygame.image.load(path.join(path_addon,"chair_3.png")).convert_alpha()
+chair_3 = pygame.transform.scale(chair_3,(95,2*95))
+
+chest = pygame.image.load(path.join(path_addon,"chest.png")).convert_alpha()
+chest = pygame.transform.scale(chest,(100,100))
+
+etagere = pygame.image.load(path.join(path_addon,"etagère.png")).convert_alpha()
+etagere = pygame.transform.scale(etagere,(150,2*150))
+
+etagere_2 = pygame.image.load(path.join(path_addon,"etagere_2.png")).convert_alpha()
+etagere_2 = pygame.transform.scale(etagere_2,(150,2*150))
+
+table = pygame.image.load(path.join(path_addon,"table.png")).convert_alpha()
+table = pygame.transform.scale(table,(2*150,2*150))

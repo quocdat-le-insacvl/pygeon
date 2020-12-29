@@ -19,11 +19,15 @@ from settings.color import *
 from script import player_for_save,player_3,list_static_entity,player_2
 from fonction import *
 from personnage import Perso_game
+from seller_scripts import list_seller,seller_1_inv
+from monster import Monster
+from custum_map_ import list_entity_animation,list_npc
+from inventory import Shop,Inventaire
 from case import *
 from combat import *
-from seller_scripts import list_seller
-from monster import Monster
-from custum_map_ import list_entity_animation
+# from seller_scripts import list_seller
+# from monster import Monster
+# from custum_map_ import list_entity_animation
 from skill import *
 
 pygame.init()
@@ -32,14 +36,42 @@ time_line = pygame.time.get_ticks()
 """ Une chose intéréssant que je viens d'apprendre : Il faut utiliser toujours .convert() ou .conver_alpha() 
 quand on load les images pour la question de performance
 """
+key = list(Wikitem.keys())
 dict_img_monstre = dict()
+dict_animation_monstre = dict()
+dict_decalage_monstre = dict()
+dict_size_monstre = dict()
+dict_img_npc = dict()
 dict_img_monstre['1']= list_entity_animation[0]
 dict_img_monstre['2']= list_entity_animation[1]
 dict_img_monstre['3']= list_entity_animation[2]
 dict_img_monstre['4']= list_entity_animation[3]
 dict_img_monstre['5']= list_entity_animation[4]
 
-"""Anthony j'ai mis la classe Case dans un fichier tout seul qui s'apelle case.py car j en ai besoin et j ai importé le fichier la"""
+dict_img_npc['1']= list_npc[0]
+dict_img_npc['2']= list_npc[1]
+dict_img_npc['3']= list_npc[2]
+dict_img_npc['4']= list_npc[3]
+dict_img_npc['5']= list_npc[4]
+
+dict_animation_monstre['1'] = demon_1_animation
+dict_animation_monstre['2'] = demon_animation
+dict_animation_monstre['3'] = squelton_animation
+dict_animation_monstre['4'] = wizard_animation
+dict_animation_monstre['5'] = dark_wizard_animation
+
+dict_decalage_monstre['1'] = [0,0]
+dict_decalage_monstre['2'] = [0,0]
+dict_decalage_monstre['3'] = [-30,-30]
+dict_decalage_monstre['4'] = [-30,-30]
+dict_decalage_monstre['5'] = [70,20]
+
+dict_size_monstre['1'] = (500,400)
+dict_size_monstre['2'] = (500,400)
+dict_size_monstre['3'] = (300,300)
+dict_size_monstre['4'] = (300,300)
+dict_size_monstre['5'] = (600,500)
+
 
 
 class Map():
@@ -47,24 +79,27 @@ class Map():
         self.path = path
         self.path_deco = path_deco
         self.path_monster = path_monstre
-        self.map_decoration = load_map(path_deco)
-        self.all_monstre = load_map(path_monstre)
+        self.map_decoration = load_map(path_deco,reverse=True)
+        self.all_monstre = load_map(path_monstre,reverse=True)
+        self.all_shop = load_inv()
         self.collision = []
         self.collision_change_camera = []
         self.collision_entity = []
         self.tree_position = []
+        self.collision_under_level = []
         self.change_camera_entity = []
-        self.map = load_map(path)
+        self.map = load_map(path,reverse=True)
         self.display = pygame.Surface((18000,10000))
         self.display_tree = pygame.Surface((18000,10000))
         self.cubesize = cubesize
         self.static_entity = list_static_entity
+        self.collision_hupper_level = []
         self.list_monster = []
         self.dict_collision = dict()
         
     def load_map(self):
-        self.map = load_map(self.path)
-        self.map_decoration = load_map(self.path_deco)
+        self.map = load_map(self.path,reverse=True)
+        self.map_decoration = load_map(self.path_deco,reverse=True)
         self.collision = []
         self.collision_change_camera = []
         self.collision_entity = []
@@ -78,15 +113,33 @@ class Map():
         self.print_building()
         self.print_tree()
         self.init_monster()
+        self.init_shop()
         self.dict_collision["change_camera_entity"] = self.change_camera_entity
         self.dict_collision["collision_entity"] = self.collision_entity
         self.dict_collision["collision"] = self.collision
         self.dict_collision["collision_change_camera"] = self.collision_change_camera
+        self.dict_collision["collision_under_level"] = self.collision_under_level
+        self.dict_collision["collision_hupper_level"] = self.collision_hupper_level
+
         #self.display.blit(self.display_tree,(0,0))
     def init_monster(self):
+        self.list_monster = []
         for x in self.all_monstre:
             if len(x) !=0:
-                self.list_monster.append(Monster(int(x[0]),int(x[1]),dict_img_monstre[x[2]],"",x[2],size_collide_box=4))
+                self.list_monster.append(Monster(int(x[0]),int(x[1]),dict_img_monstre[x[2]],"",x[2],size_collide_box=4,size=dict_size_monstre[x[2]],animation_dict=dict_animation_monstre[x[2]],decalage=dict_decalage_monstre[x[2]]))
+    def init_shop(self):
+        line=1
+        self.list_shop = []
+        for i in range(self.all_shop[0]):
+            inv = Inventaire(7,5)
+            for x in self.all_shop[line+2]:
+                if self.all_shop[line+2][x] != None:
+                    inv.ajouteritems(key[self.all_shop[line+2][x]])
+            inter_x = int(self.all_shop[line])
+            inter_y = int(self.all_shop[line+1])
+            x,y = (inter_y-inter_x)*190//2+9000,(inter_y+inter_x)*190//4
+            list_seller.append(Shop(inv,x,y,list_npc[self.all_shop[line+3]],"Marc",'Seller',talking="Bienvenue dans mon magasin !",size_collide_box=2))
+            line+=4
     def print_ground(self):
         i=0
         for layer in self.map:
@@ -154,6 +207,7 @@ class Map():
                     if self.map[i][j] == '7':
                         n = random.randint(1,5)
                         self.display.blit(grass['grass_blue_' + str(n) + '.png'],(x,y))
+                    
                 j+=1
             i+=1
         i=0
@@ -192,6 +246,33 @@ class Map():
                     if self.map_decoration[i][j] == 'd':
                         self.collision.append((x,y))
                         self.display.blit(wall,(x,y-100))
+                    if self.map_decoration[i][j] == 'e':
+                        self.collision.append((x,y))
+                        self.display.blit(chair,(x,y-100))
+                    if self.map_decoration[i][j] == 'f':
+                        self.collision.append((x,y))
+                        self.display.blit(etagere,(x,y-200)) 
+                    if self.map_decoration[i][j] == 'g':
+                        self.collision.append((x,y))
+                        self.display.blit(etagere_2,(x,y-200)) 
+                    if self.map_decoration[i][j] == 'h':
+                        self.collision.append((x,y))
+                        self.display.blit(chair_2,(x,y-100)) 
+                    if self.map_decoration[i][j] == 'i':
+                        self.collision.append((x,y))
+                        self.display.blit(chair_3,(x,y-100)) 
+                    if self.map_decoration[i][j] == 'j':
+                        self.collision.append((x,y))
+                        self.display.blit(chest,(x+50,y)) 
+                    if self.map_decoration[i][j] == 'k':
+                        self.collision.append((x,y))
+                        self.display.blit(table,(x,y)) 
+                    if self.map_decoration[i][j] == '8':
+                        self.collision_under_level.append((x,y))
+                        self.display.blit(pygame.transform.scale(rune_1,(190,95)),(x,y))
+                    if self.map_decoration[i][j] == '9':
+                        self.collision_hupper_level.append((x,y))
+                        self.display.blit(pygame.transform.scale(rune,(190,95)),(x,y))
                 j+=1
             i+=1
         i=0
@@ -307,28 +388,14 @@ class Game():
                 entity_re_print = self.player.find_nearest_entity(list_static_entity)
                 screen.blit(entity_re_print.img,(entity_re_print.pos_x+center_x,entity_re_print.pos_y+center_y))
             
-            #screen.blit(rune_1,(11000+center_x,3000+center_y))
-
-            '''Actualiser case interaction + animations'''
             
-            #for x in list_mooving_entity:
-            #     x.animate_map()
-            #     x.update_interact()
-
-            
-            # f += 1
-            # if f < 150:
-            #     list_mooving_entity[0].move_entity([2,-1],self.map,self.player)
-            #     list_mooving_entity[2].move_entity([2,-1],self.map,self.player)
-            # elif f > 150:
-            #     list_mooving_entity[0].move_entity([-2,1],self.map,self.player)
-            #     list_mooving_entity[2].move_entity([-2,1],self.map,self.player)
-            # if f == 300:
-            #     f=0
-            #for x in list_mooving_entity:
-            #    x.animate_map(frame)
             print_mooving_entity(self, screen,self.map.list_monster,center_x,center_y)
             for x in self.map.list_monster:
+                x.type_animation = "walk"
+                if x.mouvement[0] < 0 :
+                    x.animate_map(flip=True)
+                else:
+                    x.animate_map()
                 x.moove_patrouille(self.player,self.map.list_monster)
             #self.map.list_monster[0].moove_patrouille(self.player,self.map.list_monster)
             
@@ -351,8 +418,21 @@ class Game():
                     self.player.mouvement = [False,False,False,False]
             else:
                 draw_interact = True
-        
+            if self.player.change_level:
+                if draw_interact: draw_text("Press I for go under",ColderWeather,WHITE,screen,500,500)
+                if interact:
+                    self.map = map_2
+                    self.map.init_map()
+                    interact=False
+            if self.player.change_hupper_level:
+                if draw_interact: draw_text("Press I for go hupper",ColderWeather,WHITE,screen,500,500)
+                if interact:
+                    self.map = map_1
+                    self.map.init_map()
+                    interact=False
+
             '''Set caméra / player pos pour sauvegarde'''
+
             center_x -= (self.player.pos_x + center_x - 900)//20
             center_y -= (self.player.pos_y + center_y - 540) //20
             
@@ -398,10 +478,12 @@ class Game():
                     if event.key == K_m:
                         self.zoom_map = False
 
-            # monstre = self.player.move_player(self.map.dict_collision,list_seller,self.map.list_monster)
-            # if monstre != None:
-            #     self.print_combat_screen(monstre.group_monster)
-            # self.player.animate_map(frame%2+1)
+            monstre = self.player.move_player(self.map.dict_collision,list_seller,self.map.list_monster)
+            if monstre != None:
+                f = Combat(self,monstre.group_monster)
+                f.affichage()
+                self.print_combat_screen(monstre.group_monster)
+            self.player.animate_map(frame%2+1)
             """
             if g != 255:
                 for x in range(255):
@@ -414,11 +496,9 @@ class Game():
             if show_characteresheet:
                 self.player.caracter_sheet()
                 show_characteresheet = False
-                
-            draw_text("FPS: % i" % (clock.get_fps()),
-                      ColderWeather, WHITE, screen, 100, 100)
-            # draw_text("FPS: %i, x : %i , y : %i,nb_monstre = %i" % (clock.get_fps(),self.player.pos_x,self.player.pos_y
-            #                                         ,len(self.map.list_monster[0].group_monster)), ColderWeather, WHITE, screen, 100, 100)
+            
+            draw_text("FPS: %i, x : %i , y : %i" % (clock.get_fps(),self.player.pos_x,self.player.pos_y
+                                                    ,), ColderWeather, WHITE, screen, 100, 100)
             self.player.spell_bar()
             
             # update skill
@@ -459,10 +539,10 @@ class Game():
             list_case[i].in_case = x
             i+=1
         self.player.transform_display_for_combat()
-
+        '''
         list_case[59].in_case = self.player
         list_case[60].in_case = self.player.crew_mate[0]
-        list_case[61].in_case = self.player.crew_mate[1]
+        list_case[61].in_case = self.player.crew_mate[1]'''
         while running:
             mx, my = pygame.mouse.get_pos()
             screen.fill(LIGHT_GREY)
@@ -473,7 +553,7 @@ class Game():
             for x in list_case:
                 screen.blit(x.display, x.cordo())
                 if x.in_case != None and not x.is_select:
-                    x.in_case.type_animation = "idle"
+                    x.in_case.type_animation = "walk"
                 if x.in_case != None and x.is_select:
                     x.in_case.type_animation = "idle"
                 if x.in_case != None:
@@ -572,10 +652,12 @@ class Game():
 # while True:
 #     game.main_game()
 
-# map_1 = Map("map_generator.txt","map_generator_deco.txt","map_generator_monstre.txt",list_static_entity)
-# map_1.init_map()
-# #map_2 = Map(r"tavern_1",[])
-# #map_2.init_map()
+map_1 = Map("map_level_1.txt","map_decoration_level_1.txt","map_monstre_level_1.txt",list_static_entity)
+map_2 = Map("map_level_2.txt","map_decoration_level_2.txt","map_monstre_level_2.txt",list_static_entity)
+
+map_1.init_map()
+#map_2 = Map(r"tavern_1",[])
+#map_2.init_map()
 
 # player.crew_mate.append(player_2)
 # player.crew_mate.append(player_3)
@@ -586,21 +668,23 @@ class Game():
 # player_3.crew_mate.append(player)
 # player_3.crew_mate.append(player_2)
 
-# map_1 = Map("map1.txt","map_generator_deco.txt","map_generator_monstre.txt",list_static_entity)
-map_1 = Map("map1.txt","map_generator_deco.txt","map_generator_monstre.txt",list_static_entity)
 
-# map_1 = Map("map1.txt", list_static_entity)
+player.crew_mate.append(player_2)
+player.crew_mate.append(player_3)
+
+player_2.crew_mate.append(player_3)
+player_2.crew_mate.append(player)
+
+player_3.crew_mate.append(player)
+player_3.crew_mate.append(player_2)
+
+
 map_1.init_map()
 game = Game(player,map_1)
-#### ADD SKILL
-player.skills.append(Stealth(game))
+#c = Combat(game,[])
+#c.affichage()
+
 game.main_game()
-
-
-# c = Combat(game,[])
-# c.affichage()
-
-#game.main_game()
 #running = True
 #click = False
 #while running:
