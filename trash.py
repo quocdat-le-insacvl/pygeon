@@ -117,11 +117,13 @@ class Map():
 
         #self.display.blit(self.display_tree,(0,0))
     def init_monster(self):
+        self.list_monster = []
         for x in self.all_monstre:
             if len(x) !=0:
                 self.list_monster.append(Monster(int(x[0]),int(x[1]),dict_img_monstre[x[2]],"",x[2],size_collide_box=4,size=dict_size_monstre[x[2]],animation_dict=dict_animation_monstre[x[2]],decalage=dict_decalage_monstre[x[2]]))
     def init_shop(self):
         line=1
+        self.list_shop = []
         for i in range(self.all_shop[0]):
             inv = Inventaire(7,5)
             for x in self.all_shop[line+2]:
@@ -472,6 +474,8 @@ class Game():
 
             monstre = self.player.move_player(self.map.dict_collision,list_seller,self.map.list_monster)
             if monstre != None:
+                f = Combat(self,monstre.group_monster)
+                f.affichage()
                 self.print_combat_screen(monstre.group_monster)
             self.player.animate_map(frame%2+1)
             """
@@ -653,9 +657,6 @@ map_1.init_map()
 # player_3.crew_mate.append(player)
 # player_3.crew_mate.append(player_2)
 
-map_1 = Map("map_level_1.txt","map_decoration_level_1.txt","map_monstre_level_1.txt",list_static_entity)
-
-# map_1 = Map("map.txt", list_static_entity)
 
 player.crew_mate.append(player_2)
 player.crew_mate.append(player_3)
