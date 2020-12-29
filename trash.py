@@ -1,3 +1,4 @@
+from skill import Stealth
 from personnage import Perso
 from entity import Fog, Minimap
 import pygame
@@ -23,6 +24,8 @@ from combat import *
 from seller_scripts import list_seller
 from monster import Monster
 from custum_map_ import list_entity_animation
+from skill import *
+
 pygame.init()
 clock = pygame.time.Clock()
 time_line = pygame.time.get_ticks()
@@ -230,10 +233,10 @@ class Game():
         is_talking = False
         self.player.pos_x = 8680
         self.player.pos_y = 800
-        self.player.crew_mate[0].pos_x = 8680
-        self.player.crew_mate[0].pos_y = 1000
-        self.player.crew_mate[1].pos_x = 8680
-        self.player.crew_mate[1].pos_y = 1100
+        # self.player.crew_mate[0].pos_x = 8680
+        # self.player.crew_mate[0].pos_y = 1000
+        # self.player.crew_mate[1].pos_x = 8680
+        # self.player.crew_mate[1].pos_y = 1100
         ### Minimap
         self.minimap = Minimap(self, self.map.display)
         for x in self.map.list_monster:
@@ -395,10 +398,10 @@ class Game():
                     if event.key == K_m:
                         self.zoom_map = False
 
-            monstre = self.player.move_player(self.map.dict_collision,list_seller,self.map.list_monster)
-            if monstre != None:
-                self.print_combat_screen(monstre.group_monster)
-            self.player.animate_map(frame%2+1)
+            # monstre = self.player.move_player(self.map.dict_collision,list_seller,self.map.list_monster)
+            # if monstre != None:
+            #     self.print_combat_screen(monstre.group_monster)
+            # self.player.animate_map(frame%2+1)
             """
             if g != 255:
                 for x in range(255):
@@ -411,10 +414,17 @@ class Game():
             if show_characteresheet:
                 self.player.caracter_sheet()
                 show_characteresheet = False
-            
-            draw_text("FPS: %i, x : %i , y : %i,nb_monstre = %i" % (clock.get_fps(),self.player.pos_x,self.player.pos_y
-                                                    ,len(self.map.list_monster[0].group_monster)), ColderWeather, WHITE, screen, 100, 100)
+                
+            draw_text("FPS: % i" % (clock.get_fps()),
+                      ColderWeather, WHITE, screen, 100, 100)
+            # draw_text("FPS: %i, x : %i , y : %i,nb_monstre = %i" % (clock.get_fps(),self.player.pos_x,self.player.pos_y
+            #                                         ,len(self.map.list_monster[0].group_monster)), ColderWeather, WHITE, screen, 100, 100)
             self.player.spell_bar()
+            
+            # update skill
+            for skill in self.player.skills:
+                skill.update()
+            
             pygame.display.update()
             clock.tick(64)
 
@@ -576,13 +586,19 @@ class Game():
 # player_3.crew_mate.append(player)
 # player_3.crew_mate.append(player_2)
 
+# map_1 = Map("map1.txt","map_generator_deco.txt","map_generator_monstre.txt",list_static_entity)
 map_1 = Map("map1.txt","map_generator_deco.txt","map_generator_monstre.txt",list_static_entity)
 
-# map_1 = Map("map.txt", list_static_entity)
+# map_1 = Map("map1.txt", list_static_entity)
 map_1.init_map()
 game = Game(player,map_1)
-c = Combat(game,[])
-c.affichage()
+#### ADD SKILL
+player.skills.append(Stealth(game))
+game.main_game()
+
+
+# c = Combat(game,[])
+# c.affichage()
 
 #game.main_game()
 #running = True
