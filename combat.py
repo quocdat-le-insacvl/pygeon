@@ -97,7 +97,7 @@ class Combat:
 
 
         while running:
-
+            list_case[10].select(True)
             self.angle += 10
 
             for text in self.texts:
@@ -113,18 +113,18 @@ class Combat:
 
             for x in list_case:
                 screen.blit(x.display, x.cordo())
-                if x.in_case != None and not x.is_select:
+                if x.in_case != None :
                     x.in_case.type_animation = "idle"
                 if x.in_case != None and x.is_select:
                     x.in_case.type_animation = "idle"  # attack
                 if x.in_case != None:
                     x.in_case.animate()
-
+            """
             for x in list_case:
-                x.checkIfSelected()
+                x.checkIfSelected()"""
 
-            for x in list_case:
-                x.print_contains()
+            
+
             i, j = 0, 0
             for h in l:
                 j = 0
@@ -142,7 +142,7 @@ class Combat:
 
                     j += 1
                 i += 1
-
+            
             screen.blit(image_box, (850, 0))
             for text in self.texts:
                 text.print_text()
@@ -185,10 +185,11 @@ class Combat:
             #if not fin: #pour ne plus afficher le de une fois qu'il a terminé de tourner
             self.essai()
 
-            # if current_selec != None:
-            #     current_selec.select(True)
-            #     current_selec.select_neighbour(list_case)
-
+            if current_selec != None:
+                current_selec.select(True)
+                current_selec.select_neighbour(list_case)
+            for x in list_case:
+                x.print_contains()
             running, self.game.click = basic_checkevent(self.game.click)
 
             # if f != 255:

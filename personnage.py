@@ -73,7 +73,7 @@ class Perso_saveable(): # INTERDICTION DE METTRE DES PYGAMES SURFACE SEULEMENT D
         self.pos_y = perso.pos_y
 class Perso(Entity):
     def __init__(self,STR=8,DEX=8,CON=8,INT=8,WIS=8,CHA=8,hp=10,hp_max=10,inventaire=10,name=None,classe=None,level=0,xp=0,hit_dice=0,argent=0,player_animation = None):
-        super().__init__(100,100,pygame.transform.scale(pygame.image.load(path.join(path_addon,'Image/perso.png')),(96,147)),name,"Player",animation_dict=player_animation)
+        super().__init__(100,100,pygame.transform.scale(pygame.image.load(path.join(path_addon,'Image/perso.png')),(96,147)),name,"Player",animation_dict=player_animation,decalage = [-80,-30])
         ### Stats ###
         self.classe = classe
         self.level = level

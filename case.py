@@ -38,14 +38,18 @@ class Case():
         # if self.in_case != None:
         for x in list_case:
             x.is_select = False
-            if x.j == self.j and x.i == self.i - 1:
-                x.select(True)
-            if x.j == self.j and x.i == self.i + 1:
-                x.select(True)
-            if x.i == self.i and x.j == self.j - 1:
-                x.select(True)
-            if x.i == self.i and x.j == self.j + 1:
-                x.select(True)
+            for i in range(-1,2):
+                for j in range(-1,2):
+                    if x.j+j == self.j and x.i+i == self.i:
+                        x.select(True)
+                    
+    def select_diag(self,list_case):
+        for x in list_case:
+            for i in range(-7,7):
+                if x.j+i == self.j and x.i+i == self.i:
+                    x.select(True)
+                if x.j+i == self.j and x.i-i == self.i:
+                    x.select(True)
 
     def checkIfSelected(self):
         if self.is_select:
