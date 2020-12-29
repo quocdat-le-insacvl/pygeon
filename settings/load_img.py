@@ -2,7 +2,7 @@ from settings.color import *
 import pygame
 from fonction_load_image import image_loader,transform_image
 from settings.screen import WINDOWS_SIZE
-from os import path
+from os import path,getcwd
 
 path_settings = path.dirname(__file__)
 path_pygeon = path.dirname(path_settings)
@@ -175,17 +175,24 @@ path_background = path.join(path_addon, 'Background')
 
 fond = pygame.image.load(path.join(path_background, 'wine-wang-sunshineforest-1.jpg'))
 fond = pygame.transform.scale(fond,WINDOWS_SIZE)
+fond.set_colorkey(BLACK)
+
 case = pygame.image.load(path.join(path_addon, 'case.png'))
 case = pygame.transform.scale(case,(pixel_red.get_width(),pixel_red.get_height()))
+case.set_colorkey(BLACK)
 
 case_select = pygame.image.load(path.join(path_addon, 'case_select.png'))
 case_select = pygame.transform.scale(case_select,(pixel_red.get_width(),pixel_red.get_height()))
 case_select.set_colorkey((255,255,255))
-case_select.set_alpha(100)
+#case_select.set_alpha(100)
 
 rune = pygame.image.load(path.join(path_addon, "rune_1.png")).convert_alpha()
 rune_1 = pygame.image.load(path.join(path_addon, "rune_2.png")).convert_alpha()
 
+#combat
+image_boutton = pygame.image.load(getcwd()+'\\Addon\\Menu\\TextBTN_Small.png')
+image_box = pygame.image.load(getcwd()+'\\Addon\\UI board Small Set.png')
+image_boutton1 = pygame.image.load(getcwd()+'\\Addon\\Menu\\TextBTN_XSmall.png')
 floor_tavern = pygame.image.load(path.join(path_addon,'floor_tavern.png')).convert_alpha()
 floor_tavern = pygame.transform.scale(floor_tavern,(floor_tavern.get_width(),floor_tavern.get_width()//2))
 def board_init(i=0):

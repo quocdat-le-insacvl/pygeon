@@ -413,3 +413,16 @@ def print_turn_batlle(list_turn):
         screen.blit(pygame.transform.scale(x.avata,(200,100)),(20,470-110*i))
         i+=1
             
+#combat
+
+
+def bonus(attribut):  # pour assigner a chaque attribut les pts bonus correspondants
+    if attribut == 1:
+        return -5
+    else:
+        b, i = -5, 1
+        while i <= attribut:
+            if i %2 == 0:
+                b += 1
+            i += 1
+        return b

@@ -114,6 +114,10 @@ class Perso(Entity):
             self.armor[i] = None
         ### Pictures ###
         self.avata = ava_perso
+        self.tour = False
+        self.resultat = 0
+        self.n_de = 6
+        
     def load_player(self,perso_saveable):
         self.name = perso_saveable.name
         self.classe = perso_saveable.classe
@@ -390,7 +394,11 @@ class Perso_game(Perso):
 
         self.mouvement = [False,False,False,False]
         self.deplacement = [0,0]
+        self.n_case = 59
+        self.n_mvt = 1
+        self.nbre_direct = 0
         self.interact_range = (10,10)
+        
     def refresh_animation_and_mouvement(self):
         if self.mouvement[0]:
             self.deplacement = [10,-5]

@@ -129,6 +129,7 @@ class Map():
         self.collision_hupper_level = []
         self.list_monster = []
         self.dict_collision = dict()
+        
     def load_map(self):
         self.map = load_map(self.path,reverse=True)
         self.map_decoration = load_map(self.path_deco,reverse=True)
@@ -319,6 +320,8 @@ class Game():
         self.fog = Fog(self)
         self.zoom_map = False
         self.center_x, self.center_y = 0, 0
+        # self.list_mooving_entity = list_mooving_entity
+        self.clock = clock
         self.list_mooving_entity = self.map.list_monster
 
     def main_game(self):
@@ -668,30 +671,47 @@ class Game():
                 screen.blit(display_talk,(0,0))
         return is_talking
 
-# player_direct = Perso(0,0,0,0,0,0,0,0,0)
+#player_direct = Perso(0,0,0,0,0,0,0,0,0,[])
 # game = Game(player_direct)
 # while True:
 #     game.main_game()
 
+<<<<<<< HEAD
 map_1 = Map("map_level_1.txt","map_decoration_level_1.txt","map_monstre_level_1.txt",list_static_entity)
 map_2 = Map("map_level_2.txt","map_decoration_level_2.txt","map_monstre_level_2.txt",list_static_entity)
 
 map_1.init_map()
 #map_2 = Map(r"tavern_1",[])
 #map_2.init_map()
+=======
+# map_1 = Map("map_generator.txt","map_generator_deco.txt","map_generator_monstre.txt",list_static_entity)
+# map_1.init_map()
+# #map_2 = Map(r"tavern_1",[])
+# #map_2.init_map()
+>>>>>>> 10d788b8ca48298fb2744c395086aa6debea5bb8
 
-player.crew_mate.append(player_2)
-player.crew_mate.append(player_3)
+# player.crew_mate.append(player_2)
+# player.crew_mate.append(player_3)
 
-player_2.crew_mate.append(player_3)
-player_2.crew_mate.append(player)
+# player_2.crew_mate.append(player_3)
+# player_2.crew_mate.append(player)
 
-player_3.crew_mate.append(player)
-player_3.crew_mate.append(player_2)
+# player_3.crew_mate.append(player)
+# player_3.crew_mate.append(player_2)
 
+map_1 = Map("map1.txt","map_generator_deco.txt","map_generator_monstre.txt",list_static_entity)
 
+# map_1 = Map("map.txt", list_static_entity)
+map_1.init_map()
 game = Game(player,map_1)
-game.main_game()
+c = Combat(game,[])
+c.affichage()
+
+#game.main_game()
+#running = True
+#click = False
+#while running:
+# game.main_game()
 #game.print_combat_screen([entity_2])
 
 """running = True
