@@ -70,27 +70,17 @@ tavern_5 = Entity(10540+380,1790-tavern_img.get_height()//2+270,tavern2_img,"Tav
 
 list_static_entity = []
 
-wizard = Entity(9000,800,wizard_hide["wizard_idle_1.png"],"wizard","Monster",wizard_animation,size=(300,300))
-wizard_2 = Entity(9000,500,wizard_hide["wizard_idle_1.png"],"wizard","Monster",wizard_animation,size=(300,300))
-squelton_1 = Entity(9250,685,wizard_hide["wizard_idle_1.png"],"wizard","Monster",wizard_animation,size=(300,300))
-dark_wizard = Entity(10000,400,dark_wizard_idle["dark_wizard_idle_1.png"],"dark_wizard","Monster",dark_wizard_animation,size=(500,500),decalage=[70,60])
 
 
-monster_test = Monster(9250,685,wizard_hide["wizard_idle_1.png"],"wizard","Monster",wizard_animation,size=(300,300),size_collide_box=4)
-monster_test_2 = Monster(9250,785,wizard_hide["wizard_idle_1.png"],"wizard","Monster",wizard_animation,size=(300,300),size_collide_box=4)
-
-
-
+"""
 list_static_entity.append(tavern_1)
 list_static_entity.append(tavern_2)
 list_static_entity.append(tavern_3)
 list_static_entity.append(tavern_4)
-list_static_entity.append(tavern_5)
+list_static_entity.append(tavern_5)"""
 
 list_mooving_entity = []
 
-list_mooving_entity.append(monster_test)
-list_mooving_entity.append(monster_test_2)
 
 # running = True
 # click = False
