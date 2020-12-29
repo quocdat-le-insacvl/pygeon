@@ -474,6 +474,11 @@ class Game():
                         #pygame.image.save(self.fog.surface,'test_fog.png')
                     if event.key == K_ESCAPE:
                         self.print_pause_menu()
+                    if event.key == K_q:
+                        self.player.skills[0].cast()
+                    if event.key == K_w:
+                        self.player.skills[1].cast()
+                    
                 if event.type == KEYUP:
                     if event.key == K_m:
                         self.zoom_map = False
@@ -683,7 +688,8 @@ map_1.init_map()
 game = Game(player,map_1)
 #c = Combat(game,[])
 #c.affichage()
-
+player.skills.append(Stealth(game))
+player.skills.append(Perception(game))
 game.main_game()
 #running = True
 #click = False

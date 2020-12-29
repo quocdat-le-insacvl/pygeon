@@ -46,6 +46,8 @@ class Perso_saveable(): # INTERDICTION DE METTRE DES PYGAMES SURFACE SEULEMENT D
         self.armor = dict()
         for i in range(0,6):     # 0 : HEAD 1 : TORSE 2 : COUE  3 BOTTE 4 : MAIN GAUCHE : 5 MAIN DROITE
             self.armor[i] = None
+        self.visible = True 
+        
     def load_player(self,perso):
         self.name = perso.name
         self.classe = perso.classe
@@ -572,10 +574,10 @@ class Perso_game(Perso):
         for i in range(len(self.competencesList)):
             screen.blit(pygame.transform.scale(self.competencesList[i].img,(75,75)),(85*i+screen.get_width()//2-200,screen.get_height()-80))
         
-
-ava_perso = pygame.transform.scale(pygame.image.load(
+img_perso = pygame.transform.scale(pygame.image.load(
     path.join(path_addon, 'Image/perso.png')), (96, 147))
 
-        
+perso_stealth = pygame.transform.scale(pygame.image.load(
+    path.join(path_addon, 'Image/stealth.png')), (96, 147))
 
 

@@ -285,8 +285,9 @@ class Fog:
         self.surface.fill(NIGHT_COLOR)
         # self.surface.set_colorkey(BLACK)
         self.light_image = light_mask
+        self.light_radius = LIGHT_RADIUS
         self.light_image = pygame.transform.scale(
-            self.light_image, LIGHT_RADIUS)
+            self.light_image, (self.light_radius, self.light_radius))
         self.light_rect = self.light_image.get_rect()
 
     def draw_fog(self):
