@@ -46,6 +46,8 @@ class Perso_saveable(): # INTERDICTION DE METTRE DES PYGAMES SURFACE SEULEMENT D
         self.armor = dict()
         for i in range(0,6):     # 0 : HEAD 1 : TORSE 2 : COUE  3 BOTTE 4 : MAIN GAUCHE : 5 MAIN DROITE
             self.armor[i] = None
+        self.visible = True 
+        
     def load_player(self,perso):
         self.name = perso.name
         self.classe = perso.classe
@@ -71,6 +73,8 @@ class Perso_saveable(): # INTERDICTION DE METTRE DES PYGAMES SURFACE SEULEMENT D
         self.armor = perso.armor
         self.pos_x = perso.pos_x
         self.pos_y = perso.pos_y
+
+
 class Perso(Entity):
     def __init__(self,STR=8,DEX=8,CON=8,INT=8,WIS=8,CHA=8,hp=10,hp_max=10,inventaire=10,name=None,classe=None,level=0,xp=0,hit_dice=0,argent=0,player_animation = None):
         super().__init__(100,100,pygame.transform.scale(pygame.image.load(path.join(path_addon,'Image/perso.png')),(96,147)),name,"Player",animation_dict=player_animation,decalage = [-80,-30])
@@ -101,7 +105,9 @@ class Perso(Entity):
         self.poid_max = 300
         self.competencesList=[]
         self.bouton_comp = dict()
-        self.skills=[0,0,0,0,0,0,0]
+        # self.skills=[0,0,0,0,0,0,0]
+        self.skills = []
+
         ### Actions during the game ###
         
         self.feats=[]
@@ -398,7 +404,7 @@ class Perso_game(Perso):
         self.n_mvt = 1
         self.nbre_direct = 0
         self.interact_range = (10,10)
-        
+
     def refresh_animation_and_mouvement(self):
         if self.mouvement[0]:
             self.deplacement = [10,-5]
@@ -568,6 +574,10 @@ class Perso_game(Perso):
         for i in range(len(self.competencesList)):
             screen.blit(pygame.transform.scale(self.competencesList[i].img,(75,75)),(85*i+screen.get_width()//2-200,screen.get_height()-80))
         
-        
+img_perso = pygame.transform.scale(pygame.image.load(
+    path.join(path_addon, 'Image/perso.png')), (96, 147))
+
+perso_stealth = pygame.transform.scale(pygame.image.load(
+    path.join(path_addon, 'Image/real_stealth.png')), (96, 147))
 
 

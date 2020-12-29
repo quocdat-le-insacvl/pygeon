@@ -1,3 +1,4 @@
+from skill import Stealth
 from personnage import Perso
 from entity import Fog, Minimap
 import pygame
@@ -24,6 +25,11 @@ from custum_map_ import list_entity_animation,list_npc
 from inventory import Shop,Inventaire
 from case import *
 from combat import *
+# from seller_scripts import list_seller
+# from monster import Monster
+# from custum_map_ import list_entity_animation
+from skill import *
+
 pygame.init()
 clock = pygame.time.Clock()
 time_line = pygame.time.get_ticks()
@@ -308,10 +314,10 @@ class Game():
         is_talking = False
         self.player.pos_x = 8680
         self.player.pos_y = 800
-        self.player.crew_mate[0].pos_x = 8680
-        self.player.crew_mate[0].pos_y = 1000
-        self.player.crew_mate[1].pos_x = 8680
-        self.player.crew_mate[1].pos_y = 1100
+        # self.player.crew_mate[0].pos_x = 8680
+        # self.player.crew_mate[0].pos_y = 1000
+        # self.player.crew_mate[1].pos_x = 8680
+        # self.player.crew_mate[1].pos_y = 1100
         ### Minimap
         self.minimap = Minimap(self, self.map.display)
         for x in self.map.list_monster:
@@ -468,6 +474,11 @@ class Game():
                         #pygame.image.save(self.fog.surface,'test_fog.png')
                     if event.key == K_ESCAPE:
                         self.print_pause_menu()
+                    if event.key == K_q:
+                        self.player.skills[0].cast()
+                    if event.key == K_w:
+                        self.player.skills[1].cast()
+                    
                 if event.type == KEYUP:
                     if event.key == K_m:
                         self.zoom_map = False
@@ -494,6 +505,11 @@ class Game():
             draw_text("FPS: %i, x : %i , y : %i" % (clock.get_fps(),self.player.pos_x,self.player.pos_y
                                                     ,), ColderWeather, WHITE, screen, 100, 100)
             self.player.spell_bar()
+            
+            # update skill
+            for skill in self.player.skills:
+                skill.update()
+            
             pygame.display.update()
             clock.tick(64)
 
