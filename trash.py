@@ -676,19 +676,12 @@ class Game():
 # while True:
 #     game.main_game()
 
-<<<<<<< HEAD
 map_1 = Map("map_level_1.txt","map_decoration_level_1.txt","map_monstre_level_1.txt",list_static_entity)
 map_2 = Map("map_level_2.txt","map_decoration_level_2.txt","map_monstre_level_2.txt",list_static_entity)
 
 map_1.init_map()
 #map_2 = Map(r"tavern_1",[])
 #map_2.init_map()
-=======
-# map_1 = Map("map_generator.txt","map_generator_deco.txt","map_generator_monstre.txt",list_static_entity)
-# map_1.init_map()
-# #map_2 = Map(r"tavern_1",[])
-# #map_2.init_map()
->>>>>>> 10d788b8ca48298fb2744c395086aa6debea5bb8
 
 # player.crew_mate.append(player_2)
 # player.crew_mate.append(player_3)
