@@ -385,6 +385,9 @@ class Perso_game(Perso):
         self.swap = False
         self.entity_near = False
         self.swap_entity = False
+        self.change_level = False   
+        self.change_hupper_level = False  
+
         self.mouvement = [False,False,False,False]
         self.deplacement = [0,0]
         self.interact_range = (10,10)
@@ -409,6 +412,9 @@ class Perso_game(Perso):
         self.swap = False
         self.entity_near = False
         self.swap_entity = False
+        self.change_level = False
+        self.change_hupper_level = False  
+
         possible = True
         for x in dict_collision['change_camera_entity']:
             if pixel_mask.overlap(self.masks,((self.pos_x+self.deplacement[0]+10)-x[0],(self.pos_y+self.deplacement[1]+self.img.get_height()-15)-x[1])):
@@ -431,6 +437,12 @@ class Perso_game(Perso):
         for x in dict_collision['collision']:
             if pixel_mask.overlap(self.masks,((self.pos_x+self.deplacement[0]+10)-x[0],(self.pos_y+self.deplacement[1]+self.img.get_height()-15)-x[1])):
                 possible = False
+        for x in dict_collision['collision_under_level']:
+            if pixel_mask.overlap(self.masks,((self.pos_x+self.deplacement[0]+10)-x[0],(self.pos_y+self.deplacement[1]+self.img.get_height()-15)-x[1])):
+                self.change_level = True     
+        for x in dict_collision['collision_hupper_level']:
+            if pixel_mask.overlap(self.masks,((self.pos_x+self.deplacement[0]+10)-x[0],(self.pos_y+self.deplacement[1]+self.img.get_height()-15)-x[1])):
+                self.change_hupper_level = True  
         if possible:
             self.pos_x += self.deplacement[0]
             self.pos_y += self.deplacement[1]

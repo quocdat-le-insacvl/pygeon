@@ -177,10 +177,10 @@ class Inventaire():
                     self.have_object = False
         else:
             self.last_moove = -1
-    def loot_inventory(self,pos_x,pos_y,inv):
+    def loot_inventory(self,pos_self_x,pos_self_y,pos_other_x,pos_other_y,inv,print_info_on_mouse=False):
         mx,my = pygame.mouse.get_pos()
-        mx_inv = mx - 500
-        my_inv = my - 500
+        mx_inv = mx - pos_other_x
+        my_inv = my - pos_other_y
         click=False
         if self.backpack[self.mouse_slot] != None:
             self.have_object = True
@@ -192,8 +192,8 @@ class Inventaire():
                         self.have_object = False
         else:
             self.have_object = False
-        inv.print_inventory_bis(500,500,mouse=self.have_object)
-        self.print_inventory_bis(pos_x,pos_y)
+        inv.print_inventory_bis(pos_other_x,pos_other_y,mouse=self.have_object,print_info_on_mouse=print_info_on_mouse)
+        self.print_inventory_bis(pos_self_x,pos_self_y,print_info_on_mouse=print_info_on_mouse)
     def add_random_drop(self,number):
         for i in range(number):
             j = random.randint(0,len(Droppable))

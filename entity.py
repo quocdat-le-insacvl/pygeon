@@ -24,7 +24,7 @@ class Entity():
         self.talking = talking
         self.interaction = [[self.pos_x,self.pos_y],[self.pos_x,self.pos_y],[self.pos_x,self.pos_y],[self.pos_x,self.pos_y]]
         self.type_animation = "idle"
-        self.decalage_display = decalage
+        self.decalage = decalage
         self.avata = pygame.transform.scale(img, (30, 30))
         self.is_hidden = True
         self.seen = False
@@ -40,19 +40,20 @@ class Entity():
             if self.frame > len(animation)+1:
                 self.frame=1
             self.refresh_display()
-            if self.nom != None:
-                self.display.blit(animation[ self.nom + "_" + self.type_animation + "_" + str(int(self.frame)) + ".png"],(self.img.get_width()//2-animation[ self.nom + "_" + self.type_animation + "_" + str(int(self.frame)) + ".png"].get_width()//2+150-int(self.img.get_width()//2)+self.decalage_display[0],self.img.get_height()-animation[ self.nom + "_" + self.type_animation + "_" + str(int(self.frame)) + ".png"].get_height()+300-self.img.get_height()+self.decalage_display[1]))
-            else:
-                self.display.blit(animation[ self.type_animation + "_" + str(int(self.frame)) + ".png"],(self.img.get_width()//2-animation[ self.type_animation + "_" + str(int(self.frame)) + ".png"].get_width()//2+150-int(self.img.get_width()//2)+self.decalage_display[0],self.img.get_height()-animation[ self.type_animation + "_" + str(int(self.frame)) + ".png"].get_height()+300-self.img.get_height()+self.decalage_display[1]))
-    def animate_map(self,frame):
+            self.display.blit(animation[self.type_animation + "_" + str(int(self.frame)) + ".png"],(self.img.get_width()//2-animation[self.type_animation + "_" + str(int(self.frame)) + ".png"].get_width()//2+150-int(self.img.get_width()//2)+self.decalage[0],self.img.get_height()-animation[ self.type_animation + "_" + str(int(self.frame)) + ".png"].get_height()+300-self.img.get_height()+self.decalage[1]))
+            #self.display.blit(animation[ self.type_animation + "_" + str(int(self.frame)) + ".png"],(150-animation[ self.type_animation + "_" + str(int(self.frame)) + ".png"].get_width()//2,self.img.get_height()-animation[ self.type_animation + "_" + str(int(self.frame)) + ".png"].get_height()+300-self.img.get_height()+self.decalage_display[1]))
+    def animate_map(self,flip=False):
         if self.type_animation != "" and self.animation_dict != None :
             animation = self.animation_dict[self.type_animation]
-            if self.nom != None:
-                #self.display.blit(animation[ self.nom + "_" + self.type_animation + "_" + str(int(self.frame)) + ".png"],(0,0))
-                self.img = animation[ self.nom + "_" + self.type_animation + "_" + str(int(frame)) + ".png"]
-            else:
                 #self.display.blit(animation[ self.type_animation + "_" + str(int(self.frame)) + ".png"],(0,0))
-                self.img = animation[ self.type_animation + "_" + str(int(frame)) + ".png"]
+            self.frame += 0.05
+            if self.frame > len(animation)+1:
+                self.frame=1
+            if not flip:
+                self.img = animation[ self.type_animation + "_" + str(int(self.frame)) + ".png"]
+            else:
+                self.img = pygame.transform.flip(animation[ self.type_animation + "_" + str(int(self.frame)) + ".png"],True,False)
+                self.img.set_colorkey(BLACK)
     def refresh_display(self):
         self.display.fill((0,0,0))
         self.display.set_colorkey((0,0,0))

@@ -94,15 +94,17 @@ class Monster(Entity):
         if not player.masks.overlap(self.collide_box.mask,((self.collide_box.pos_x + mouvement[0])-player.pos_x,(self.collide_box.pos_y+ mouvement[1])-(player.pos_y+130))):
             self.pos_x += mouvement[0]
             self.pos_y += mouvement[1]    
+
         else:
             if not self.is_aggresive :
                 for x in self.group_monster:
                     if (x.pos_x - player.pos_x ) >0:
-                        x.pos_x += 4
+                        x.pos_x += 4     
                     else:
                         x.pos_x -=4
                     if (x.pos_y - player.pos_y ) < 0:
                         x.pos_y += 2
+
                     else:
                         x.pos_y -=2
                     x.update_pos_collide()

@@ -1,4 +1,4 @@
-import pickle,os
+import pickle,os,json
 from pygame.locals import *
 from settings import police,color
 from settings.screen import *
@@ -7,6 +7,7 @@ from settings.load_img import *
 from settings.color import *
 import random
 import time
+import sys
 # from script import demon_shadow
 
 
@@ -258,15 +259,23 @@ def transition(ms,capture_screen,first_blit):
 """ def load_map
     Chargement de la carte, crée une nouvelle ligne a chaque \n
     Return Map Une liste de liste contenant des charactères"""
-def load_map(path):
+def load_map(path,reverse=False):
     f = open(path,'r')
     data = f.read()
     f.close()
     data = data.split('\n')
     map = []
-    for row in data:
-        map.append(list(row))
+    if not reverse:
+        for row in data:
+            map.append(list(row))
+    else:
+        for row in reversed(data):
+            map.append(list(row))
     return map
+
+def load_inv(reverse=False):
+    return [json.loads(line) for line in open('inventaire.json', 'r')]
+
 """ def print_map(self,Map,display):
         Affichage de la carte sur un Display,Chaque numéro contenue dans Map correspond a une case précise du sol et à une propriété
         Return Display Pygame Surface qui contient le sol de la carte
@@ -363,7 +372,7 @@ def print_mooving_entity(game, display,list_entity,center_x,center_y):
             if game.fog.surface.get_at((entity.pos_x, entity.pos_y)) != NIGHT_COLOR:
                 entity.is_hidden = False
                 entity.seen = True
-                display.blit(entity.display, (entity.pos_x + center_x, entity.pos_y+center_y))
+                display.blit(entity.img, (entity.pos_x + center_x, entity.pos_y+center_y))
                 entity.last_know_pos = (entity.pos_x, entity.pos_y)
             else:
                 entity.is_hidden = True

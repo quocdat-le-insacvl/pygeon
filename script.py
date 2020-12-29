@@ -47,7 +47,7 @@ tavern_img = pygame.image.load(path.join(path_addon, 'tavern_1.png')).convert_al
 tavern_img = pygame.transform.scale(tavern_img,(int(1.8*tavern_img.get_width()),int(1.8*tavern_img.get_height())))
 tavern_2_img = pygame.image.load(path.join(path_addon, 'tavern_2.png')).convert_alpha()
 tavern_2_img = pygame.transform.scale(tavern_2_img,(int(1.7*tavern_2_img.get_width()),int(1.7*tavern_2_img.get_height())))
-demon = pygame.image.load(path.join(path_demon_walk, 'demon_walk_1.png')).convert_alpha()
+demon = pygame.image.load(path.join(path_demon_walk, 'walk_1.png')).convert_alpha()
 demon = pygame.transform.scale(demon,(10*demon.get_width(),10*demon.get_height()))
 
 tavern2_img = pygame.image.load(path.join(path_addon, 'medieval-tavern_00000.png')).convert_alpha()
@@ -56,7 +56,7 @@ tavern2_img = pygame.transform.scale(tavern2_img,(2*tavern2_img.get_width(),2*ta
 test_demon = Entity(7180, 1940, demon, 'test_demon', 'Monster',
                   demon_1_animation, size=(500, 400), decalage=[60, 0])
 demon_shadow = pygame.image.load(
-    path.join(path_demon_walk, 'demon_shadow.png')).convert_alpha()
+    path.join(path_addon, 'demon_shadow.png')).convert_alpha()
 demon_shadow = pygame.transform.scale(
     demon_shadow, (10*demon_shadow.get_width(), 10*demon_shadow.get_height()))
 test_demon.shadow = demon_shadow
