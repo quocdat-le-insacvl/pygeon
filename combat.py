@@ -490,6 +490,7 @@ class Combat:
         if (self.player.nbre_direct < 6):
             if self.check_case(list_case[self.game.player.n_case].i-1, list_case[self.game.player.n_case].j+1):
                 self.player.nbre_direct += 1
+                
                 list_case[self.game.player.n_case].j += 1
                 list_case[self.game.player.n_case].i -= 1
                 list_case[self.game.player.n_case].in_case = self.game.player

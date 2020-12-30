@@ -15,9 +15,9 @@ player_2 = Perso_game(10,10,10,10,10,10,100,150,pack_bis,walk_bottom['walk_botto
 player = Perso_game(10,10,10,10,10,10,100,100,pack,walk_bottom['walk_bottom_' + str(1) +'.png'],8680,800,decalage=[30,80],size=(300,300))
 player_3 = Perso_game(50,10,10,10,10,10,100,100,pack,walk_bottom['walk_bottom_' + str(1) +'.png'].copy(),8680,800,decalage=[30,80],size=(300,300))
 
-sorcerer = Sorcerer()
-sorcerer_2 = Sorcerer()
-sorcerer_3 = Sorcerer()
+sorcerer = Sorcerer(decalage=[30,80],size=(300,300))
+sorcerer_2 = Sorcerer(decalage=[30,80],size=(300,300))
+sorcerer_3 = Sorcerer(decalage=[30,80],size=(300,300))
 
 player.xp = 500
 
