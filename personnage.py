@@ -76,8 +76,8 @@ class Perso_saveable(): # INTERDICTION DE METTRE DES PYGAMES SURFACE SEULEMENT D
 
 
 class Perso(Entity):
-    def __init__(self,STR=8,DEX=8,CON=8,INT=8,WIS=8,CHA=8,hp=10,hp_max=10,inventaire=10,name=None,classe=None,level=0,xp=0,hit_dice=0,argent=0,player_animation = None):
-        super().__init__(100,100,pygame.transform.scale(pygame.image.load(path.join(path_addon,'Image/perso.png')),(96,147)),name,"Player",animation_dict=player_animation,decalage = [-80,-30])
+    def __init__(self,STR=8,DEX=8,CON=8,INT=8,WIS=8,CHA=8,hp=10,hp_max=10,inventaire=10,name=None,classe=None,level=0,xp=0,hit_dice=0,argent=0,player_animation = None,decalage = [0,0],size=(0,0)):
+        super().__init__(100,100,pygame.transform.scale(pygame.image.load(path.join(path_addon,'Image/perso.png')),(96,147)),name,"Player",animation_dict=player_animation,decalage = decalage,size=size)
         ### Stats ###
         self.classe = classe
         self.level = level
@@ -104,6 +104,8 @@ class Perso(Entity):
         self.poid_actuel = 0
         self.poid_max = 300
         self.competencesList=[]
+        self.n_case = 59
+        self.n_mvt = 1
         self.bouton_comp = dict()
         # self.skills=[0,0,0,0,0,0,0]
         self.skills = []
@@ -386,9 +388,8 @@ class Perso(Entity):
         return self.img
 
 class Perso_game(Perso):
-    def __init__(self,STR,DEX,CON,INT,WIS,CHA,hp,hp_max,inventaire,img,pos_x,pos_y,player_animation = None ,argent = 0,name=None,classe=None,level=1,xp=0):
-        #Entity.__init__(self,pos_x,pos_y,img,name,"Player",animation_dict=player_animation)
-        Perso.__init__(self,STR,DEX,CON,INT,WIS,CHA,hp,hp_max,inventaire,player_animation=player_animation,name=name)
+    def __init__(self,STR,DEX,CON,INT,WIS,CHA,hp,hp_max,inventaire,img,pos_x,pos_y,player_animation = None ,argent = 0,name=None,classe=None,level=1,xp=0,decalage=[0,0],size=(0,0)):
+        Perso.__init__(self,STR,DEX,CON,INT,WIS,CHA,hp,hp_max,inventaire,player_animation=player_animation,name=name,decalage=decalage,size=size)
         self.case_connue = []
         self.mask_surface = pygame.Surface((img.get_width()-40,10))
         self.mask_surface.fill((255,0,0))
@@ -398,11 +399,8 @@ class Perso_game(Perso):
         self.swap_entity = False
         self.change_level = False   
         self.change_hupper_level = False  
-
         self.mouvement = [False,False,False,False]
         self.deplacement = [0,0]
-        self.n_case = 59
-        self.n_mvt = 1
         self.nbre_direct = 0
         self.interact_range = (10,10)
 

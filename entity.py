@@ -41,6 +41,9 @@ class Entity():
                 self.frame=1
             self.refresh_display()
             self.display.blit(animation[self.type_animation + "_" + str(int(self.frame)) + ".png"],(self.img.get_width()//2-animation[self.type_animation + "_" + str(int(self.frame)) + ".png"].get_width()//2+150-int(self.img.get_width()//2)+self.decalage[0],self.img.get_height()-animation[ self.type_animation + "_" + str(int(self.frame)) + ".png"].get_height()+300-self.img.get_height()+self.decalage[1]))
+        else:
+            self.display.blit(self.img,(0,0))
+
             #self.display.blit(animation[ self.type_animation + "_" + str(int(self.frame)) + ".png"],(150-animation[ self.type_animation + "_" + str(int(self.frame)) + ".png"].get_width()//2,self.img.get_height()-animation[ self.type_animation + "_" + str(int(self.frame)) + ".png"].get_height()+300-self.img.get_height()+self.decalage_display[1]))
     def animate_map(self,flip=False):
         if self.type_animation != "" and self.animation_dict != None :

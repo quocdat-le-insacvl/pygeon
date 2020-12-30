@@ -16,7 +16,7 @@ from settings.screen import *
 from settings.police import Drifftype, ColderWeather, Rumbletumble, coeff, coeff1, coeff2, ColderWeather_small
 from settings.load_img import *
 from settings.color import *
-from script import player_for_save,player_3,list_static_entity,player_2
+from script import player_for_save,player_3,list_static_entity,player_2,playerbis,sorcerer,sorcerer_2,sorcerer_3
 from fonction import *
 from personnage import Perso_game
 from seller_scripts import list_seller,seller_1_inv
@@ -72,7 +72,7 @@ dict_size_monstre['3'] = (300,300)
 dict_size_monstre['4'] = (300,300)
 dict_size_monstre['5'] = (600,500)
 
-
+donjon =  [json.loads(line) for line in open('donjon.json', 'r')]
 
 class Map():
     def __init__(self,path,path_deco,path_monstre,list_static_entity,cubesize=190):
@@ -292,7 +292,7 @@ class Game():
         # self.list_mooving_entity = list_mooving_entity
         self.clock = clock
         self.list_mooving_entity = self.map.list_monster
-
+        self.current_level = 1
     def main_game(self):
         global time_line
         self.player.name = 'gh'
@@ -314,10 +314,10 @@ class Game():
         is_talking = False
         self.player.pos_x = 8680
         self.player.pos_y = 800
-        # self.player.crew_mate[0].pos_x = 8680
-        # self.player.crew_mate[0].pos_y = 1000
-        # self.player.crew_mate[1].pos_x = 8680
-        # self.player.crew_mate[1].pos_y = 1100
+        self.player.crew_mate[0].pos_x = 8680
+        self.player.crew_mate[0].pos_y = 1000
+        self.player.crew_mate[1].pos_x = 8680
+        self.player.crew_mate[1].pos_y = 1100
         ### Minimap
         self.minimap = Minimap(self, self.map.display)
         for x in self.map.list_monster:
@@ -421,16 +421,30 @@ class Game():
             if self.player.change_level:
                 if draw_interact: draw_text("Press I for go under",ColderWeather,WHITE,screen,500,500)
                 if interact:
-                    self.map = map_2
-                    self.map.init_map()
-                    interact=False
+                    print(self.current_level)
+                    nb = 0
+                    for x in donjon:
+                        if x[2] == self.current_level:
+                            nb +=1
+                    if nb == 1: 
+                        self.map = list_map[x[3]-1]
+                        self.current_level = x[3]
+                    else:
+                        for x in donjon:
+                            print(self.current_level)
             if self.player.change_hupper_level:
                 if draw_interact: draw_text("Press I for go hupper",ColderWeather,WHITE,screen,500,500)
                 if interact:
-                    self.map = map_1
-                    self.map.init_map()
-                    interact=False
-
+                    print(self.current_level)
+                    nb=0
+                    for x in donjon:
+                        if x[3] == self.current_level:
+                            nb+=1
+                    if nb == 1:
+                        self.map = list_map[x[2]-1]
+                        self.current_level = x[2]
+                    
+                    print(self.current_level)
             '''Set caméra / player pos pour sauvegarde'''
 
             center_x -= (self.player.pos_x + center_x - 900)//20
@@ -483,11 +497,15 @@ class Game():
                     if event.key == K_m:
                         self.zoom_map = False
 
+
             monstre = self.player.move_player(self.map.dict_collision,list_seller,self.map.list_monster)
             if monstre != None:
                 f = Combat(self,monstre.group_monster)
                 f.affichage()
                 self.print_combat_screen(monstre.group_monster)
+
+
+
             self.player.animate_map(frame%2+1)
             """
             if g != 255:
@@ -656,25 +674,26 @@ class Game():
 # game = Game(player_direct)
 # while True:
 #     game.main_game()
+num = 1
+list_map = []
+while os.path.exists(os.path.join(path.dirname(__file__), 'map_level_'+str(num)+'.txt')):
+    level = Map("map_level_"+str(num)+".txt","map_decoration_level_"+str(num)+".txt","map_monstre_level_"+str(num)+".txt",list_static_entity)
+    level.init_map()
+    list_map.append(level)
+    num +=1
 
-map_1 = Map("map_level_1.txt","map_decoration_level_1.txt","map_monstre_level_1.txt",list_static_entity)
-map_2 = Map("map_level_2.txt","map_decoration_level_2.txt","map_monstre_level_2.txt",list_static_entity)
+#map_1 = Map("map_level_1.txt","map_decoration_level_1.txt","map_monstre_level_1.txt",list_static_entity)
+#map_2 = Map("map_level_2.txt","map_decoration_level_2.txt","map_monstre_level_2.txt",list_static_entity)
 
-map_1.init_map()
+#map_1.init_map()
 #map_2 = Map(r"tavern_1",[])
 #map_2.init_map()
 
-# player.crew_mate.append(player_2)
-# player.crew_mate.append(player_3)
-
-# player_2.crew_mate.append(player_3)
-# player_2.crew_mate.append(player)
-
-# player_3.crew_mate.append(player)
-# player_3.crew_mate.append(player_2)
-
-
+"""
 player.crew_mate.append(player_2)
+print(player_3.decalage[0])
+print(player_2.decalage[0])
+
 player.crew_mate.append(player_3)
 
 player_2.crew_mate.append(player_3)
@@ -682,14 +701,25 @@ player_2.crew_mate.append(player)
 
 player_3.crew_mate.append(player)
 player_3.crew_mate.append(player_2)
+"""
+
+sorcerer.crew_mate.append(sorcerer_2)
+sorcerer.crew_mate.append(sorcerer_3)
+
+sorcerer_2.crew_mate.append(sorcerer_3)
+sorcerer_2.crew_mate.append(sorcerer)
+
+sorcerer_3.crew_mate.append(sorcerer)
+sorcerer_3.crew_mate.append(sorcerer_2)
 
 
-map_1.init_map()
-game = Game(player,map_1)
-c = Combat(game,[])
-c.affichage()
-player.skills.append(Stealth(game))
-player.skills.append(Perception(game))
+
+#map_1.init_map()
+game = Game(sorcerer,list_map[0])
+#c = Combat(game,[])
+#c.affichage()
+#player.skills.append(Stealth(game))
+#player.skills.append(Perception(game))
 game.main_game()
 #running = True
 #click = False

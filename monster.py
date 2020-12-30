@@ -32,6 +32,8 @@ class Monster(Entity):
         self.is_aggresive = True
         self.change_direction = 0
         self.mouvement = [0,0]
+        self.STR = 10
+        
     def init_collide_patrouille(self):
         self.collide_patrouille.pos_x = int ( self.pos_x - self.collide_patrouille.img_collide.get_width()//2 + self.img.get_width()//2)
         self.collide_patrouille.pos_y = int ( self.pos_y + self.img.get_height() - self.collide_patrouille.img_collide.get_height()//2)

@@ -5,16 +5,23 @@ from inventory import *
 from entity import Entity,Collide_box
 from items import *
 from monster import Monster
-
+from sorcerer import Sorcerer
 
 pack = Inventaire(7,5)
 pack_bis = Inventaire(5,5)
-player_2 = Perso_game(10,10,10,10,10,10,100,150,pack_bis,walk_bottom['walk_bottom_' + str(1) +'.png'],8680,2000)
-player = Perso_game(10,10,10,10,10,10,100,100,pack,walk_bottom['walk_bottom_' + str(1) +'.png'],8680,800,player_animation=player_animation)
-player_3 = Perso_game(50,10,10,10,10,10,100,100,pack,walk_bottom['walk_bottom_' + str(1) +'.png'],8680,800)
+
+player_2 = Perso_game(10,10,10,10,10,10,100,150,pack_bis,walk_bottom['walk_bottom_' + str(1) +'.png'].copy(),8680,2000,decalage=[30,80],size=(300,300))
+
+player = Perso_game(10,10,10,10,10,10,100,100,pack,walk_bottom['walk_bottom_' + str(1) +'.png'],8680,800,decalage=[30,80],size=(300,300))
+player_3 = Perso_game(50,10,10,10,10,10,100,100,pack,walk_bottom['walk_bottom_' + str(1) +'.png'].copy(),8680,800,decalage=[30,80],size=(300,300))
+
+sorcerer = Sorcerer()
+sorcerer_2 = Sorcerer()
+sorcerer_3 = Sorcerer()
 
 player.xp = 500
-playerbis = Perso(20,20,20,20,20,20,20,20,pack,name="Anthony")
+
+playerbis = Perso(20,20,20,20,20,20,20,20,pack,name="Anthony",decalage=[30,80],size=(300,300))
 player_for_save = Perso_saveable()
 
 

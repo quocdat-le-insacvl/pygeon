@@ -177,11 +177,12 @@ class Map_editor:
                             self.house_select = False 
                             self.map_decoration[self.case_collide[i][0]][self.case_collide[i][1]] = '8'
                             self.save_map(self.path+ '_level_'+str(self.num_level)+'.txt',self.path_deco+ '_level_'+str(self.num_level)+ '.txt',self.path_monstre+ '_level_'+str(self.num_level)+ '.txt')
+                            self.list_donjon.append([self.case_collide[i][0],self.case_collide[i][1],self.num_level,self.number_create_level])
                             self.init_cord()
                             self.init_collid()
                             self.list_monstre = []
                             self.refresh()
-                            self.num_level +=1
+                            self.num_level = self.number_create_level
                             self.map_decoration[self.case_collide[i][0]][self.case_collide[i][1]] = '9'
 
                             '''self.path = self.path + 'level_' + str(self.num_level)
@@ -279,28 +280,39 @@ class Map_editor:
                 elif event.key == K_LEFT:
                     self.camera_x +=100              
     def save_map(self,path,path_deco,path_monstre):
+
         fichier = open(path, "w")
+
         for x in self.map_ground:
             for f in x:
                 fichier.write(f)
             fichier.write("\n")
         fichier.close()
+
         fichier_deco =open(path_deco,"w")
+
         for x in self.map_decoration:
             for f in x:
                 fichier_deco.write(f)
             fichier_deco.write("\n")
+
         fichier_deco.close()
+
+
         fichier = open(path_monstre,"w")
+
         for x in self.list_monstre:
             fichier.write(str(x.pos_x))
             fichier.write(str(x.pos_y))
             fichier.write(str(x.type))
             fichier.write("\n")
         fichier.close()
+
+
         fichier = open("inventaire.json",'w')
         fichier.write(str(len(self.list_shop)))
         fichier.write("\n")
+
         for x in self.list_shop:
             fichier.write(str(x[1]))
             fichier.write("\n")
@@ -311,6 +323,14 @@ class Map_editor:
             fichier.write(str(x[4]))
             fichier.write("\n")
         fichier.close()
+
+        fichier = open("donjon.json","w")
+        for x in self.list_donjon:
+            json.dump(x,fichier)
+            fichier.write("\n")
+        fichier.close
+
+
     def print_menu_editor(self):
         self.init_collid()
         self.init_cord()
@@ -394,10 +414,10 @@ class Map_editor:
             self.print_on_the_grid()
             
             if not self.house_select:
-                if self.number_create_level == self.num_level:
-                    if creation_img_text_click(img_next,"Create level",ColderWeather,WHITE,screen,self.click,screen.get_width()-img_next.get_width()//2,img_next.get_height()//2+200):
-                        self.house_select = True
-                        self.number_create_level +=1
+                if creation_img_text_click(img_next,"Create level",ColderWeather,WHITE,screen,self.click,screen.get_width()-img_next.get_width()//2,img_next.get_height()//2+200):
+                    self.house_select = True
+                    self.number_create_level +=1
+                        
             if self.num_level > 1 :
                 if creation_img_text_click(img_next,"Go up level",ColderWeather,WHITE,screen,self.click,img_next.get_width()-80,img_next.get_height()//2+200):
                     self.map_ground = load_map(self.path+ '_level_'+str(self.num_level-1) + '.txt')

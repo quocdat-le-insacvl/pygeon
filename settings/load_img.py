@@ -222,3 +222,13 @@ etagere_2 = pygame.transform.scale(etagere_2,(150,2*150))
 
 table = pygame.image.load(path.join(path_addon,"table.png")).convert_alpha()
 table = pygame.transform.scale(table,(2*150,2*150))
+
+
+"lvl pour les spells"
+
+lvl0=pygame.image.load(r"Addon\spell\lvl0.png")
+lvl1=pygame.image.load(r"Addon\spell\lvl1.png")
+lvl2=pygame.image.load(r"Addon\spell\lvl2.png")
+
+parchment=pygame.image.load(path.join(path_menu,"UI board Large  parchment.png"))
+img_description = pygame.image.load(path.join(path_menu,"UI board Large stone.png"))

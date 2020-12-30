@@ -92,12 +92,13 @@ class Combat:
         for x in self.liste_monstre:
             list_case[i].in_case = x
             i += 1
-        self.game.player.transform_display_for_combat()
+        #self.game.player.transform_display_for_combat()
         list_case[self.game.player.n_case].in_case = self.game.player
-
+        list_case[65].in_case = self.game.player.crew_mate[0]
+        list_case[51].in_case = self.game.player.crew_mate[1]
 
         while running:
-            list_case[10].select(True)
+            
             self.angle += 10
 
             for text in self.texts:
@@ -124,7 +125,7 @@ class Combat:
                 x.checkIfSelected()"""
 
             
-
+            
             i, j = 0, 0
             for h in l:
                 j = 0
@@ -187,10 +188,12 @@ class Combat:
 
             if current_selec != None:
                 current_selec.select(True)
-                #current_selec.select_neighbour(list_case)
-                current_selec.print_effect(list_case)
+                current_selec.select_neighbour(list_case)
+                #current_selec.print_effect(list_case)
+
             for x in list_case:
                 x.print_contains()
+
             running, self.game.click = basic_checkevent(self.game.click)
 
             # if f != 255:

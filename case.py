@@ -21,7 +21,7 @@ class Case():
             #screen.blit(self.in_case.display,(self.cordo()[0]+self.in_case.display.get_width()//2,self.cordo()[1]-self.in_case.display.get_height()//2))
             flip = pygame.transform.flip(self.in_case.display,True,False)
             flip.set_colorkey(BLACK)
-            screen.blit(flip,(self.cordo()[0]-self.in_case.display.get_width()//2,self.cordo()[1]-self.in_case.display.get_height()//2+self.in_case.decalage[1]))
+            screen.blit(flip,(self.cordo()[0]-self.in_case.display.get_width()//2+self.in_case.decalage[0],self.cordo()[1]-self.in_case.display.get_height()//2+self.in_case.decalage[1]))
     def cordo(self):
         return ((self.j-self.i)*(pixel_red.get_width()+45)//2+screen.get_width()//2-pixel_red.get_width()//2, (self.j+self.i)*(pixel_red.get_width()+45)//4-100)
 
@@ -39,13 +39,13 @@ class Case():
         for x in list_case:
             x.is_select = False
             for i in range(-1,2):
-                for j in range(-1,2):
+                for j in range(-1,3):
                     if x.j+j == self.j and x.i+i == self.i:
                         x.select(True)
                     
     def select_diag(self,list_case):
         for x in list_case:
-            for i in range(-7,7):
+            for i in range(-1,2):
                 if x.j+i == self.j and x.i+i == self.i:
                     x.select(True)
                 if x.j+i == self.j and x.i-i == self.i:
