@@ -466,7 +466,6 @@ class Game():
                 # handle chatbox
                 chatting = self.chat_box.handle_event(event)
                 if not chatting:
-                    print(chatting)
                     self.player.check_user(event)
                     if event.type == QUIT:
                         sys.exit()
