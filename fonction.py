@@ -426,3 +426,11 @@ def bonus(attribut):  # pour assigner a chaque attribut les pts bonus correspond
                 b += 1
             i += 1
         return b
+
+def numero_case(list_case,ki,kj):
+        k = 0
+        print("ki kj ",ki,kj)
+        while k<len(list_case):
+            if (list_case[k].i == ki and list_case[k].j == kj):
+                return k
+            k += 1
