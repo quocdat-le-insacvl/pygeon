@@ -10,7 +10,7 @@ from settings.load_img import lvl0,lvl1,lvl2,walk_bottom
 
 class Sorcerer(Perso_game):
     "proficient with all simple weapons but cannot wear armor"
-    def __init__(self,STR=8,DEX=8,CON=8,INT=8,WIS=8,CHA=8,hp=10,hp_max=10,inventaire=10,name=None,classe=None,level=0,xp=0,decalage=[0,0],size=(0,0),n_case = 0):
+    def __init__(self,STR=8,DEX=8,CON=8,INT=8,WIS=8,CHA=8,hp=10,hp_max=10,inventaire=10,name=None,classe=None,level=0,xp=0,decalage=[0,0],size=(0,0)):
         Perso_game.__init__(self,STR,DEX,CON,INT,WIS,CHA,hp,hp_max,inventaire,walk_bottom['walk_bottom_' + str(1) +'.png'],100,100,decalage=decalage,size=size)
         self.name="anthozgg"
         self.attack=0
@@ -18,7 +18,6 @@ class Sorcerer(Perso_game):
         self.spells_slots=[0,0]
         self.sort1=False
         self.sort2=False
-        self.n_case = n_case
 
     def levelupchange(self):
         if super().levelupchange():
@@ -82,8 +81,8 @@ class Sorcerer(Perso_game):
                 """la liste prend la forme de liste de liste, chaque liste de liste est une action indépendente de la forme
                     [montant degat/soins,type (0=soins, 1=degats), le nombre de cible (ex 1=1 carré), la zone d'effet (1 carré ou 2 cône,
                     0 si l'élement précédent est 1),la range du sort (cible à 4 carrées max), la type de cible (0=soit même, 1=ennemies, 2=alliées),
-                    dc (si 0 pas de saving throw possible),type de saving thow (si 0 à dc 0 au type),erreur]"""
-                listdeg.append([self.action.dice(4)+1,1,2,0,3,1,0,0]) #3 au lieu de 24 et 1 a l[2]
+                    dc (si 0 pas de saving throw possible),type de saving thow (si 0 à dc 0 au type)]"""
+                listdeg.append([self.action.dice(4)+1,1,1,0,24,1,0,0]) 
         screen.blit(screenS,(0,0))
         if listdeg:
             return listdeg
@@ -100,7 +99,6 @@ class Sorcerer(Perso_game):
         pygame.display.flip()
         running=True
         click=False
-        erreur = False
         "indice pour savoir si une action s'est réalisée"
         while running:
             if self.sPoints>=2 and self.bonusAction>0:
@@ -115,7 +113,6 @@ class Sorcerer(Perso_game):
                     if indice==1:
                         if self.sPoints<3:
                             running=board_error("not enough sorcery points")
-                            erreur = True
                         else:
                             self.spells_slots[1]+=1
                             self.sPoints-=3
@@ -123,9 +120,7 @@ class Sorcerer(Perso_game):
                             running=False
             else:
                 running=board_error("not enough point")
-                erreur = True
         screen.blit(screenS,(0,0))
-        return erreur
 
     def rest(self):
         super().rest()
@@ -153,7 +148,6 @@ class Sorcerer(Perso_game):
         pygame.display.flip()
         running=True
         click=False
-        erreur = False
         while running:
             if self.spells_slots[0]!=0 or self.spells_slots[1]!=0 and self.bonusAction>0:
                 indice=collides(pygame.mouse.get_pos(),choiceList)
@@ -162,10 +156,8 @@ class Sorcerer(Perso_game):
                     if indice==0:
                         if self.level-self.sPoints<2:
                             running=board_error("cannot do that to much sorcery points")
-                            erreur = True
                         elif self.spells_slots[0]==0:
                             running=board_error("not enough sorcery points")
-                            erreur = True
                         else:
                             self.sPoints+=2
                             self.spells_slots[0]-=1
@@ -174,10 +166,8 @@ class Sorcerer(Perso_game):
                     if indice==1:
                         if self.level-self.sPoints<3:
                             running=board_error("cannot do that to much sorcery points")
-                            erreur = True
                         elif self.spells_slots[1]==0:
                             running=board_error("not enough sorcery points")
-                            erreur = True
                         else:
                             self.sPoints+=3
                             self.spells_slots[1]-=1
@@ -185,9 +175,7 @@ class Sorcerer(Perso_game):
                             running=False
             else:
                 running=board_error("not enough point")
-                erreur = True
         screen.blit(screenS,(0,0))
-        return erreur
 
     def firebolt(self):
         "ce sort renvoi une liste de liste qui a la taille de son nombre de hit si le spell peut être lancé, cantrip"
@@ -197,13 +185,13 @@ class Sorcerer(Perso_game):
         0 si l'élement précédent est 1),la range du sort (cible à 4 carrées max), la type de cible (0=soit même, 1=ennemies, 2=alliées),
         dc (si 0 pas de saving throw possible),type de saving thow (si 0 à dc 0 au type)]"""
         if self.actionP>0 or self.bonusAction>0:
-            listdeg.append([self.action.dice(10),1,1,0,6,1,0,0])
+            listdeg.append([self.action.dice(10),1,1,0,24,1,0,0])
             if self.bonusAction>0:
                 self.bonusAction-=1
             else:
                 self.actionP-=1 
             if self.level>=5:
-                listdeg.append([self.action.dice(10),1,1,0,6,1,0,0])
+                listdeg.append([self.action.dice(10),1,1,0,24,1,0,0])
         if listdeg:
             return listdeg
 
@@ -236,7 +224,6 @@ class Sorcerer(Perso_game):
             return listdeg
     
     def quick_spell(self):
-        erreur = False
         if self.masterAction>0 and self.bonusAction>0:
             self.Action=2
             self.masterAction-=1
@@ -245,8 +232,6 @@ class Sorcerer(Perso_game):
             running=True
             while running:
                 running=board_error("no bonus action or Master Action left")
-                erreur = True
-        return erreur
     
 
     """to do 

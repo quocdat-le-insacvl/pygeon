@@ -3,6 +3,7 @@ from settings.load_img import pixel_red, light_mask,collide_map,collide_monster
 from settings.screen import *
 from settings.color import *
 from settings.load_img import ava_perso
+from pygame.locals import *
 class Entity():
 
     def __init__(self,pos_x,pos_y,img,name,which_type,animation_dict = None,talking=None,size=(0,0),decalage = [0,0],size_collide_box=1):
@@ -11,7 +12,7 @@ class Entity():
         self.pos_x = pos_x
         self.pos_y = pos_y
         self.img = img
-        self.name = "Monstre"
+        self.name = name
         self.type = which_type
         self.nom = name
         self.center = [pos_x + img.get_width()//2,pos_y + img.get_height()//2]
@@ -306,3 +307,89 @@ class Collide_box():
         self.pos_x = 0
         self.pos_y = 0
     
+
+class ChatBox:
+    def __init__(self, game):
+        self.game = game
+        self.surface = pygame.Surface((400, 320)).convert()
+        self.surface.fill((200, 200, 200))
+        self.rect = self.surface.get_rect()
+        self.rect.bottomleft = (0, self.game.screen.get_height() )
+        self.font = pygame.font.Font(None, 24)
+        self.log = ["Hi Anthony", "Hi Pierre", "Hi Gabriel", "Hi Christine", "Hi Long", "Hi Dat"]
+        # self.COLOR_INACTIVE = pygame.Color("lightskyblue3")
+        # self.COLOR_ACTIVE = pygame.Color((255, 255, 255))
+        # self.active = False
+        self.input_box = InputBox(
+            self, 0, self.game.screen.get_height() - 64, 400, 32)
+        # Position beginning to print the log
+        self.y_start = self.game.screen.get_height() - 64 - 32
+
+    def update(self):
+        self.input_box.update()
+
+    def draw(self):
+        self.game.screen.blit(self.surface, self.rect,
+                              special_flags=BLEND_MULT)
+        self.print_log()
+        self.input_box.draw(self.game.screen)
+
+    def handle_event(self, event):
+        active = self.input_box.handle_event(event)
+        return active
+    def print_log(self):
+        x = 5
+        y = self.y_start
+        for text in self.log:
+            # type(text) == str
+            txt_surface = self.font.render(text, True, (255, 255, 255))
+            self.game.screen.blit(txt_surface, (x, y))
+            y -= 25
+            if y < self.rect.top:
+                break
+
+
+class InputBox:
+
+    def __init__(self, chat_box, x, y, w, h, text='Chat here ...'):
+        self.chat_box = chat_box
+        self.COLOR_INACTIVE = pygame.Color((150, 150, 150))
+        self.COLOR_ACTIVE = pygame.Color((255, 255, 255))
+        self.FONT = pygame.font.Font(None, 25)
+        self.rect = pygame.Rect(x, y, w, h)
+        self.color = self.COLOR_INACTIVE
+        self.text = text
+        self.txt_surface = self.FONT.render(text, True, self.color)
+        self.active = False
+        self.first = True
+
+    def handle_event(self, event):
+        if event.type == pygame.MOUSEBUTTONDOWN:
+            if self.rect.collidepoint(event.pos):
+                self.active = not self.active
+                if self.first:
+                    self.first = False
+                    self.text = ''
+            else:
+                self.active = False
+            self.color = self.COLOR_ACTIVE if self.active else self.COLOR_INACTIVE
+        if event.type == KEYDOWN:
+            if self.active:
+                if event.key == K_RETURN:
+                    self.chat_box.log.insert(0, self.text)
+                    self.text = ''
+                elif event.key == K_BACKSPACE:
+                    self.text = self.text[:-1]
+                else:
+                    self.text += event.unicode
+                self.txt_surface = self.FONT.render(
+                    self.text, True, self.color)
+        print(self.active)
+        return self.active
+    
+    def update(self):
+        pass
+
+    def draw(self, screen):
+        screen.blit(self.txt_surface, (self.rect.x+5, self.rect.y+10))
+        pygame.draw.rect(screen, self.color, self.rect, 2)

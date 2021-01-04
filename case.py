@@ -4,7 +4,6 @@ from settings.police import *
 from settings.load_img import *
 from settings.color import *
 from fonction import *
-from monster import *
 
 class Case():
     def __init__(self, i, j):
@@ -35,13 +34,12 @@ class Case():
             screen.blit(self.display, (0, 0))
             self.is_select = False
 
-    """Cette fonction va me rendre l ensemble des neighbours touches par le sort"""
-    def select_neighbour(self, list_case,k):
+    def select_neighbour(self, list_case):
         # if self.in_case != None:
         for x in list_case:
             x.is_select = False
-            for i in range(-1-k,2+k):
-                for j in range(-1-k,2+k):
+            for i in range(-1,2):
+                for j in range(-1,3):
                     if x.j+j == self.j and x.i+i == self.i:
                         x.select(True)
                     
@@ -52,57 +50,11 @@ class Case():
                     x.select(True)
                 if x.j+i == self.j and x.i-i == self.i:
                     x.select(True)
-
-    "Initialement cette fonction donne un range de 1"
-    def print_effect(self,list_case,k=0,m=0):
+    def print_effect(self,list_case):
         for x in list_case:
             x.select(False)
-            if x.j-1-k == self.j and x.i+1+k == self.i:
-                x.select_neighbour(list_case,m)
-
+            if x.j-3 == self.j and x.i+3 == self.i:
+                x.select_neighbour(list_case)
     def checkIfSelected(self):
         if self.is_select:
             screen.blit(case_select, self.cordo())
-    
-    def select_neighbour_inverse(self, list_case,k):
-        # if self.in_case != None:
-        for x in list_case:
-            x.is_select = False
-            for i in range(-1-k,2+k):
-                for j in range(-1-k,2+k):
-                    if x.j+j == self.j and x.i+i == self.i:
-                        x.select(False)
-                        
-    def print_effect_inverse(self,list_case,k=0,m=0):
-        for x in list_case:
-            x.select(False)
-            if x.j-1-k == self.j and x.i+1+k == self.i:
-                x.select_neighbour_inverse(list_case,m)
-
-    def numero_case(self,list_case):
-        k = 0
-        while k<len(list_case):
-            if (list_case[k].i == self.i and list_case[k].j == self.j):
-                return k
-            k += 1
-
-    def effect_neighbour(self, list_case,k,liste):
-        # if self.in_case != None:
-        for x in list_case:
-            x.is_select = False
-            for i in range(-1-k,2+k):
-                for j in range(-1-k,2+k):
-                    if (x.j+j == self.j and x.i+i == self.i and x.in_case != None):
-                        liste.append(x.in_case)
-        
-
-    def get_effect(self,list_case,k=0,m=0):
-        liste_hit = []
-        for x in list_case:
-            x.select(False)
-            if x.j-1-k == self.j and x.i+1+k == self.i:
-                x.effect_neighbour(list_case,m,liste_hit)
-        print("liste hit ", liste_hit)
-        return liste_hit
-
-    

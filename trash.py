@@ -1,6 +1,6 @@
 from skill import Stealth
 from personnage import Perso
-from entity import Fog, Minimap
+from entity import ChatBox, Fog, Minimap
 import pygame
 import sys
 import pickle
@@ -293,6 +293,9 @@ class Game():
         self.clock = clock
         self.list_mooving_entity = self.map.list_monster
         self.current_level = 1
+        self.screen = screen
+        self.chat_box = ChatBox(self)
+        
     def main_game(self):
         global time_line
         self.player.name = 'gh'
@@ -304,7 +307,7 @@ class Game():
         interact = False
         pause_menu = False
         running = True
-
+        
         for x in list_seller:
             x.update_pos_collide()
             self.map.display.blit(x.img,(x.pos_x,x.pos_y))
@@ -460,43 +463,49 @@ class Game():
 
             """Check event classique"""
             for event in pygame.event.get():
-                self.player.check_user(event)
-                if event.type == QUIT:
-                    sys.exit()
-                if event.type == KEYDOWN:
-                    if event.key == K_i:
-                        interact = not interact
-                    if event.key == K_m:
-                        self.zoom_map = True
-                    if event.key == K_j:
-                        show_inventory = not show_inventory
-                    """if event.key == K_ESCAPE:
-                        self.map.load_map()
-                        self.map.init_map()"""
-                    if event.key == K_u:
-                        show_characteresheet = not show_characteresheet
-                    if event.key == K_l:
-                        self.map = map_2
-                        self.map.init_map()
-                    if event.key == K_v:
+                # handle chatbox
+                chatting = self.chat_box.handle_event(event)
+                if not chatting:
+                    print(chatting)
+                    self.player.check_user(event)
+                    if event.type == QUIT:
+                        sys.exit()
+                    if event.type == KEYDOWN:
+                        if event.key == K_i:
+                            interact = not interact
+                        if event.key == K_m:
+                            self.zoom_map = True
+                        if event.key == K_j:
+                            show_inventory = not show_inventory
+                        """if event.key == K_ESCAPE:
+                            self.map.load_map()
+                            self.map.init_map()"""
+                        if event.key == K_u:
+                            show_characteresheet = not show_characteresheet
+                        # Error !!! @Anthony
+                        # if event.key == K_l:
+                        #     self.map = map_2
+                        #     self.map.init_map()
+                        if event.key == K_v:
+                            
+                            self.player = self.player.crew_mate[0]
+                            self.fog.player = self.player
+                            nb_crew+=1
+                            if nb_crew ==2:
+                                nb_crew = 0
+                            #pygame.image.save(self.fog.surface,'test_fog.png')
+                        if event.key == K_ESCAPE:
+                            self.print_pause_menu()
+                            
+                        # Handle skill cast
+                        # if event.key == K_q:
+                        #     self.player.skills[0].cast()
+                        # if event.key == K_w:
+                        #     self.player.skills[1].cast()
                         
-                        self.player = self.player.crew_mate[0]
-                        self.fog.player = self.player
-                        nb_crew+=1
-                        if nb_crew ==2:
-                            nb_crew = 0
-                        #pygame.image.save(self.fog.surface,'test_fog.png')
-                    if event.key == K_ESCAPE:
-                        self.print_pause_menu()
-                    if event.key == K_q:
-                        self.player.skills[0].cast()
-                    if event.key == K_w:
-                        self.player.skills[1].cast()
-                    
-                if event.type == KEYUP:
-                    if event.key == K_m:
-                        self.zoom_map = False
-
+                    if event.type == KEYUP:
+                        if event.key == K_m:
+                            self.zoom_map = False
 
             monstre = self.player.move_player(self.map.dict_collision,list_seller,self.map.list_monster)
             if monstre != None:
@@ -527,6 +536,10 @@ class Game():
             # update skill
             for skill in self.player.skills:
                 skill.update()
+            
+            # update + draw chatbox
+            self.chat_box.update()
+            self.chat_box.draw()
             
             pygame.display.update()
             clock.tick(64)
@@ -718,8 +731,8 @@ sorcerer_3.crew_mate.append(sorcerer_2)
 game = Game(sorcerer,list_map[0])
 #c = Combat(game,[])
 #c.affichage()
-#player.skills.append(Stealth(game))
-#player.skills.append(Perception(game))
+player.skills.append(Stealth(game))
+player.skills.append(Perception(game))
 game.main_game()
 #running = True
 #click = False
