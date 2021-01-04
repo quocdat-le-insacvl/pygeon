@@ -384,7 +384,6 @@ class InputBox:
                     self.text += event.unicode
                 self.txt_surface = self.FONT.render(
                     self.text, True, self.color)
-        print(self.active)
         return self.active
     
     def update(self):
