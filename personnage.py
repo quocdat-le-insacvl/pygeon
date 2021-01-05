@@ -5,6 +5,7 @@ from entity import Entity
 from fonctions import *
 from items import Sword1,Sword10,Wikitem
 from fonction import basic_checkevent,draw_text
+from settings.load_img import wizard_icon, neutre_icon
 import pygame
 key = list(Wikitem.keys())
 buttona,buttons,buttonpa,buttonps=init_buttonsas()
@@ -214,24 +215,34 @@ class Perso(Entity):
         running=True
         "Creer un board et y met les attributs qui ne sont pas censer bouger"
         board=pygame.transform.scale(board_init(),(900,780))
+        rectboard=pygame.Rect(screen.get_width()//2-board.get_width()//2,20,0,0)
         board.set_colorkey((255,255,255))
+        board_icon=pygame.transform.scale(board_init(),(board.get_width()//5,board.get_height()//5))
+        # board_icon.set_colorkey((0,0,0))
+        icone=pygame.transform.scale(wizard_icon,(board_icon.get_width()//2,board_icon.get_height()))
+        icone.set_colorkey((255,255,255))
+        board_icon.blit(icone,(board_icon.get_width()//2-icone.get_width()//2,0))
+        rect_icon=screen.blit(board_icon,(rectboard.x-board_icon.get_width()//1.5,rectboard.y+board_icon.get_height()//0.8))
+        board_icon2=pygame.transform.scale(board_init(),(board.get_width()//5,board.get_height()//5))
+        iconen=pygame.transform.scale(neutre_icon,(trunc(board_icon2.get_width()//1.2),trunc(board_icon2.get_height()//1.2)))
+        board_icon2.blit(iconen,(board_icon2.get_width()//2-iconen.get_width()//2,board_icon2.get_height()//2-iconen.get_height()//2))
         perso=pygame.transform.scale(self.img,(board.get_width()//5,board.get_height()//3))
         board2=board_init()
-        board.blit(perso,(10,10))
+        board.blit(perso,(10+board.get_width()*0.06,10))
         boards=pygame.transform.scale(board_init(), (board.get_width()-10,int(board.get_height()//1.5)))
         board.blit(boards,(5,10+board.get_height()//3))
-        board2=pygame.transform.scale(board_init(), (int(board.get_width()//1.25-5),board.get_height()//3))
-        board.blit(board2,(perso.get_width(),15))
+        board2=pygame.transform.scale(board_init(), (int(board.get_width()//1.4-5),board.get_height()//3))
+        board.blit(board2,(perso.get_width()+board.get_width()*0.06,15))
         draw_text(self.name,title,"b",board,perso.get_width()*2.5,board.get_height()//30-10)
-        draw_text("Class : "+ self.classe,subtitle,"b",board,perso.get_width()+30,70)
-        draw_text("Level : "+str(self.level),subtitle,"b",board,perso.get_width()+30,110)
-        draw_text("Attack : "+str(self.attack),subtitle,"b",board,perso.get_width()+30,150)
-        draw_text("Hit Dice : "+str(self.hit_dice),subtitle,"b",board,perso.get_width()+30,190)
-        draw_text("HP : ",subtitle,"b",board,perso.get_width()+400,70)
-        draw_text(str(self.hp) + " / "  + str(self.hp_max),subtitle,color.RED,board,perso.get_width()+490,70)
-        draw_text("AC : " + str(self.armor_class),subtitle,"b",board,perso.get_width()+400,110)
-        draw_text("Feet : " + str(self.feet),subtitle,"b",board,perso.get_width()+400,150)
-        draw_text("Nb HD : " + str(self.nb_hit_dice),subtitle,"b",board,perso.get_width()+400,190)
+        draw_text("Class : "+ self.classe,subtitle,"b",board,perso.get_width()+board.get_width()*0.06+30,70)
+        draw_text("Level : "+str(self.level),subtitle,"b",board,perso.get_width()+board.get_width()*0.06+30,110)
+        draw_text("Attack : "+str(self.attack),subtitle,"b",board,perso.get_width()+board.get_width()*0.06+30,150)
+        draw_text("Hit Dice : "+str(self.hit_dice),subtitle,"b",board,perso.get_width()+board.get_width()*0.06+30,190)
+        draw_text("HP : ",subtitle,"b",board,perso.get_width()+board.get_width()*0.06+400,70)
+        draw_text(str(self.hp) + " / "  + str(self.hp_max),subtitle,color.RED,board,perso.get_width()+board.get_width()*0.06+490,70)
+        draw_text("AC : " + str(self.armor_class),subtitle,"b",board,perso.get_width()+board.get_width()*0.06+400,110)
+        draw_text("Feet : " + str(self.feet),subtitle,"b",board,perso.get_width()+board.get_width()*0.06+400,150)
+        draw_text("Nb HD : " + str(self.nb_hit_dice),subtitle,"b",board,perso.get_width()+board.get_width()*0.06+400,190)
         draw_text("SKILL POINTS",title2,"b",board,40,50+board.get_height()//3)
         draw_text("AIVABLE",title,"b",board,500,160+board.get_height()//3)
         draw_text("STR",title,"b",board,40,100+board.get_height()//3)
@@ -241,7 +252,6 @@ class Perso(Entity):
         draw_text("WIL",title,"b",board,40,340+board.get_height()//3)
         draw_text("CHA",title,"b",board,40,400+board.get_height()//3)
         av=self.av_points
-        rectboard=pygame.Rect(screen.get_width()//2-board.get_width()//2,20,0,0)
         click=False
         "initialise la liste de boutons cliquable"
         Blist=self.buttons_init(board,rectboard)
@@ -249,12 +259,13 @@ class Perso(Entity):
         board1=self.boardSkill(board.copy(),av)
         if self.chose_skill==True:
             self.choseSkill()
+        screenS2=screenSave()
         while running:
             "actualise le board avec les skills points et les buttons si un changement a été fait"
+            screen.blit(screenS2,(0,0))
             board1=self.boardSkill(board.copy(),av)
             self.confirm(board1,rectboard,av)
             self.buttons_select(board1,av)  
-            
             indice=collides(pygame.mouse.get_pos(),Blist)
             "ici on vérifie si le joueur a fait un click et où"
             if click and indice!=-1:
@@ -273,12 +284,18 @@ class Perso(Entity):
                       self.points[n]-10)//3 for n in range(6)]
             elif click and rect_confirm.collidepoint(pygame.mouse.get_pos()):
                 self.confirm(board1,rectboard,av,True)
+            elif click and rect_icon.collidepoint(pygame.mouse.get_pos()):
+                self.stats_eph=[0,0,0,0,0,0]
+                self.points_eph=[0,0,0,0,0,0]
+                return 1
             screen.blit(board1,(screen.get_width()//2-board.get_width()//2,20))
+            screen.blit(board_icon2,(rectboard.x-board_icon.get_width()//1.5,rectboard.y+board_icon.get_height()*0.2))
             pygame.display.flip()
             running,click=basic_checkevent(click)
         self.stats_eph=[0,0,0,0,0,0]
         self.points_eph=[0,0,0,0,0,0]
         screen.blit(screenS,(0,0))
+        return 0
     
 
     def boardSkill(self,board,av):

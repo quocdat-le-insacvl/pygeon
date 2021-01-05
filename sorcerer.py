@@ -6,7 +6,7 @@ from math import trunc
 from fonctions import *
 from fonction import basic_checkevent,draw_text
 from settings import color
-from settings.load_img import lvl0,lvl1,lvl2,wizard_hide
+from settings.load_img import lvl0,lvl1,lvl2,wizard_hide,wizard_icon, neutre_icon
 from items import image
 from settings.screen import screen
 
@@ -257,6 +257,12 @@ class Sorcerer(Perso):
     def caracter_sheet(self):
         screenS=screenSave()
         board=pygame.transform.scale(board_init(),(900,780))
+        board_icon=pygame.transform.scale(board_init(),(board.get_width()//5,board.get_height()//5))
+        iconew=pygame.transform.scale(wizard_icon,(board_icon.get_width()//2,board_icon.get_height()))
+        board_icon.blit(iconew,(board_icon.get_width()//2-iconew.get_width()//2,0))
+        board_icon2=pygame.transform.scale(board_init(),(board.get_width()//5,board.get_height()//5))
+        iconen=pygame.transform.scale(neutre_icon,(trunc(board_icon2.get_width()//1.2),trunc(board_icon2.get_height()//1.2)))
+        board_icon2.blit(iconen,(board_icon2.get_width()//2-iconen.get_width()//2,board_icon2.get_height()//2-iconen.get_height()//2))
         draw_text("Sorcerer",title,"b",board,board.get_width()//8,board.get_height()//20)
         perso=pygame.transform.scale(wizard_hide['wizard_idle_1.png'],(board.get_width()//3,board.get_height()//2))
         board.blit(perso,(board.get_width()//14,board.get_height()//7))
@@ -293,35 +299,41 @@ class Sorcerer(Perso):
         board.blit(board_level3,(trunc(board.get_width()*0.45),trunc(board.get_height()*0.39)))
         board.blit(board_level4,(trunc(board.get_width()*0.45),trunc(board.get_height()*0.57)))
         board.blit(board_level5,(trunc(board.get_width()*0.45),trunc(board.get_height()*0.75)))
-        screen.blit(board,(rectboard.x,rectboard.y))
-        ScreenS2=screenSave()
         running=True
         click=False
-        while running:
-            screen.blit(ScreenS2,(0,0))
-            indice1=collides(pygame.mouse.get_pos(),rect_choices[0])
-            indice2=collides(pygame.mouse.get_pos(),rect_choices[1])
-            indice3=collides(pygame.mouse.get_pos(),rect_choices[2])
-            indice4=collides(pygame.mouse.get_pos(),rect_choices[3])
-            indice5=collides(pygame.mouse.get_pos(),rect_choices[4])
-            if indice1 == 0:
-                board_with_text("missile magic can be lunch at lvl 1 to lunch one missil or at level 2 to lunch 2 missil, it inflict between 1 and 5 damage")
-            if indice1 == 1:
-                board_with_text("fire bolt is a cantrip he doesn't use spell slot, it can be lunch as a bonus action, it inflicts between 1 and 10 damages")
-            if indice2 == 0:
-                board_with_text("Now you can use sorcery points, the amount is equal to your level you can use sorcery points to recover spell slots or use spell slots to recover sorcery points")
-            if indice2 == 1:
-                board_with_text("you could choose a skill, each time you will use an attribute reattach to your skill you will add your proficiency modifier to your score")
-            if indice3 == 0:
-                board_with_text("You unlock fire ball, this spell deals between 6 and 36 damages in a square area")
-            if indice4 == 0:
-                board_with_text("You unlock your mastery action quick spell, you can use this action one time between 2 rest, this bonus action allow you to lunch 2 spell in the same turn")
-            if indice5 == 0:
-                board_with_text("firebolt lunch two firebolt now")
-            if indice5 == 1:
-                board_with_text("proficiency bonus is now at 3")
-            running,click=basic_checkevent(click)
-            pygame.display.flip()
+        if super().caracter_sheet():
+            rect_icon=screen.blit(board_icon2,(rectboard.x-board_icon.get_width()//1.5,rectboard.y+board_icon.get_height()*0.2))
+            screen.blit(board,(rectboard.x,rectboard.y))
+            screen.blit(board_icon,(rectboard.x-board_icon.get_width()//1.5,rectboard.y+board_icon.get_height()//0.8))
+            ScreenS2=screenSave()
+            while running:
+                screen.blit(ScreenS2,(0,0))
+                indice1=collides(pygame.mouse.get_pos(),rect_choices[0])
+                indice2=collides(pygame.mouse.get_pos(),rect_choices[1])
+                indice3=collides(pygame.mouse.get_pos(),rect_choices[2])
+                indice4=collides(pygame.mouse.get_pos(),rect_choices[3])
+                indice5=collides(pygame.mouse.get_pos(),rect_choices[4])
+                if indice1 == 0:
+                    board_with_text("missile magic can be lunch at lvl 1 to lunch one missil or at level 2 to lunch 2 missil, it inflict between 1 and 5 damage")
+                elif indice1 == 1:
+                    board_with_text("fire bolt is a cantrip he doesn't use spell slot, it can be lunch as a bonus action, it inflicts between 1 and 10 damages")
+                elif indice2 == 0:
+                    board_with_text("Now you can use sorcery points, the amount is equal to your level you can use sorcery points to recover spell slots or use spell slots to recover sorcery points")
+                elif indice2 == 1:
+                    board_with_text("you could choose a skill, each time you will use an attribute reattach to your skill you will add your proficiency modifier to your score")
+                elif indice3 == 0:
+                    board_with_text("You unlock fire ball, this spell deals between 6 and 36 damages in a square area")
+                elif indice4 == 0:
+                    board_with_text("You unlock your mastery action quick spell, you can use this action one time between 2 rest, this bonus action allow you to lunch 2 spell in the same turn")
+                elif indice5 == 0:
+                    board_with_text("firebolt lunch two firebolt now")
+                elif indice5 == 1:
+                    board_with_text("proficiency bonus is now at 3")
+                running,click=basic_checkevent(click)
+                if click==True and rect_icon.collidepoint(pygame.mouse.get_pos()):
+                    if super().caracter_sheet()==0:
+                        running=False
+                pygame.display.flip()
         screen.blit(screenS,(0,0))
 
     """to do 

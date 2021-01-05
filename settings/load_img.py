@@ -1,7 +1,6 @@
 import pygame
 from fonction_load_image import image_loader,transform_image
 from settings.screen import WINDOWS_SIZE
-from fonction_load_image import image_loader,transform_image
 from os import path,getcwd
 path_settings = path.dirname(__file__)
 path_pygeon = path.dirname(path_settings)
@@ -10,6 +9,7 @@ path_police = path.join(path_addon, 'Police')
 path_menu = path.join(path_addon, 'Menu')
 path_ava = path.join(path_addon, 'avata')
 path_light = path.join(path_addon, 'Light')
+path_icon = path.join(path_addon, 'icons')
 
 wizard_hide = dict(image_loader(path.join(path_addon,'Wizard Pack/idle/')))
 transform_image(wizard_hide,2)
@@ -109,3 +109,7 @@ sheep.set_colorkey((255,255,255))
 lvl0=pygame.image.load(r"Addon\spell\lvl0.png")
 lvl1=pygame.image.load(r"Addon\spell\lvl1.png")
 lvl2=pygame.image.load(r"Addon\spell\lvl2.png")
+
+"icons"
+wizard_icon=pygame.image.load(path.join(path_icon,'wizard.png'))
+neutre_icon=pygame.image.load(path.join(path_icon,'neutre.png'))
