@@ -1,6 +1,18 @@
 import pygame
 from fonction_load_image import image_loader,transform_image
 from settings.screen import WINDOWS_SIZE
+from fonction_load_image import image_loader,transform_image
+from os import path,getcwd
+path_settings = path.dirname(__file__)
+path_pygeon = path.dirname(path_settings)
+path_addon = path.join(path_pygeon, 'Addon')
+path_police = path.join(path_addon, 'Police')
+path_menu = path.join(path_addon, 'Menu')
+path_ava = path.join(path_addon, 'avata')
+path_light = path.join(path_addon, 'Light')
+
+wizard_hide = dict(image_loader(path.join(path_addon,'Wizard Pack/idle/')))
+transform_image(wizard_hide,2)
 
 parchment=pygame.image.load(r"Addon\Menu\UI board Large  parchment.png")
 img_next = pygame.image.load(r'Addon\Menu\TextBTN_Big.png')

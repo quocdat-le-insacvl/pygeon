@@ -4,13 +4,15 @@ from settings import police
 from settings.screen import screen
 from math import trunc
 from fonctions import *
-from fonction import basic_checkevent
+from fonction import basic_checkevent,draw_text
 from settings import color
-from settings.load_img import lvl0,lvl1,lvl2
+from settings.load_img import lvl0,lvl1,lvl2,wizard_hide
+from items import image
+from settings.screen import screen
 
 class Sorcerer(Perso):
     "proficient with all simple weapons but cannot wear armor"
-    def __init__(self,STR=8,DEX=8,CON=8,INT=8,WIS=8,CHA=8,hp=10,hp_max=10,inventaire=10,name=None,classe=None,level=0,xp=0):
+    def __init__(self,STR=8,DEX=8,CON=8,INT=8,WIS=8,CHA=8,level=0,xp=0):
         super().__init__(classe="sorcerer",hit_dice=6)
         self.name="anthozgg"
         self.attack=0
@@ -18,6 +20,12 @@ class Sorcerer(Perso):
         self.spells_slots=[0,0]
         self.sort1=False
         self.sort2=False
+        self.STR = STR
+        self.DEX = DEX
+        self.CON = CON
+        self.INT = INT
+        self.WIS = WIS
+        self.CHA = CHA
 
     def levelupchange(self):
         if super().levelupchange():
@@ -47,6 +55,9 @@ class Sorcerer(Perso):
         lvl_s=False
         running=True
         click=False
+        if any([self.armor[0],self.armor[1],self.armor[2],self.armor[3]]):
+            running=board_error("cannot lunch spell and wear armor")
+            return False
         board=board_with_msg("Choose a lvl to cast your spell, esc pour annuler")
         boardrect=screen.blit(board,(screen.get_width()//4,screen.get_height()//4))
         rect_list_choice=choices_clickable(board,[lvl1,lvl2],boardrect)
@@ -77,12 +88,11 @@ class Sorcerer(Perso):
             else:
                 running=board_error("no spell slot anymore or no action left")
         if lvl_s:
-            for i in range(lvl_s):
                 """la liste prend la forme de liste de liste, chaque liste de liste est une action indépendente de la forme
                     [montant degat/soins,type (0=soins, 1=degats), le nombre de cible (ex 1=1 carré), la zone d'effet (1 carré ou 2 cône,
                     0 si l'élement précédent est 1),la range du sort (cible à 4 carrées max), la type de cible (0=soit même, 1=ennemies, 2=alliées),
                     dc (si 0 pas de saving throw possible),type de saving thow (si 0 à dc 0 au type)]"""
-                listdeg.append([self.action.dice(4)+1,1,1,0,24,1,0,0]) 
+                listdeg=[[self.action.dice(4)+1,1,1,0,24,1,0,0] for n in range(lvl_s)] 
         screen.blit(screenS,(0,0))
         if listdeg:
             return listdeg
@@ -180,12 +190,15 @@ class Sorcerer(Perso):
     def firebolt(self):
         "ce sort renvoi une liste de liste qui a la taille de son nombre de hit si le spell peut être lancé, cantrip"
         listdeg=[]
+        if any([self.armor[0],self.armor[1],self.armor[2],self.armor[3]]):
+            running=board_error("cannot lunch spell and wear armor")
+            return False
         """la liste prend la forme de liste de liste, chaque liste de liste est une action indépendente de la forme
         [montant degat/soins,type (0=soins, 1=degats), le nombre de cible (ex 1=1 carré), la zone d'effet (1 carré ou 2 cône,
         0 si l'élement précédent est 1),la range du sort (cible à 4 carrées max), la type de cible (0=soit même, 1=ennemies, 2=alliées),
         dc (si 0 pas de saving throw possible),type de saving thow (si 0 à dc 0 au type)]"""
         if self.actionP>0 or self.bonusAction>0:
-            listdeg.append([self.action.dice(10),1,1,0,24,1,0,0])
+            listdeg.append([self.action.dice(9)+1,1,1,0,24,1,0,0])
             if self.bonusAction>0:
                 self.bonusAction-=1
             else:
@@ -196,8 +209,11 @@ class Sorcerer(Perso):
             return listdeg
 
     def fireball(self):
-        "ce sort renvoi une liste de liste qui a la taille de son nombre de hit si le spell peut être lancé, spell lvl4"
+        "ce sort renvoi une liste de liste qui a la taille de son nombre de hit si le spell peut être lancé, spell lvl3"
         listdeg=[]
+        if any([self.armor[0],self.armor[1],self.armor[2],self.armor[3]]):
+            running=board_error("cannot lunch spell and wear armor")
+            return False
         if self.spells_slots[1]>0 and self.actionP>0:
             """la liste prend la forme de liste de liste, chaque liste de liste est une action indépendente de la forme
             [montant degat/soins,type (0=soins, 1=degats), le nombre de cible (ex 1=1 carré de proximité, 2 tous les carrés contact a la cible),
@@ -224,6 +240,9 @@ class Sorcerer(Perso):
             return listdeg
     
     def quick_spell(self):
+        if any([self.armor[0],self.armor[1],self.armor[2],self.armor[3]]):
+            running=board_error("cannot lunch spell and wear armor")
+            return False
         if self.masterAction>0 and self.bonusAction>0:
             self.Action=2
             self.masterAction-=1
@@ -233,6 +252,77 @@ class Sorcerer(Perso):
             while running:
                 running=board_error("no bonus action or Master Action left")
     
+    ### caracter sheet du sorcerer ###
+
+    def caracter_sheet(self):
+        screenS=screenSave()
+        board=pygame.transform.scale(board_init(),(900,780))
+        draw_text("Sorcerer",title,"b",board,board.get_width()//8,board.get_height()//20)
+        perso=pygame.transform.scale(wizard_hide['wizard_idle_1.png'],(board.get_width()//3,board.get_height()//2))
+        board.blit(perso,(board.get_width()//14,board.get_height()//7))
+        """initialisation de tous les boards avec les choix correspondants aux 5 differents lvl"""
+        rect_choices=list()
+        draw_text("Sorcery Points : "+ str(self.sPoints),subtitle,'bl',board,board.get_width()//18,trunc(board.get_height()*0.65))
+        draw_text("Spells Slots lvl 1 : "+ str(self.spells_slots[0]),subtitle,'bl',board,board.get_width()//18,trunc(board.get_height()*0.65)+50)
+        draw_text("Spells Slots lvl 2 : "+ str(self.spells_slots[1]),subtitle,'bl',board,board.get_width()//18,trunc(board.get_height()*0.65)+100)
+        rectboard=pygame.Rect(screen.get_width()//2-board.get_width()//2,20,0,0)
+        board_level1=board_with_msg("Unlock at level 1")
+        rect_board1=replace_rect(rectboard,pygame.Rect(trunc(board.get_width()*0.45),trunc(board.get_height()*0.03),0,0))
+        rect_choices.append(choices_clickable(board_level1,[image['S_Magic01.png'],image['S_Fire01.png']],rect_board1))
+        print(rect_choices)
+        board_level1,rect_choices[0]=replace_rects_scale((trunc(board.get_width()*0.5),trunc(board.get_height()*0.2)),board_level1,rect_choices[0],rect_board1)
+        print(rect_choices)
+        board_level2=board_with_msg("Unlock at level 2")
+        rect_board2=replace_rect(rectboard,pygame.Rect(trunc(board.get_width()*0.45),trunc(board.get_height()*0.21),0,0))
+        rect_choices.append(choices_clickable(board_level2,[image['S_Shadow02.png'],image['S_Buff01.png']],rect_board2))
+        board_level2,rect_choices[1]=replace_rects_scale((trunc(board.get_width()*0.5),trunc(board.get_height()*0.2)),board_level2,rect_choices[1],rect_board2)
+        board_level3=board_with_msg("Unlock at level 3")
+        rect_board3=replace_rect(rectboard,pygame.Rect(trunc(board.get_width()*0.45),trunc(board.get_height()*0.39),0,0))
+        rect_choices.append(choices_clickable(board_level3,[image['S_Fire02.png']],rect_board3))
+        board_level3,rect_choices[2]=replace_rects_scale((trunc(board.get_width()*0.5),trunc(board.get_height()*0.2)),board_level3,rect_choices[2],rect_board3)
+        board_level4=board_with_msg("Unlock at level 4")
+        rect_board4=replace_rect(rectboard,pygame.Rect(trunc(board.get_width()*0.45),trunc(board.get_height()*0.57),0,0))
+        rect_choices.append(choices_clickable(board_level4,[image['S_Buff09.png']],rect_board4))
+        board_level4,rect_choices[3]=replace_rects_scale((trunc(board.get_width()*0.5),trunc(board.get_height()*0.2)),board_level4,rect_choices[3],rect_board4)
+        board_level5=board_with_msg("Unlock at level 5")
+        rect_board5=replace_rect(rectboard,pygame.Rect(trunc(board.get_width()*0.45),trunc(board.get_height()*0.75),0,0))
+        rect_choices.append(choices_clickable(board_level5,[image['S_Fire04.png'],image['W_Axe001.png']],rect_board5))
+        board_level5,rect_choices[4]=replace_rects_scale((trunc(board.get_width()*0.5),trunc(board.get_height()*0.2)),board_level5,rect_choices[4],rect_board5)
+        board.blit(board_level1,(trunc(board.get_width()*0.45),trunc(board.get_height()*0.03)))
+        board.blit(board_level2,(trunc(board.get_width()*0.45),trunc(board.get_height()*0.21)))
+        board.blit(board_level3,(trunc(board.get_width()*0.45),trunc(board.get_height()*0.39)))
+        board.blit(board_level4,(trunc(board.get_width()*0.45),trunc(board.get_height()*0.57)))
+        board.blit(board_level5,(trunc(board.get_width()*0.45),trunc(board.get_height()*0.75)))
+        screen.blit(board,(rectboard.x,rectboard.y))
+        ScreenS2=screenSave()
+        running=True
+        click=False
+        while running:
+            screen.blit(ScreenS2,(0,0))
+            indice1=collides(pygame.mouse.get_pos(),rect_choices[0])
+            indice2=collides(pygame.mouse.get_pos(),rect_choices[1])
+            indice3=collides(pygame.mouse.get_pos(),rect_choices[2])
+            indice4=collides(pygame.mouse.get_pos(),rect_choices[3])
+            indice5=collides(pygame.mouse.get_pos(),rect_choices[4])
+            if indice1 == 0:
+                board_with_text("missile magic can be lunch at lvl 1 to lunch one missil or at level 2 to lunch 2 missil, it inflict between 1 and 5 damage")
+            if indice1 == 1:
+                board_with_text("fire bolt is a cantrip he doesn't use spell slot, it can be lunch as a bonus action, it inflicts between 1 and 10 damages")
+            if indice2 == 0:
+                board_with_text("Now you can use sorcery points, the amount is equal to your level you can use sorcery points to recover spell slots or use spell slots to recover sorcery points")
+            if indice2 == 1:
+                board_with_text("you could choose a skill, each time you will use an attribute reattach to your skill you will add your proficiency modifier to your score")
+            if indice3 == 0:
+                board_with_text("You unlock fire ball, this spell deals between 6 and 36 damages in a square area")
+            if indice4 == 0:
+                board_with_text("You unlock your mastery action quick spell, you can use this action one time between 2 rest, this bonus action allow you to lunch 2 spell in the same turn")
+            if indice5 == 0:
+                board_with_text("firebolt lunch two firebolt now")
+            if indice5 == 1:
+                board_with_text("proficiency bonus is now at 3")
+            running,click=basic_checkevent(click)
+            pygame.display.flip()
+        screen.blit(screenS,(0,0))
 
     """to do 
     def acid_splash(self):  (optional)

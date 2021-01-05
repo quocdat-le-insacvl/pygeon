@@ -3,9 +3,10 @@ from settings.screen import screen,WINDOWS_SIZE
 from settings import color
 from entity import Entity
 from fonctions import *
+from items import Sword1,Sword10,Wikitem
 from fonction import basic_checkevent,draw_text
 import pygame
-
+key = list(Wikitem.keys())
 buttona,buttons,buttonpa,buttonps=init_buttonsas()
 confirm,confirmp=confirm_button()
 
@@ -16,7 +17,7 @@ class Object():
 
 
 class Perso(Entity):
-    def __init__(self,STR=8,DEX=8,CON=8,INT=8,WIS=8,CHA=8,hp=10,hp_max=10,inventaire=10,name=None,classe=None,level=0,xp=0,hit_dice=0):
+    def __init__(self,STR=8,DEX=8,CON=8,INT=8,WIS=8,CHA=8,hp=5,hp_max=5,inventaire=10,name=None,classe=None,level=0,xp=0,hit_dice=0):
         super().__init__(100,100,pygame.transform.scale(pygame.image.load(r"Image\perso.png"),(96,147)),name,"perso")
         ### Stats ###
         self.classe = classe
@@ -39,7 +40,6 @@ class Perso(Entity):
         self.points_eph=[0,0,0,0,0,0]
         self.skills=[0,0,0,0,0,0]
         self.chose_skill=False
-        self.armor_class=self.calcul_armor()
         self.av_points=15
         self.pos_xp = xp
         self.hit_dice=hit_dice
@@ -49,7 +49,6 @@ class Perso(Entity):
         self.masterAction=0
         ### Actions during the game ###
         self.action=Actions()
-        self.next_hd_attack=self.action.dice(20)
         self.actionP=1
         self.bonusAction=1
         ### extern elements ###
@@ -58,6 +57,7 @@ class Perso(Entity):
         self.armor = dict()
         for i in range(0,6):     # 0 : HEAD 1 : TORSE 2 : COUE  3 BOTTE 4 : MAIN GAUCHE : 5 MAIN DROITE
             self.armor[i] = None
+        self.armor_class=self.calcul_armor()
         ### Pictures ###
         self.lvl_up_img=pygame.transform.scale(pygame.image.load(r"Image\lvl_up.png"),(WINDOWS_SIZE[0]//20,WINDOWS_SIZE[1]//20))
 
@@ -129,10 +129,10 @@ class Perso(Entity):
     ####### End lvl def #######
 
     def ability_score(self,caracteristique):
-        """calcul basic du score en fonction d'une caractéristique passée en paramètre
+        """calcul basique du score en fonction d'une caractéristique passée en paramètre
         STR=0, DEX=1, CON=2, INT=3, WIS=4, CHA=5"""
 
-        return (self.stats[caracteristique]-10)//2
+        return (self.handicap(caracteristique)-10)//2
 
 
     # def stats_up(self,stat,facteur,temps):
@@ -150,7 +150,7 @@ class Perso(Entity):
         self.hp+=self.level*self.action.dice(self.hit_dice)
         if self.hp>self.hp_max:
             self.hp=self.hp_max
-        if self.level=4:
+        if self.level==4:
             self.masterAction=1
 
     def update_hp_bar(self,surface):
@@ -172,13 +172,39 @@ class Perso(Entity):
             return self.ability_score(select[comp])+self.proficiency
         else :
             return self.ability_score(select[comp])
+    
+    def handicap(self,comp):
+        "calcul les différents handicapes, liés au poids de l'armure par exemple"
+        if comp==1 and self.armor[1]!=None:
+            if self.stats[comp]>8+self.key[self.armor[1]].dex_bonus:
+                return 8+self.key[self.armor[1]].dex_bonus
+        return self.stats[comp]
 
     def calcul_armor(self, type_of_calcul=0):
         """ refresh the value of the class armor, must add calcul with """
         assert(type_of_calcul==1 or type_of_calcul==0), "must add a valide type of calcul : 1 without armor"
+        if type_of_calcul==0:
+            if self.armor[1]!=None:
+                return self.score("dex")+10+key[armor[1]].armor_bonus
         return self.score("dex")+10
-        if(type_of_calcul==1):
-            return self.score("dex")+10
+    
+    def damage(self):
+        "calcule les dommages en fonction de l'arme équipée"
+        bonus_deg=0
+        if self.armor[4]!=None:
+            bonus_deg=self.action.dice(key[armor[4]].dmg)
+            if key[self.armor[4]].wpn_type=="RANGED" or key[self.armor[5]].wpn_type=="RANGED":
+                return bonus_deg+self.score("dex")
+        elif self.armor[5]!=None and self.armor[4]==None:
+            bonus_deg=self.action.dice(key[armor[5]].dmg)
+            if key[self.armor[4]].wpn_type=="RANGED" or key[self.armor[5]].wpn_type=="RANGED":
+                return bonus_deg+self.score("dex")
+        if self.armor[4]!=None and self.armor[5]!=None:
+            if all([key[self.armor[4]].wpn_type!="Two Handed",key[self.armor[4]].wpn_type!="RANGED",key[self.armor[5]].wpn_type!="RANGED"]):
+                bonus_deg+=self.action.dice(key[armor[5]].dmg)
+            elif key[self.armor[4]].wpn_type=="Two Handed":
+                bonus_deg+=self.score("str")//2    
+        return bonus_deg+self.score("str")
     
     ######## All the following fonctions will be for the caractersheet ############
 
@@ -351,5 +377,3 @@ class Perso(Entity):
                     self.chose_skill=False
                     running=False
         screen.blit(screenS,(0,0))
-
-
