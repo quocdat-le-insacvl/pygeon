@@ -37,16 +37,13 @@ time_line = pygame.time.get_ticks()
 quand on load les images pour la question de performance
 """
 key = list(Wikitem.keys())
-dict_img_monstre = dict()
-dict_animation_monstre = dict()
-dict_decalage_monstre = dict()
-dict_size_monstre = dict()
+
 dict_img_npc = dict()
-dict_img_monstre['1']= list_entity_animation[0]
-dict_img_monstre['2']= list_entity_animation[1]
-dict_img_monstre['3']= list_entity_animation[2]
-dict_img_monstre['4']= list_entity_animation[3]
-dict_img_monstre['5']= list_entity_animation[4]
+
+list_img_monstre = [list_entity_animation[0],list_entity_animation[1],list_entity_animation[2],list_entity_animation[3],list_entity_animation[4]]
+list_animation_monstre = [demon_1_animation,demon_animation,squelton_animation,wizard_animation,dark_wizard_animation]
+list_decalage_monstre = [[0,0],[0,0],[-30,-30],[-30,-30],[70,20]]
+list_size_monstre = [(500,400),(500,400),(300,300),(300,300),(600,500)]
 
 dict_img_npc['1']= list_npc[0]
 dict_img_npc['2']= list_npc[1]
@@ -54,25 +51,9 @@ dict_img_npc['3']= list_npc[2]
 dict_img_npc['4']= list_npc[3]
 dict_img_npc['5']= list_npc[4]
 
-dict_animation_monstre['1'] = demon_1_animation
-dict_animation_monstre['2'] = demon_animation
-dict_animation_monstre['3'] = squelton_animation
-dict_animation_monstre['4'] = wizard_animation
-dict_animation_monstre['5'] = dark_wizard_animation
-
-dict_decalage_monstre['1'] = [0,0]
-dict_decalage_monstre['2'] = [0,0]
-dict_decalage_monstre['3'] = [-30,-30]
-dict_decalage_monstre['4'] = [-30,-30]
-dict_decalage_monstre['5'] = [70,20]
-
-dict_size_monstre['1'] = (500,400)
-dict_size_monstre['2'] = (500,400)
-dict_size_monstre['3'] = (300,300)
-dict_size_monstre['4'] = (300,300)
-dict_size_monstre['5'] = (600,500)
 
 donjon =  [json.loads(line) for line in open('donjon.json', 'r')]
+
 
 class Map():
     def __init__(self,path,path_deco,path_monstre,list_static_entity,cubesize=190):
@@ -80,7 +61,7 @@ class Map():
         self.path_deco = path_deco
         self.path_monster = path_monstre
         self.map_decoration = load_map(path_deco,reverse=True)
-        self.all_monstre = load_map(path_monstre,reverse=True)
+        self.all_monstre = [json.loads(line) for line in open(path_monstre, 'r')]
         self.all_shop = load_inv()
         self.collision = []
         self.collision_change_camera = []
@@ -96,7 +77,7 @@ class Map():
         self.collision_hupper_level = []
         self.list_monster = []
         self.dict_collision = dict()
-        
+        self.spawn_point = (0,0)
     def load_map(self):
         self.map = load_map(self.path,reverse=True)
         self.map_decoration = load_map(self.path_deco,reverse=True)
@@ -125,8 +106,20 @@ class Map():
     def init_monster(self):
         self.list_monster = []
         for x in self.all_monstre:
+            self.list_monster.append(Monster(x[0],x[1],list_img_monstre[x[2]-1],"",str(x[2]),size_collide_box=4,size=list_size_monstre[x[2]-1],animation_dict=list_animation_monstre[x[2]-1],decalage=list_decalage_monstre[x[2]-1]))
+        for x in self.list_monster:
+            inter_x = x.pos_x
+            inter_y = x.pos_y
+            x.pos_x,x.pos_y = (inter_y-inter_x)*190//2+9000,(inter_y+inter_x)*190//4
+            x.init()
+        for x in self.list_monster:
+            x.set_group_monster(self.list_monster)
+
+    """    for x in self.all_monstre:
+            print(x[1])
             if len(x) !=0:
-                self.list_monster.append(Monster(int(x[0]),int(x[1]),dict_img_monstre[x[2]],"",x[2],size_collide_box=4,size=dict_size_monstre[x[2]],animation_dict=dict_animation_monstre[x[2]],decalage=dict_decalage_monstre[x[2]]))
+                self.list_monster.append(Monster(x[0],x[1],dict_img_monstre[str(x[2])],"",x[2],size_collide_box=4,size=dict_size_monstre[str(x[2])],animation_dict=dict_animation_monstre[x[2]],decalage=dict_decalage_monstre[str(x[2])]))
+    """
     def init_shop(self):
         line=1
         self.list_shop = []
@@ -272,6 +265,7 @@ class Map():
                         self.display.blit(pygame.transform.scale(rune_1,(190,95)),(x,y))
                     if self.map_decoration[i][j] == '9':
                         self.collision_hupper_level.append((x,y))
+                        self.spawn_point = (x,y)
                         self.display.blit(pygame.transform.scale(rune,(190,95)),(x,y))
                 j+=1
             i+=1
@@ -320,13 +314,11 @@ class Game():
         self.player.crew_mate[1].pos_y = 1100
         ### Minimap
         self.minimap = Minimap(self, self.map.display)
-        for x in self.map.list_monster:
-            inter_x = x.pos_x
-            inter_y = x.pos_y
-            x.pos_x,x.pos_y = (inter_y-inter_x)*190//2+9000,(inter_y+inter_x)*190//4
-            x.init()
-        for x in self.map.list_monster:
-            x.set_group_monster(self.map.list_monster)
+    
+        for x in donjon:
+            x[0],x[1] = (x[1]-x[0])*190//2+9000,(x[1]+x[0])*190//4
+
+       
         ###
         show_inventory = False
         show_characteresheet = False
@@ -421,17 +413,23 @@ class Game():
             if self.player.change_level:
                 if draw_interact: draw_text("Press I for go under",ColderWeather,WHITE,screen,500,500)
                 if interact:
-                    print(self.current_level)
-                    nb = 0
+                    #print("Je suis etage",self.current_level)
+                    
+                    print(donjon)
                     for x in donjon:
-                        if x[2] == self.current_level:
-                            nb +=1
-                    if nb == 1: 
-                        self.map = list_map[x[3]-1]
-                        self.current_level = x[3]
-                    else:
-                        for x in donjon:
-                            print(self.current_level)
+                        x_ = x[0]-self.player.pos_x
+                        
+                        y = x[1] - self.player.pos_y
+                       
+                        if abs(x[0]-self.player.pos_x) < 200 and abs(x[1]-self.player.pos_y) < 200 :
+                            #print("Je vais etage",donjon[len(donjon)-1-nb][3])
+                            self.map = list_map[x[3]-1]
+                            self.current_level = x[3]
+                            self.fog = Fog(self)
+                        if self.map.spawn_point != (0,0):
+                            self.player.pos_x = self.map.spawn_point[0]
+                            self.player.pos_y = self.map.spawn_point[1]
+                    interact = False
             if self.player.change_hupper_level:
                 if draw_interact: draw_text("Press I for go hupper",ColderWeather,WHITE,screen,500,500)
                 if interact:
@@ -443,7 +441,8 @@ class Game():
                     if nb == 1:
                         self.map = list_map[x[2]-1]
                         self.current_level = x[2]
-                    
+                        self.fog = Fog(self)
+                    interact = False
                     print(self.current_level)
             '''Set caméra / player pos pour sauvegarde'''
 
@@ -520,8 +519,9 @@ class Game():
                 self.player.caracter_sheet()
                 show_characteresheet = False
             
-            draw_text("FPS: %i, x : %i , y : %i" % (clock.get_fps(),self.player.pos_x,self.player.pos_y
-                                                    ,), ColderWeather, WHITE, screen, 100, 100)
+            """draw_text("FPS: %i, x : %i , y : %i" % (clock.get_fps(),self.player.pos_x,self.player.pos_y
+                                                    ,), ColderWeather, WHITE, screen, 100, 100)"""
+            draw_text("Donjon.x: %i, Donjon.y : %i ,x : %i, y : %i" % (len(self.map.list_monster),donjon[0][1],self.player.pos_x,self.player.pos_y), ColderWeather, WHITE, screen, 100, 100)
             self.player.spell_bar()
             
             # update skill
@@ -677,11 +677,11 @@ class Game():
 num = 1
 list_map = []
 while os.path.exists(os.path.join(path.dirname(__file__), 'map_level_'+str(num)+'.txt')):
-    level = Map("map_level_"+str(num)+".txt","map_decoration_level_"+str(num)+".txt","map_monstre_level_"+str(num)+".txt",list_static_entity)
+    level = Map("map_level_"+str(num)+".txt","map_decoration_level_"+str(num)+".txt","map_monstre_level_"+str(num)+".json",list_static_entity)
     level.init_map()
     list_map.append(level)
     num +=1
-
+print("Nb map : %i"%len(list_map))
 #map_1 = Map("map_level_1.txt","map_decoration_level_1.txt","map_monstre_level_1.txt",list_static_entity)
 #map_2 = Map("map_level_2.txt","map_decoration_level_2.txt","map_monstre_level_2.txt",list_static_entity)
 
