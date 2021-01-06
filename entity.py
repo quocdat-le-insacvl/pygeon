@@ -14,7 +14,7 @@ class Entity():
         self.pos_x = pos_x
         self.pos_y = pos_y
         self.img = img
-        self.name = name
+        self.name = "Monstre"
         self.type = which_type
         self.nom = name
         self.center = [pos_x + img.get_width()//2, pos_y + img.get_height()//2]
