@@ -159,7 +159,7 @@ title=pygame.font.Font(r'Addon\Police\ColderWeather-Regular.ttf', board_init().g
 title2=pygame.font.Font(r'Addon\Police\21 Glyphs.ttf', board_init().get_height()//10)
 subtitle=pygame.font.Font(r'Addon\Police\ColderWeather-Regular.ttf', board_init().get_height()//13)
 sub2=pygame.font.Font(r'Addon\Police\21 Glyphs.ttf', board_init().get_height()//20)
-text=pygame.font.Font(r'Addon\Police\ColderWeather-Regular.ttf', board_init().get_height()//30)
+text=pygame.font.Font(r'Addon\Police\ColderWeather-Regular.ttf', board_init().get_height()//17)
 astxt=pygame.font.Font(r'Addon\Police\Outrun-future.otf', 20)
 astxt.set_bold(1)
 

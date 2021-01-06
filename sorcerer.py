@@ -1,7 +1,6 @@
 import pygame
-from personnage import Perso
 from settings import police
-from settings.screen import screen
+from personnage import *
 from math import trunc
 from fonctions import *
 from fonction import basic_checkevent,draw_text
@@ -263,14 +262,21 @@ class Sorcerer(Perso):
         board_icon2=pygame.transform.scale(board_init(),(board.get_width()//5,board.get_height()//5))
         iconen=pygame.transform.scale(neutre_icon,(trunc(board_icon2.get_width()//1.2),trunc(board_icon2.get_height()//1.2)))
         board_icon2.blit(iconen,(board_icon2.get_width()//2-iconen.get_width()//2,board_icon2.get_height()//2-iconen.get_height()//2))
-        draw_text("Sorcerer",title,"b",board,board.get_width()//8,board.get_height()//20)
+        draw_text("Sorcerer",title,"bl",board,board.get_width()//8,board.get_height()//20)
         perso=pygame.transform.scale(wizard_hide['wizard_idle_1.png'],(board.get_width()//3,board.get_height()//2))
         board.blit(perso,(board.get_width()//14,board.get_height()//7))
         """initialisation de tous les boards avec les choix correspondants aux 5 differents lvl"""
         rect_choices=list()
-        draw_text("Sorcery Points : "+ str(self.sPoints),subtitle,'bl',board,board.get_width()//18,trunc(board.get_height()*0.65))
-        draw_text("Spells Slots lvl 1 : "+ str(self.spells_slots[0]),subtitle,'bl',board,board.get_width()//18,trunc(board.get_height()*0.65)+50)
-        draw_text("Spells Slots lvl 2 : "+ str(self.spells_slots[1]),subtitle,'bl',board,board.get_width()//18,trunc(board.get_height()*0.65)+100)
+        draw_text("Sorcery Points : "+ str(self.sPoints),text,'b',board,board.get_width()//18,trunc(board.get_height()*0.65))
+        draw_text("Spells Slots lvl 1 : "+ str(self.spells_slots[0]),text,'b',board,board.get_width()//18,trunc(board.get_height()*0.65)+50)
+        draw_text("Spells Slots lvl 2 : "+ str(self.spells_slots[1]),text,'b',board,board.get_width()//18,trunc(board.get_height()*0.65)+100)
+        if self.master==False:
+            draw_text("unlock master skill lvl 4",text,'b',board,board.get_width()//18,trunc(board.get_height()*0.65)+150)
+        else:
+            if self.masterAction:
+                draw_text("master action : Active",text,'b',board,board.get_width()//18,trunc(board.get_height()*0.65)+150)
+            else:
+                draw_text("Master Action : Inactive",text,'b',board,board.get_width()//18,trunc(board.get_height()*0.65)+150)
         rectboard=pygame.Rect(screen.get_width()//2-board.get_width()//2,20,0,0)
         board_level1=board_with_msg("Unlock at level 1")
         rect_board1=replace_rect(rectboard,pygame.Rect(trunc(board.get_width()*0.45),trunc(board.get_height()*0.03),0,0))

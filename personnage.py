@@ -5,7 +5,7 @@ from entity import Entity
 from fonctions import *
 from items import Sword1,Sword10,Wikitem
 from fonction import basic_checkevent,draw_text
-from settings.load_img import wizard_icon, neutre_icon
+from settings.load_img import wizard_icon, neutre_icon,fighter_icon
 import pygame
 key = list(Wikitem.keys())
 buttona,buttons,buttonpa,buttonps=init_buttonsas()
@@ -210,7 +210,7 @@ class Perso(Entity):
     ######## All the following fonctions will be for the caractersheet ############
 
     def caracter_sheet(self):
-        assert(self.name!=None and self.classe!=None), "perso not initialised"
+        #assert(self.name!=None and self.classe!=None), "perso not initialised"
         screenS=screen.copy()
         running=True
         "Creer un board et y met les attributs qui ne sont pas censer bouger"
@@ -219,7 +219,10 @@ class Perso(Entity):
         board.set_colorkey((255,255,255))
         board_icon=pygame.transform.scale(board_init(),(board.get_width()//5,board.get_height()//5))
         # board_icon.set_colorkey((0,0,0))
-        icone=pygame.transform.scale(wizard_icon,(board_icon.get_width()//2,board_icon.get_height()))
+        if self.classe=='sorcerer':
+            icone=pygame.transform.scale(wizard_icon,(board_icon.get_width()//2,board_icon.get_height()))
+        if self.classe=='fighter':
+            icone=pygame.transform.scale(fighter_icon,(board_icon.get_width(),board_icon.get_height()))
         icone.set_colorkey((255,255,255))
         board_icon.blit(icone,(board_icon.get_width()//2-icone.get_width()//2,0))
         rect_icon=screen.blit(board_icon,(rectboard.x-board_icon.get_width()//1.5,rectboard.y+board_icon.get_height()//0.8))

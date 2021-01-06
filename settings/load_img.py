@@ -10,6 +10,7 @@ path_menu = path.join(path_addon, 'Menu')
 path_ava = path.join(path_addon, 'avata')
 path_light = path.join(path_addon, 'Light')
 path_icon = path.join(path_addon, 'icons')
+path_fighter = path.join(path_addon, 'Fighter')
 
 wizard_hide = dict(image_loader(path.join(path_addon,'Wizard Pack/idle/')))
 transform_image(wizard_hide,2)
@@ -113,3 +114,7 @@ lvl2=pygame.image.load(r"Addon\spell\lvl2.png")
 "icons"
 wizard_icon=pygame.image.load(path.join(path_icon,'wizard.png'))
 neutre_icon=pygame.image.load(path.join(path_icon,'neutre.png'))
+fighter_icon=pygame.image.load(path.join(path_icon,'fighter.png'))
+
+"Fighter img"
+fighter_img=pygame.image.load(path.join(path_fighter,'fighter.png'))
