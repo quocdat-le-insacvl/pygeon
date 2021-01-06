@@ -45,6 +45,6 @@ https://www.youtube.com/watch?v=3UxnelT9aCo&list=PLsk-HSGFjnaGQq7ybM8Lgkh5EMxUWP
 
 sudo apt install python3-pip
 
-pip3 install requirements.txt
+pip3 install -r requirements.txt
 
 python3 main.py
