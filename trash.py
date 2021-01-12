@@ -29,7 +29,9 @@ from combat import *
 # from monster import Monster
 # from custum_map_ import list_entity_animation
 from skill import *
-
+from Button import *
+from Keyboard import *
+from settings.setting import *
 pygame.init()
 clock = pygame.time.Clock()
 time_line = pygame.time.get_ticks()
@@ -529,7 +531,7 @@ class Game():
             
             """draw_text("FPS: %i, x : %i , y : %i" % (clock.get_fps(),self.player.pos_x,self.player.pos_y
                                                     ,), ColderWeather, WHITE, screen, 100, 100)"""
-            draw_text("Donjon.x: %i, Donjon.y : %i ,x : %i, y : %i" % (len(self.map.list_monster),donjon[0][1],self.player.pos_x,self.player.pos_y), ColderWeather, WHITE, screen, 100, 100)
+            #draw_text("Donjon.x: %i, Donjon.y : %i ,x : %i, y : %i" % (len(self.map.list_monster),donjon[0][1],self.player.pos_x,self.player.pos_y), ColderWeather, WHITE, screen, 100, 100)
             self.player.spell_bar()
             
             # update skill
@@ -647,7 +649,7 @@ class Game():
         la boucle d'après permet de voir si la souris (le mask) overlap la case c'est a dire si la souris collide avec la case, si elle overlap le programme cherche l'object Case(i,j) et utilise sa fonction select pour faire un affichage visuel de la case choisi"""
 
     def print_pause_menu(self):
-        display = pygame.Surface((1980, 1000))
+        display = pygame.Surface((1500, 900))
         display.set_colorkey(LIGHT_GREY)
         running = True
         while running:
@@ -661,7 +663,9 @@ class Game():
                 player_for_save,self.fog.surface = load_game(self.click, player_for_save,self.fog.surface)
                 print(player_for_save.name)
                 self.player.load_player(player_for_save)
-            if create_text_click('Quit', Drifftype, GREY, display, self.click, display.get_width()//2, display.get_height()//1.6):
+            if create_text_click('Keyboard', Drifftype, GREY, display, self.click, display.get_width()//2, display.get_height()//1.6):
+                keyboard = Keyboard()
+            if create_text_click('Quit', Drifftype, GREY, display, self.click, display.get_width()//2, display.get_height()//1.2):
                 if Validation_screen("Voulez-vous quittez sans sauvegarder ?", display, self.click):
                     sys.exit()
             screen.blit(pygame.transform.scale(display, WINDOWS_SIZE), (0, 0))

@@ -32,7 +32,21 @@ class Monster(Entity):
         self.is_aggresive = True
         self.change_direction = 0
         self.mouvement = [0,0]
-        self.STR = 10
+        self.STR = 16
+        self.hit = False
+        self.hp = 10
+        self.ac = 10
+        self.is_alive = True
+        self.case = None
+
+    def check_alive(self):
+        if self.hp <= 0:
+            self.is_alive = False
+
+    def trouver_case(self,liste_case):
+        for x in liste_case:
+            if x.in_case == self:
+                return x
         
     def init_collide_patrouille(self):
         self.collide_patrouille.pos_x = int ( self.pos_x - self.collide_patrouille.img_collide.get_width()//2 + self.img.get_width()//2)

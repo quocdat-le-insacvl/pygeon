@@ -5,8 +5,9 @@ from entity import *
 from fonction import *
 from fonctions import *
 from settings.color import *
-
-
+from Button import *
+from settings.setting import *
+from settings.police import *
 class ControlsMenu():
     def __init__(self, game):
         self.ctrl_list=[int(ctrl) for ctrl in self.search_keys(SETTINGS[2][12:-1])]
@@ -15,15 +16,15 @@ class ControlsMenu():
         #init name of key
         for k in KEYS_DICO:
             KEYS_DICO[k]=self.ctrl_list[i]
-            self.list_action.append(Text(self.game.display, SCREEN_WIDTH*(1+2*(i%2))//5, SCREEN_HEIGHT//3+50*(i//2), k[1:], ENCHANT_FONT, WHITE, 40, False))
+            self.list_action.append(Text(self.game.display, SCREEN_WIDTH*(1+2*(i%2))//5, SCREEN_HEIGHT//3+50*(i//2), k[1:], ColderWeather, WHITE, 40, False))
             i+=1
         #init button
         self.save_text = Validation_screen("Voulez-vous enregistrer ?", display, self.click)
         self.warning_text = Validation_screen("Touches qui se chevauchent", display, self.click)
-        self.list_button=[Button(self.game, SCREEN_WIDTH*(2+2*(i%2))//5, SCREEN_HEIGHT//3+50*(i//2), pygame.key.name(self.ctrl_list[i]), ENCHANT_FONT, BLACK, 30,button,buttonp) for i in range(len(self.ctrl_list))]
-        self.save_button = Button(self.game, 175, 150, "Save", ENCHANT_FONT, WHITE, 50,background=button)
+        self.list_button=[Button(self.game, SCREEN_WIDTH*(2+2*(i%2))//5, SCREEN_HEIGHT//3+50*(i//2), pygame.key.name(self.ctrl_list[i]), ColderWeather, BLACK, 30,button,buttonp) for i in range(len(self.ctrl_list))]
+        self.save_button = Button(self.game, 175, 150, "Save", ColderWeather, WHITE, 50,background=button)
         self.background = printbackgrounds(display)
-    def search_keys(self,line):
+    def search_keys(self,ligne):
         "Get the key from the settings"
         w=''
         flag=False

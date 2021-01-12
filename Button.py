@@ -1,11 +1,10 @@
 import pygame 
 from settings.load_img import *
-
+from settings.setting import *
 
 
 class Button(object):
-    """This class aims to create buttons that the user can click. 
-    Notice that you need to handle what to do when the button is clicked oustide this class !"""
+    
 
     def __init__(self, game, px, py, text, font, text_color, font_size, background=button, \
             background_hover=buttonp):
