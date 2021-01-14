@@ -8,7 +8,7 @@ from settings.color import *
 from Button import *
 from settings.setting import *
 from settings.police import *
-fontObj = pygame.font.Font('FreeSansBold.ttf', 32)
+
 class ControlsMenu():
     def __init__(self, game):
         self.ctrl_list=[int(ctrl) for ctrl in self.search_keys(SETTINGS[2][12:-1])]
@@ -40,7 +40,7 @@ class ControlsMenu():
         self.run_display = True 
         while self.run_display:
             self.game.check_events()
-            self.game.display.blit(self.menu_background, (0,0))
+            self.game.display.blit(self.background, (0,0))
             #display buttons
             for butt in self.list_button:
                 butt.display_button()
