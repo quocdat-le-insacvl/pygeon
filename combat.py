@@ -13,11 +13,17 @@ from text import *
 from settings.load_img import *
 from script import list_mooving_entity, list_static_entity
 
+# Message pour Christine: 
+#   Pour print sur le log: 
+# self.chat_box.write_log(("combat", "You play an attack!"))
+# gardes le mot "combat", change le message ("You play an attack")
+# Il faut que l'argument soit un tuple
 
 class Combat:
 
     def __init__(self, game, list_monstre):
         self.game = game
+        self.chat_box = self.game.chat_box
         self.texts = pygame.sprite.Group()
         self.score = 0  # pour le dice
         self.diceevt = DiceEvent(self, self.game)
@@ -220,9 +226,15 @@ class Combat:
             # """ FPS
             draw_text("FPS: %i" % (self.game.clock.get_fps()),
                       ColderWeather, WHITE, screen, 100, 100)
+            
+            # update + draw chatbox
+            self.game.chat_box.update()
+            self.game.chat_box.draw()
+
+            # print(self.log)
             pygame.display.update()
             self.game.clock.tick(64)
-
+                
     def check_conditions(self):
         if self.n_entrees == 1:
             self.diceevt.resume(20, i=500)
@@ -375,6 +387,7 @@ class Combat:
         # if (b1 and pygame.mouse.get_pressed()[0] and (type(self.liste_tours[0][2]) == Perso)):
         if (b1 and pygame.mouse.get_pressed()[0]):
             print("attack")
+            self.chat_box.write_log(("combat", "You play an attack!"))
             self.clic = False
             self.attack()
         elif (b2 and pygame.mouse.get_pressed()[0]):
@@ -461,6 +474,7 @@ class Combat:
 
     def mouvement(self):
         print("compteur mouvement "+str(self.compteur_mouvement))
+        self.chat_box.write_log("compteur mouvement "+str(self.compteur_mouvement))
         if (self.bouton1_mvt_cliqué and pygame.mouse.get_pressed()[0]):
             while self.compteur_mouvement < self.player.n_mvt:
                 self.mouvement_haut()
