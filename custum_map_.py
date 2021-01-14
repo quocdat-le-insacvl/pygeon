@@ -144,6 +144,18 @@ class Map_editor:
         self.list_kill = []
         self.list_find = []
         self.list_npc = []
+        self.reset = False
+    def init_custom_map(self,update=False):
+        self.LONGUEUR = self.taille_x * TILESIZE 
+        self.LARGEUR = self.taille_y * TILESIZE 
+        self.display = pygame.Surface((max(self.taille_x,self.taille_y)*2*TILESIZE,(max(self.taille_x,self.taille_y)*2*TILESIZE)))
+        self.display.fill(BURGUNDY)
+        self.display.set_colorkey(BURGUNDY)
+        self.camera_x = -self.display.get_width()//2 + screen.get_width()//2
+        self.camera_y = -self.display.get_height()//2 + screen.get_height()//2
+        self.init_collid(update)
+        self.init_cord()
+        self.refresh()
     def create_inv(self,case):
         loot_inv = Inventaire(7,5)
         running = True
@@ -176,22 +188,21 @@ class Map_editor:
                         elif self.house_select:
                             self.house_select = False 
                             self.map_decoration[self.case_collide[i][0]][self.case_collide[i][1]] = '8'
-                            self.save_map(self.path+ '_level_'+str(self.num_level)+'.txt',self.path_deco+ '_level_'+str(self.num_level)+ '.txt',self.path_monstre+ '_level_'+str(self.num_level)+ '.txt')
-                            self.list_donjon.append([self.case_collide[i][0],self.case_collide[i][1],self.num_level,self.number_create_level])
-                            self.init_cord()
-                            self.init_collid()
-                            self.list_monstre = []
-                            self.refresh()
+                            self.save_map(self.path+ '_level_'+str(self.num_level)+'.txt',self.path_deco+ '_level_'+str(self.num_level)+ '.txt',self.path_monstre+ '_level_'+str(self.num_level))
+                            self.list_donjon.append([self.taille_x-1-self.case_collide[i][0],self.case_collide[i][1],self.num_level,self.number_create_level])
+                            self.init_custom_map()
                             self.num_level = self.number_create_level
                             self.map_decoration[self.case_collide[i][0]][self.case_collide[i][1]] = '9'
-
+                            self.refresh()
+                            self.save_map(self.path+ '_level_'+str(self.num_level)+'.txt',self.path_deco+ '_level_'+str(self.num_level)+ '.txt',self.path_monstre+ '_level_'+str(self.num_level))
                             '''self.path = self.path + 'level_' + str(self.num_level)
                             self.path_deco = self.path_deco +  'level_' + str(self.num_level)
                             self.path_monstre = self.path_monstre + 'level_' + str(self.num_level)'''
 
                         elif self.map_ground[self.case_collide[i][0]][self.case_collide[i][1]] != '8' and self.map_ground[self.case_collide[i][0]][self.case_collide[i][1]] != '9':
                             if self.current_entity != None:
-                                self.list_monstre.append(Monster(self.taille_x-1-self.case_collide[i][0],self.case_collide[i][1],pygame.transform.scale(self.current_entity,(200,200)),"Define",self.type_monstre,size_collide_box=4))
+                                self.list_monstre.append([self.taille_x-1-self.case_collide[i][0],self.case_collide[i][1],self.type_monstre])
+                                #self.list_monstre.append(Monster(self.taille_x-1-self.case_collide[i][0],self.case_collide[i][1],pygame.transform.scale(self.current_entity,(200,200)),"Define",self.type_monstre,size_collide_box=4))
                                 #list_entity.append(Entity(self.cord_collide[i][0],self.cord_collide[i][1],self.current_entity,"need to define","need to define"))
                                 self.map_ground[self.case_collide[i][0]][self.case_collide[i][1]] = self.case_select 
                                 self.current_entity = None
@@ -212,15 +223,42 @@ class Map_editor:
                     i+=1   
     def draw_entity(self):
         for x in self.list_monstre:
-            self.display.blit(pygame.transform.scale(x.img,(2*TILESIZE,2*TILESIZE)),(int(standard_vec_into_iso(abs(x.pos_x-self.taille_x+1)*TILESIZE,x.pos_y*TILESIZE)[0]),int(standard_vec_into_iso(abs(x.pos_x-self.taille_x+1)*TILESIZE,x.pos_y*TILESIZE)[1]+self.display.get_height()//2-TILESIZE//2-TILESIZE)))
+            self.display.blit(pygame.transform.scale(list_entity_animation[x[2]-1],(2*TILESIZE,2*TILESIZE)),(int(standard_vec_into_iso(abs(x[0]-self.taille_x+1)*TILESIZE,x[1]*TILESIZE)[0]),int(standard_vec_into_iso(abs(x[0]-self.taille_x+1)*TILESIZE,x[1]*TILESIZE)[1]+self.display.get_height()//2-TILESIZE//2-TILESIZE)))
         for x in self.list_shop:
             self.display.blit(pygame.transform.scale(x[0],(2*TILESIZE,2*TILESIZE)),(int(standard_vec_into_iso(abs(x[1]-self.taille_x+1)*TILESIZE,x[2]*TILESIZE)[0]),int(standard_vec_into_iso(abs(x[1]-self.taille_x+1)*TILESIZE,x[2]*TILESIZE)[1]+self.display.get_height()//2-TILESIZE//2-TILESIZE)))
     def draw(self):
         screen.blit(self.display,(self.camera_x,self.camera_y))
-    def init_collid(self):
+    def init_collid(self,update=False):
         x,y=0,0
-        self.map_ground = [[ '0' for i in range(self.taille_y)] for j in range(self.taille_x)]
-        self.map_decoration = [[ '0' for i in range(self.taille_y)] for j in range(self.taille_x)]
+        i,j = 0,0
+        if not update:
+            self.map_ground = [[ '0' for i in range(self.taille_y)] for j in range(self.taille_x)]
+            self.map_decoration = [[ '0' for i in range(self.taille_y)] for j in range(self.taille_x)]
+        else:
+            inter_ground = self.map_ground
+            inter_decoration = self.map_decoration
+            self.map_ground = [[ '0' for i in range(self.taille_y)] for j in range(self.taille_x)]
+            self.map_decoration = [[ '0' for i in range(self.taille_y)] for j in range(self.taille_x)]
+
+            if len(inter_ground[0]) < len(self.map_ground):
+                for x in inter_ground:
+                    j=0
+                    for l in x:
+                        self.map_ground[i][j] = inter_ground[i][j] 
+                        self.map_decoration[i][j] = inter_decoration[i][j]
+                        j+=1
+                    i+=1
+            else:
+                i,j=0,0
+                for x in self.map_ground:
+                    j=0
+                    for l in x:
+                        self.map_ground[i][j] = inter_ground[i][j] 
+                        self.map_decoration[i][j] = inter_decoration[i][j]
+                        j+=1
+                    i+=1
+        self.case_collide = []
+        self.cord_collide = []
         for x in range(self.taille_x):
             y = 0
             for y in range(self.taille_y):
@@ -251,14 +289,39 @@ class Map_editor:
             pg.draw.line(self.display, LIGHTGRAY,  (standard_vec_into_iso(0,y)[0],standard_vec_into_iso(0,y)[1]+self.display.get_width()//2),  (standard_vec_into_iso(self.LONGUEUR,y)[0],standard_vec_into_iso(self.LONGUEUR,y)[1]+self.display.get_height()//2))
         screen.blit(self.display,(self.camera_x,self.camera_y))
     def check_event(self):
+        i,j=0,0
         for event in pg.event.get():
             
             if event.type == pg.QUIT:
                 self.running = False
             if event.type == pg.KEYDOWN:
                 if event.key == pg.K_ESCAPE:
-                    self.running = False
-                if event.key == pg.K_m:
+                    self.reset = True
+                if event.key == pg.K_KP_PLUS:
+                    self.taille_x +=1
+                    self.taille_y +=1
+                    self.init_custom_map(True)
+                    for x in self.list_donjon:
+                        if x[2] == self.num_level:
+                            x[0]+=1
+                    for a in self.list_monstre:
+                        a[0] +=1
+                    i,j=0,0
+                    
+                if event.key == pg.K_KP_MINUS:
+                    self.taille_x -=1
+                    self.taille_y -=1
+                    self.init_custom_map(True)
+                    for x in self.list_donjon:
+                        if x[2] == self.num_level:
+                            x[0]-=1
+                        if x[0] < 0:
+                            self.list_donjon.remove(x)
+                    for a in self.list_monstre:
+                        a[0] -=1
+                        if a[0] < 0:
+                            self.list_monstre.remove(a)
+                if event.key == pg.K_r:
                     self.refresh()
             if event.type == pg.MOUSEBUTTONDOWN:
                 if event.button ==1:
@@ -279,14 +342,25 @@ class Map_editor:
                     self.camera_x -=100
                 elif event.key == K_LEFT:
                     self.camera_x +=100              
-    def save_map(self,path,path_deco,path_monstre):
-
+    def save_map(self,path,path_deco,path_monstre,is_under=False):
+        have_portal = False
+        if self.num_level > 1:
+            is_under = True
         fichier = open(path, "w")
-
-        for x in self.map_ground:
+        for x in self.map_decoration:
             for f in x:
-                fichier.write(f)
-            fichier.write("\n")
+                if f == '9':
+                    have_portal = True
+        if have_portal:
+            pass
+        else:
+            if is_under:
+                self.map_decoration[int(len(self.map_decoration[0])//2)][int(len(self.map_decoration[0])//2)] = '9'
+        
+        for x in self.map_ground:
+                for f in x:
+                    fichier.write(f)
+                fichier.write("\n")
         fichier.close()
 
         fichier_deco =open(path_deco,"w")
@@ -299,12 +373,10 @@ class Map_editor:
         fichier_deco.close()
 
 
-        fichier = open(path_monstre,"w")
+        fichier = open(path_monstre+'.json',"w")
 
         for x in self.list_monstre:
-            fichier.write(str(x.pos_x))
-            fichier.write(str(x.pos_y))
-            fichier.write(str(x.type))
+            json.dump(x,fichier)
             fichier.write("\n")
         fichier.close()
 
@@ -338,47 +410,50 @@ class Map_editor:
         choose_quest = False
         color_1,color_2,color_3 = WHITE
         while self.running:
+            
             screen.fill(DARKGRAY)
             self.draw_grid()
             self.draw()
             self.draw_entity()
             x= screen.get_width()//2-img_inventaire.get_width()//2
             y =screen.get_height()//2-img_inventaire.get_height()//2
-
             # SAUVEGARDER
             draw_text("Level : %i"%self.num_level,ColderWeather,WHITE,screen,500,500)
-            if creation_img_text_click(img_next,"Sauvegarder",ColderWeather,WHITE,screen,self.click,right=1):
-                self.save_map(self.path+ '_level_'+str(self.num_level)+'.txt',self.path_deco+ '_level_'+str(self.num_level)+ '.txt',self.path_monstre+ '_level_'+str(self.num_level)+ '.txt')
+            if creation_img_text_click(img_next,"Sauvegarder",ColderWeather,WHITE,screen,self.other_click,right=1):
+                self.save_map(self.path+ '_level_'+str(self.num_level)+'.txt',self.path_deco+ '_level_'+str(self.num_level)+ '.txt',self.path_monstre+ '_level_'+str(self.num_level))
 
             # CHOIX BLOCKS
             if not choose:
-                if creation_img_text_click(img_next,"Choisr un bloc",ColderWeather,WHITE,screen,self.click,img_next.get_width()-80,img_next.get_height()//2):
+                if creation_img_text_click(img_next,"Choisr un bloc",ColderWeather,WHITE,screen,self.other_click,img_next.get_width()-80,img_next.get_height()//2):
                     choose = True
             else:  
                 screen.blit(pygame.transform.scale(img_inventaire,(screen.get_width()//2,screen.get_height()//2)),(screen.get_width()//2-img_inventaire.get_width()//2,screen.get_height()//2-img_inventaire.get_height()//2))
                 i=1
-                if creation_img_text_click(pygame.transform.scale(img_inventaire,(TILESIZE,TILESIZE)),"RESET",ColderWeather,WHITE,screen,self.click,x+100,y+100):
+                if creation_img_text_click(pygame.transform.scale(img_inventaire,(TILESIZE,TILESIZE)),"RESET",ColderWeather,WHITE,screen,self.other_click,x+100,y+100):
                     self.current_tree = '0'
                     self.case_select = '0'
                     self.current_entity = None
                     choose = False
                 
                 for bloc in list_other_block:
-                    if creation_img_text_click(pygame.transform.scale(bloc,(TILESIZE,TILESIZE)),"",ColderWeather,WHITE,screen,self.click,x+100*i,y+400):
+                    if creation_img_text_click(pygame.transform.scale(bloc,(TILESIZE,TILESIZE)),"",ColderWeather,WHITE,screen,self.other_click,x+100*i,y+400):
                         self.other_block = chr(97+i)
+                        self.current_tree = '0'
                         choose = False
                     i+=1
                 i=1
                 for img in list_block:
-                    if creation_img_text_click(img,"",ColderWeather,WHITE,screen,self.click,x+100*i,y+200):
+                    if creation_img_text_click(img,"",ColderWeather,WHITE,screen,self.other_click,x+100*i,y+200):
                         self.case_select = str(i)
                         self.other_block = '0'
+                        self.current_tree = '0'
                         choose = False
                     i+=1
                 i=1
                 for tree in list_tree:
-                    if creation_img_text_click(tree,'',ColderWeather,WHITE,screen,self.click,x+100*i,y+200+TILESIZE*2):
+                    if creation_img_text_click(tree,'',ColderWeather,WHITE,screen,self.other_click,x+100*i,y+200+TILESIZE*2):
                         self.current_tree = chr(97+i-1)
+                        self.other_block = '0'
                         choose = False
                     i+=1
             
@@ -393,20 +468,20 @@ class Map_editor:
                 screen.blit(pygame.transform.scale(img_inventaire,(screen.get_width()//2,screen.get_height()//2)),(screen.get_width()//2-img_inventaire.get_width()//2,screen.get_height()//2-img_inventaire.get_height()//2))
                 i=1
                 for monstre in list_entity_animation:
-                    if creation_img_text_click(pygame.transform.scale(monstre,(2*TILESIZE,2*TILESIZE)),"",ColderWeather,WHITE,screen,self.click,x+100*i,y+200):
+                    if creation_img_text_click(pygame.transform.scale(monstre,(2*TILESIZE,2*TILESIZE)),"",ColderWeather,WHITE,screen,self.other_click,x+100*i,y+200):
                         self.current_entity = pygame.transform.scale(monstre,(2*TILESIZE,2*TILESIZE))
                         self.current_tree = '0'
                         self.type_monstre = i 
                         #self.monstre_creator()
                         choose_quest = False
                     i+=1
-                if creation_img_text_click(pygame.transform.scale(rune_1,(2*TILESIZE,TILESIZE)),"",ColderWeather,WHITE,screen,self.click,x+100,y+300):
+                if creation_img_text_click(pygame.transform.scale(rune_1,(2*TILESIZE,TILESIZE)),"",ColderWeather,WHITE,screen,self.other_click,x+100,y+300):
                     self.donjon_select = True
                     self.case_select = '8'
                     #self.donjon_creator()
                     choose_quest = False
 
-            if creation_img_text_click(img_next,"Continuer",ColderWeather,WHITE,screen,self.click,left=1):
+            if creation_img_text_click(img_next,"Continuer",ColderWeather,WHITE,screen,self.other_click,left=1):
                 self.running = False
             else:
                 self.check_event()
@@ -414,73 +489,86 @@ class Map_editor:
             self.print_on_the_grid()
             
             if not self.house_select:
-                if creation_img_text_click(img_next,"Create level",ColderWeather,WHITE,screen,self.click,screen.get_width()-img_next.get_width()//2,img_next.get_height()//2+200):
+                if creation_img_text_click(img_next,"Create level",ColderWeather,WHITE,screen,self.other_click,screen.get_width()-img_next.get_width()//2,img_next.get_height()//2+200):
                     self.house_select = True
+                    self.current_tree = '0'
+                    self.other_block = '0'
                     self.number_create_level +=1
                         
             if self.num_level > 1 :
-                if creation_img_text_click(img_next,"Go up level",ColderWeather,WHITE,screen,self.click,img_next.get_width()-80,img_next.get_height()//2+200):
+                if creation_img_text_click(img_next,"Go up level",ColderWeather,WHITE,screen,self.other_click,img_next.get_width()-80,img_next.get_height()//2+200):
                     self.map_ground = load_map(self.path+ '_level_'+str(self.num_level-1) + '.txt')
                     self.map_decoration = load_map(self.path_deco+ '_level_'+str(self.num_level-1)+'.txt')
-                    self.list_monstre = load_map(self.path_monstre+ '_level_'+str(self.num_level-1)+'.txt')
+                    self.list_monstre = [json.loads(line) for line in open(self.path_monstre+ '_level_'+str(self.num_level-1)+'.json', 'r')]
+                    self.taille_x,self.taille_y = len(self.map_ground[0]),len(self.map_ground[0])
+                    self.init_custom_map(True)
                     self.num_level -=1
                     self.init_monster()
                     self.refresh()
-                    self.click = False
+                    self.other_click = False
             if self.num_level < self.number_create_level:
-                if creation_img_text_click(img_next,"Go down level",ColderWeather,WHITE,screen,self.click,img_next.get_width()-80,img_next.get_height()//2+400):
+                if creation_img_text_click(img_next,"Go down level",ColderWeather,WHITE,screen,self.other_click,img_next.get_width()-80,img_next.get_height()//2+400):
                     self.map_ground = load_map(self.path+ '_level_'+str(self.num_level+1) + '.txt')
                     self.map_decoration = load_map(self.path_deco+ '_level_'+str(self.num_level+1)+'.txt')
-                    self.list_monstre = load_map(self.path_monstre+ '_level_'+str(self.num_level+1)+'.txt')
+                    self.list_monstre =  [json.loads(line) for line in open(self.path_monstre+ '_level_'+str(self.num_level+1)+'.json', 'r')]
+                    self.taille_x,self.taille_y = len(self.map_ground[0]),len(self.map_ground[0])
+                    self.init_custom_map(True)
                     self.num_level +=1
                     self.init_monster()
                     self.refresh()
-                    self.click = False
+                    self.other_click = False
             
             if not self.choose_npc:
-                if creation_img_text_click(img_next,"NPC",ColderWeather,WHITE,screen,self.click,img_next.get_width()//2,img_next.get_height()//2+600):
+                if creation_img_text_click(img_next,"NPC",ColderWeather,WHITE,screen,self.other_click,img_next.get_width()//2,img_next.get_height()//2+600):
                     self.choose_npc = True
+                    
             else:  
                 screen.blit(pygame.transform.scale(img_inventaire,(screen.get_width()//2,screen.get_height()//2)),(screen.get_width()//2-img_inventaire.get_width()//2,screen.get_height()//2-img_inventaire.get_height()//2))
                 i=1
                 for npc in list_npc:
-                    if creation_img_text_click(pygame.transform.scale(npc,(2*TILESIZE,2*TILESIZE)),"",ColderWeather,WHITE,screen,self.click,x+100*i,y+200):
+                    if creation_img_text_click(pygame.transform.scale(npc,(2*TILESIZE,2*TILESIZE)),"",ColderWeather,WHITE,screen,self.other_click,x+100*i,y+200):
                         self.current_npc = pygame.transform.scale(npc,(2*TILESIZE,2*TILESIZE))
                         self.type_img_npc = i
                         self.current_tree = '0'
+                        self.other_block = '0'
                         #self.monstre_creator()
                         self.choose_npc = False
                     i+=1
                 
                 
-                if create_text_click("Quest",ColderWeather,color_2,screen,self.click,x+300,y+300):
+                if create_text_click("Quest",ColderWeather,color_2,screen,self.other_click,x+300,y+300):
                     self.type_npc = "Quest"
                     color_2=RED
                     color_1=WHITE
                     color_3=WHITE
                 if self.type_npc == "Quest" or self.type_npc == "Find" or self.type_npc == "Kill":
-                    if create_text_click("Find item",ColderWeather,color_1,screen,self.click,x,y+400):
+                    if create_text_click("Find item",ColderWeather,color_1,screen,self.other_click,x,y+400):
                         self.type_npc = "Find"
                         color_1 = RED
                         color_2 = WHITE
                         color_3 = WHITE
-                    if create_text_click("Kill monster",ColderWeather,color_3,screen,self.click,x+500,y+400):
+                    if create_text_click("Kill monster",ColderWeather,color_3,screen,self.other_click,x+500,y+400):
                         self.type_npc = "Kill"
                         color_3 = RED
                         color_2 = WHITE
                         color_1 = WHITE
                 if self.type_npc != "Find" and self.type_npc != "Kill":
-                    if create_text_click("NPC",ColderWeather,color_1,screen,self.click,x+100,y+300):
+                    if create_text_click("NPC",ColderWeather,color_1,screen,self.other_click,x+100,y+300):
                         self.type_npc = "NPC"
                         color_1=RED
                         color_2=WHITE
                         color_3=WHITE
-                    if create_text_click("Shop",ColderWeather,color_3,screen,self.click,x+500,y+300):
+                    if create_text_click("Shop",ColderWeather,color_3,screen,self.other_click,x+500,y+300):
                         self.type_npc = "Shop"
                         color_3=RED
                         color_2=WHITE
                         color_1=WHITE
-
+            if self.reset:
+                self.choose_npc = False
+                choose = False
+                self.house_select = False
+                choose_quest = False
+            self.reset = False
             pg.display.update()
     def init_monster(self):
         inter_list = []
@@ -581,5 +669,5 @@ def iso_vec_into_standard(x,y):
     y_stand = 0.5*x + y
     return (x_stand,y_stand)
 
-mapp = Map_editor(10,10)
+mapp = Map_editor(20,20)
 mapp.print_menu_editor()
