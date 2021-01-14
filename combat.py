@@ -7,7 +7,7 @@ from settings.color import *
 from fonction import *
 from case import *
 from DiceEvent import *
-from monstre import *  # a remplacer plus tard
+from monstre import *  
 from personnage import *
 from text import *
 from settings.load_img import *
@@ -27,13 +27,12 @@ class Combat:
         self.tourm = True  # cette valeur est a True si c'est le tour du monstre de jouer
         self.perso1 = self.game.player
         self.perso2 = self.game.player.crew_mate[0]
-        # a modifier quand on definit sur la map 3 joueurs
         self.perso3 = self.game.player.crew_mate[1]
         self.stop = False  # pour la generation du nombre aleatoire
         self.actdamage = False  # pour activer le calcul des degats
-        self.liste_monstre = list_monstre  # a modifier
-        self.monstre = Monstre(18,17)  # a remplacer plus tard
-        self.angle = 0
+        self.liste_monstre = list_monstre  
+        self.monstre = Monstre(18,17)  
+        self.angle = 0 #pour la rotation des dices
         self.message_hp = "perso 1 hp:" + \
             str(self.perso1.hp)+" perso 2 hp:"+str(self.perso2.hp) + \
             " perso 3 hp:"+str(self.perso3.hp)
@@ -56,7 +55,9 @@ class Combat:
         self.get_num, self.options_sorts, self.get_rang, self.options_bonus = False, False, False, False
         self.sort_choisi = False
         self.liste_sort,self.list_hit, self.get_listehit =[[0 for i in range(8)]], [], False
-        self.nb_monstres, self.nb_attack_monstre = 0, 0 # a remodifier
+        self.nb_monstres, self.nb_attack_monstre = 0, 0 
+
+    """Fonction responsable de l'affichage du combat"""
 
     def affichage(self):
         global n, list_case, rang
@@ -68,7 +69,6 @@ class Combat:
         souris_surf = pygame.Surface((1, 1))
         souris_surf.fill(RED)
         souris_surf.set_colorkey(BLACK)
-        print("liste monstres ",self.liste_monstre)
         souris_mask = pygame.mask.from_surface(souris_surf)
         # pixel_red.set_alpha(0)
         pixel_red.set_colorkey(BLACK)
@@ -110,7 +110,6 @@ class Combat:
             x.case = x.trouver_case(list_case)
 
         while (running and not self.stop_running):
-            #print(self.running)
 
             self.angle += 10
 
@@ -120,8 +119,6 @@ class Combat:
             self.perso1.check_alive()
             self.perso2.check_alive()
             self.perso3.check_alive()
-            # self.perso3.is_alive = False
-            # self.perso1.is_alive = False
             
             for text in self.texts:
                 text.update()
@@ -154,13 +151,12 @@ class Combat:
             #         self.activate = True
             if self.get_rang:
                 list_case[self.liste_tours[self.compteur_tour][2].n_case].print_effect(list_case,k=rang-1,m=self.liste_sort[0][2]-2)
+                self.activate = True
 
             if (not self.get_listehit and self.get_rang):
                 self.text, self.text_tour = "",""
                 self.list_hit = list_case[self.liste_tours[self.compteur_tour][2].n_case].get_effect(list_case,k=rang-1,m=self.liste_sort[0][2]-2)
                 for x in self.list_hit:
-                    print("name ",x.name)
-                    print("hp ",x.hp)
                     if self.liste_sort[0][1] == 1: #degats
                         x.hp -= self.liste_sort[0][0]
                     elif self.liste_sort[0][1] == 0: #soins
@@ -175,14 +171,8 @@ class Combat:
                 self.message_final = Text(self, text="", size_font=30, pos=[
                                 image_box.get_width(), 20], life_time=5000)
                 self.get_listehit, self.activate = True, True
-                print("self list hit ", self.list_hit)
 
-            #################################################################################
-
-                # if current_selec != None:
-                #     current_selec.select(True)
-                #     #current_selec.select_neighbour(list_case)
-                #     current_selec.print_effect(list_case)
+    
 
             for x in list_case:
                 x.print_contains()
@@ -220,7 +210,6 @@ class Combat:
 
             bouton1_cliqué = creation_img_text_click(
                 image_boutton, "Choose what to do", ColderWeather_small, WHITE, screen, click, 300, 50)
-            #print("compteur tour: "+str(self.compteur_tour))
 
             if (bouton1_cliqué and pygame.mouse.get_pressed()[0] and not self.first_Entry and self.checkIfTourPerso(self.compteur_tour) and not self.bloc):
                 self.clic = True
@@ -231,9 +220,7 @@ class Combat:
                 if (not self.entered and len(self.liste_monstre) > 0):
                     self.monstre_attack(self.liste_monstre[0])
 
-            # myfont = pygame.font.SysFont('Comic Sans MS', 70)
-            # textsurface = myfont.render("{}".format(self.game.clock.get_fps()), False, (0, 0, 0))
-            # screen.blit(textsurface, (300, 500))
+            
             if (self.clic):
                 bouton2_cliqué = creation_img_text_click(
                     image_boutton, "Sorts", ColderWeather_small, WHITE, screen, click, 300, 150)
@@ -253,30 +240,23 @@ class Combat:
             self.bonus_action()
 
             #if not fin: #pour ne plus afficher le de une fois qu'il a terminé de tourner
-            self.essai()
+            self.gen_tour()
 
-            # if current_selec != None:
-            #     current_selec.select(True)
-            #     current_selec.select_neighbour(list_case)
 
             running, self.game.click = basic_checkevent(self.game.click)
 
-            # if f != 255:
-            #     for x in range(255):
-            #         f+=0.008
-            #         transition.set_alpha(int(255-f))
-            #     screen.blit(transition,(0,0))
 
             if (self.message_final.update() and self.activate):
-                print("message final")
                 if (self.checkIfTourPerso(self.compteur_tour)):
-                    print(self.liste_tours[self.compteur_tour][2].actionP,"bonus ",self.liste_tours[self.compteur_tour][2].bonusAction)
                     list_case[self.liste_tours[self.compteur_tour][2].n_case].is_select = False
                     self.mourir_monstre()
+                    self.mourir(self.perso1)
+                    self.mourir(self.perso2)
+                    self.mourir(self.perso3)
                     self.nb_monstres = len(self.liste_monstre)
                     if self.nb_monstres == 0:
                         self.stop_running = True
-                    #je peux enlever le print_effect_inverse je pense
+            
                     if self.sort_choisi:
                         list_case[self.liste_tours[self.compteur_tour][2].n_case].print_effect_inverse(list_case,k=self.liste_sort[0][4]-1,m=self.liste_sort[0][2]-2)
                     self.get_rang, self.sort_choisi, self.get_listehit = False, False, False
@@ -298,9 +278,6 @@ class Combat:
                         for x in self.liste_monstre:
                             x.case.is_select = False
 
-                        # self.compteur_tour += 1
-                        # self.nb_attack_monstre = 0
-                        # self.reset_compteur()
                         self.mourir(self.perso1)
                         self.mourir(self.perso2)
                         self.mourir(self.perso3)
@@ -308,12 +285,10 @@ class Combat:
                         self.nb_attack_monstre = 0
                         self.reset_compteur()
                         self.activate, self.entered = False, False
-                        # self.reset_compteur()
 
                 self.reset_compteur()
                 if self.checkIfTourPerso(self.compteur_tour):
                     self.bloc = False
-            #self.reset_compteur()
 
             # """ FPS
             draw_text("FPS: %i" % (self.game.clock.get_fps()),
@@ -321,6 +296,7 @@ class Combat:
             pygame.display.update()
             self.game.clock.tick(64)
 
+    """Fonction pour le mis a jour du nombre de personnes encore vivants dans le combat"""
     def check_nbvivants(self):
         liste_vivants = []
         if self.perso1.is_alive:
@@ -331,7 +307,7 @@ class Combat:
             liste_vivants.append(self.perso3)
         return liste_vivants
 
-    "Fonction qui me permet de determiner les tours si j'ai initialement 3 personnages"
+    """Fonction qui me permet de determiner les tours si j'ai initialement 3 personnages"""
 
     def check_conditions(self):
         print("check conditions")
@@ -372,7 +348,7 @@ class Combat:
                 self.texts.add(self.message, self.message_tour)
                 self.next_text = False
 
-    "Fonction responsable de la generation des tours si on a 2 persos en vie, les persos vivants sont passes en arguments"
+    """Fonction responsable de la generation des tours si on a 2 persos en vie, les persos vivants sont passes en arguments"""
 
     def check_conditions2(self,perso1,perso2):
         if self.n_entrees == 1:
@@ -406,7 +382,7 @@ class Combat:
                 self.texts.add(self.message, self.message_tour)
                 self.next_text = False
 
-    "Fonction responsable de la generation des tours si on a 1 perso en vie, le perso vivant est passe en arguments"
+    """Fonction responsable de la generation des tours si on a 1 perso en vie, le perso vivant est passe en arguments"""
 
     def check_conditions3(self,perso1):
         if self.first_Entry:
@@ -437,11 +413,10 @@ class Combat:
                 self.texts.add(self.message, self.message_tour)
                 self.next_text = False
 
-    "Fonction responsable du calcul des degats"
+    """Fonction responsable du calcul des degats pour des attaques de monstre/personnage basique"""
 
     def degats(self):
         global liste_vivants
-        #liste_vivants = self.check_nbvivants()
         """Calcul de degats lors d un attack d un monstre"""
         if (not self.checkIfTourPerso(self.compteur_tour)):
             self.diceevt.resume(self.monstre.n_de, i=12000,
@@ -452,7 +427,6 @@ class Combat:
             self.next_dice = False
             self.diceevt.resultat_degats = random.randint(
                 1, self.monstre.n_de)
-        #print("damage "+str(self.diceevt.resultat_degats))
             self.text, self.text_tour = "Score: " + \
                 str(self.diceevt.resultat_degats), ""
         
@@ -503,7 +477,9 @@ class Combat:
             print("dernier self.message "+str(self.message.spawn_time))
             self.texts.add(self.message, self.message_tour)
 
-    def essai(self):  # fonction responsable de l'affichage du de
+    """Fonction responsable de la generation des tours + arreter le combat quand tous les personnages sont morts"""
+
+    def gen_tour(self):  # fonction responsable de l'affichage du de
         liste_vivants = self.check_nbvivants()
         if self.monstre.tour:
             self.tour = "Monstre"
@@ -519,7 +495,6 @@ class Combat:
             self.diceevt.resultat = random.randint(1, n)
             if self.monstre.tour:
                 self.monstre.resultat = self.diceevt.resultat
-                #self.monstre.resultat = 20
             elif self.perso1.tour:
                 self.perso1.resultat = self.diceevt.resultat
             elif self.perso2.tour:
@@ -527,12 +502,10 @@ class Combat:
             elif self.perso3.tour:
                 self.perso3.resultat = self.diceevt.resultat
 
-            #print("::"+str(self.diceevt.resultat))
             self.stop = False
             if self.first_Entry:
                 self.text = self.text + "\t"+self.tour+": " + \
-                    str(self.diceevt.resultat)  # self.message
-            #draw_text(self.message, ColderWeather_small, WHITE,screen, 100, 800)
+                    str(self.diceevt.resultat)  
                 if len(liste_vivants) == 3:
                     self.check_conditions()
                 elif len(liste_vivants) == 2:
@@ -545,9 +518,9 @@ class Combat:
                 print("fin combat")
 
             """Il faut faire de meme ici pr la liste des monstres"""
-            #print(self.perso1.hp, self.perso2.hp, self.perso3.hp)
 
-    #trier la liste des resultats
+    """Fonction de triage pour la liste des tours"""
+
     def trier(self, l):
         self.afficheoptions = True
         for j in range(len(l)):
@@ -559,16 +532,15 @@ class Combat:
                 i = i+1
             l[iMax], l[len(l)-1-j] = l[len(l)-j-1], l[iMax]
 
-    # ajouter une condition pour le click sur la map (qd les cases deviennent rouge)
+    """Fonction responsable de gerer les bouttons du menu deroulant Choose what to do"""
+
     def check_bouttons(self, b1, b2, b3, b4, b5):
         global click
         click = True
         if (b1 and pygame.mouse.get_pressed()[0]):
-            print("sorts")
-            #self.clic = False
+            self.activate = False
             self.options_sorts, self.player_nbmvt, self.options_bonus= True, False, False
             self.check_bouttons_sorts()
-            #self.attack()
         elif (b2 and pygame.mouse.get_pressed()[0]):
             self.options_sorts, self.options_bonus = False, False
             self.player_nbmvt = True
@@ -584,6 +556,8 @@ class Combat:
             self.clic = False
             self.options_sorts, self.player_nbmvt, self.options_bonus= False, False, False
             self.nothing()
+
+    """Fonction responsable de gerer les bouttons de l'option mouvement"""
 
     def check_bouttons_mvt(self):
         if (self.player_nbmvt and not self.options_sorts and not self.options_bonus):
@@ -609,12 +583,13 @@ class Combat:
                 image_boutton, "Bas", ColderWeather_small, WHITE, screen, click, 950, 1000)
             self.mouvement()
 
+    """Fonction responsable de gerer les bouttons de l'option sorts"""
+
     def check_bouttons_sorts(self):
         global list_case,rang
 
-        if (self.options_sorts and not self.player_nbmvt):
+        if (self.options_sorts and not self.player_nbmvt and not self.options_bonus):
             self.sort_choisi, self.bloc,  self.get_rang = False, True, False
-            # list_case[self.liste_tours[self.compteur_tour][2].n_case].is_select = True
             self.bouton1_attack_cliqué = creation_img_text_click(
                 image_boutton1, "magic missile", ColderWeather_small, WHITE, screen, click, 550, 150)
             self.bouton2_attack_cliqué = creation_img_text_click(
@@ -639,7 +614,7 @@ class Combat:
                 self.liste_sort = []
                 self.options_sorts, self.clic = False, False
                 self.liste_sort = self.liste_tours[self.compteur_tour][2].fireball()
-                ##########essai#################
+                ####################################
                 if self.liste_sort:
                     self.sort_choisi = True
                 else:
@@ -657,24 +632,18 @@ class Combat:
                     self.bloc, self.options_sorts = False, False
                     list_case[self.liste_tours[self.compteur_tour][2].n_case].is_select = False
 
-        # if self.liste_sort:
-        #     self.sort_choisi = True
-        # else:
-        #     # self.message_final = Text(self, text="", life_time=2000)
-        #     # self.activate = True
-        #     self.bloc = False
-            # list_case[self.liste_tours[self.compteur_tour][2].n_case].is_select = False
-
         if (self.sort_choisi and not self.get_rang):
             liste_bouttons = self.bouttons_range(self.liste_sort[0][4])
             rang = self.range_choisi(liste_bouttons)
-            #list_case[self.liste_tours[self.compteur_tour][2].n_case].print_effect(list_case,k=self.liste_sort[0][4]-1,m=self.liste_sort[0][2]-2)
-            #self.activate = True
 
 
-    #il faut ajouter la aussi fighter et l'eutre classe
+    #il faut ajouter la aussi fighter et l'autre classe
+    """Fonction qui return True si c le tour d un personnage et False si c le tour des monstres"""
+
     def checkIfTourPerso(self, i):
         return (type(self.liste_tours[i][2]) == Perso or type(self.liste_tours[i][2]) == Sorcerer)
+
+    """Fonction presentant une attaque de personnage basique"""
 
     def attack_basic(self):
         global list_case
@@ -687,7 +656,6 @@ class Combat:
         self.text = "Score du de: "+str(self.diceevt.resultat)+" et bonus STR: "+str(bonus(
             self.liste_tours[self.compteur_tour][2].STR)) + " Score: "+str(self.diceevt.resultat+bonus(self.liste_tours[self.compteur_tour][2].STR))
 
-        #ici je dois mettre une boucle for pour passer sur ts les monstres
         i, hit = 1, False #hit est a true si au moins un monstre est touche
         for monstre in self.liste_monstre:
             if self.diceevt.resultat + bonus(self.liste_tours[self.compteur_tour][2].STR) >= monstre.ac:
@@ -714,13 +682,7 @@ class Combat:
 
         self.activate = True
 
-    # def sorts(self):
-    #     global list_case
-    #     self.bloc = True
-    #     list_case[self.liste_tours[self.compteur_tour][2].n_case].is_select = True
-    #     self.check_bouttons_sorts()
-
-
+    """Fonction responsable de gerer les bouttons de nombre de moves dans le cas ou le personnage choisit l'action mouvement"""
     def nbre_mvt(self):
         self.compteur_mouvement = 0
         if(self.bouton1_nbmvt_cliqué and pygame.mouse.get_pressed()[0]):
@@ -739,6 +701,7 @@ class Combat:
             self.liste_tours[self.compteur_tour][2].n_mvt = 5
             self.player_nbmvt, self.clic, self.get_num = False, False, True
 
+    """Fonction responsable de gerer les bouttons haut, bas et direct de l'action mouvement"""
     def mouvement(self):
         global list_case, ki, kj
         ki, kj = list_case[self.liste_tours[self.compteur_tour][2].n_case].i , list_case[self.liste_tours[self.compteur_tour][2].n_case].j 
@@ -764,14 +727,12 @@ class Combat:
         if (self.compteur_mouvement >= self.liste_tours[self.compteur_tour][2].n_mvt):
             self.player_mvt = False
 
+    """Fonction qui s execute si le personnage choisit l option direct lors de l action mouvement, cette fonction a comme role de deplacer le perso direct + gestion d erreur 
+    en cas de depassement des bordures de la carte"""
     def mouvement_direct(self):
         global list_case,ki,kj
         self.bloc = True
         self.compteur_mouvement += 1
-        #############essai##################
-        # self.perso3.hp -= 1
-        # self.perso1.hp += 10
-        ###########################################
         n = numero_case(list_case, ki, kj)
         if (self.liste_tours[self.compteur_tour][2].nbre_direct < 6):
             if self.check_case(ki, kj):
@@ -783,7 +744,6 @@ class Combat:
                     list_case[n].is_select = True
                     self.liste_tours[self.compteur_tour][2].n_case = n
             else:
-                print("erreur mvt direct")
                 self.message = Text(self, text="Erreur quelqu'un se trouve deja dans cette case",
                                     color=RED, size_font=30, pos=[image_box.get_width()+50, 20], life_time=4000)
                 self.texts.add(self.message)
@@ -794,7 +754,6 @@ class Combat:
                 list_case[n].is_select = True
                 self.liste_tours[self.compteur_tour][2].n_case = n
         else:
-            print("erreur mvt direct")
             self.message = Text(self, text="Erreur vous avez depasse la limite", color=RED, size_font=30, pos=[
                                 image_box.get_width()+50, 20], life_time=4000)
             self.texts.add(self.message)
@@ -808,13 +767,15 @@ class Combat:
         self.message_final = Text(self, text="", life_time=4000)
         self.activate = True
 
+    
+    """Fonction qui s execute si le personnage choisit l option bas lors de l action mouvement, cette fonction a comme role de deplacer le perso vers le bas + gestion d erreur 
+    en cas de depassement des bordures de la carte"""
     def mouvement_bas(self):
         global list_case, ki ,kj
         self.bloc = True
         self.compteur_mouvement += 1
         n = numero_case(list_case, ki, kj)
         if ((kj-1 == 4 + self.liste_tours[self.compteur_tour][2].nbre_direct) and ((ki-1 == 12-self.liste_tours[self.compteur_tour][2].nbre_direct) or (ki-1 == 10 - self.liste_tours[self.compteur_tour][2].nbre_direct))):  # pour ne pas depasser la carte
-            print("erreur mvt bas")
             self.message = Text(self, text="Erreur vous avez depasse la limite", color=RED, size_font=30, pos=[
                                 image_box.get_width()+50, 20], life_time=4000)
             self.texts.add(self.message)
@@ -842,9 +803,10 @@ class Combat:
                 list_case[n].is_select = True
                 self.liste_tours[self.compteur_tour][2].n_case = n
         self.message_final = Text(self, text="", life_time=4000)
-        # print(list_case[self.liste_tours[self.compteur_tour][2].n_case].i, list_case[self.liste_tours[self.compteur_tour][2].n_case].j)
         self.activate = True
 
+    """Fonction qui s execute si le personnage choisit l option bas lors de l action mouvement, cette fonction a comme role de deplacer le perso vers le haut + gestion d erreur 
+    en cas de depassement des bordures de la carte"""
     def mouvement_haut(self):
         global list_case, ki, kj
         self.bloc = True
@@ -882,7 +844,7 @@ class Combat:
         self.message_final = Text(self, text="", life_time=4000)
         self.activate = True
 
-    #voir si la case se trouvant dans une ligne et une colonne precises contient un monstre ou un perso
+    """Fonction pour voir si la case se trouvant dans une ligne et une colonne precises contient un monstre ou un perso"""
     def check_case(self, ligne, colonne):
         global list_case
 
@@ -893,13 +855,12 @@ class Combat:
                 return True
         return False
 
-
+    """Fonction qui gere les bouttons de bonus actions"""
     def bonus_action(self):
         global list_case,rang
 
         if (self.options_bonus and not self.options_sorts and not self.player_nbmvt):
             self.bloc = True
-            # list_case[self.liste_tours[self.compteur_tour][2].n_case].is_select = True
             self.bouton1_attack_cliqué = creation_img_text_click(
                 image_boutton1, "Convert SP", ColderWeather_small, WHITE, screen, click, 550, 350)
             self.bouton2_attack_cliqué = creation_img_text_click(
@@ -926,10 +887,11 @@ class Combat:
                 self.message_final = Text(self, text='', life_time=2000)
                 self.activate = True
                 
-
+    """Fonction qui ne sert a rien c juste pour empiler le menu deroulant"""
     def nothing(self):
-        print("nothing")
-
+        self.bloc = False
+    
+    """Fonction qui produit un attack de monstre automatique"""
     def monstre_attack(self,monstre):
         global list_case, liste_vivants
         self.nb_attack_monstre += 1
@@ -938,8 +900,6 @@ class Combat:
 
         self.entered = True
         self.text_tour = "Tour des monstres:"
-        # print("dice resultat "+str(self.diceevt.resultat_monstreatk))
-        # print(str(self.perso1.hit)+str(self.perso2.hit)+str(self.perso3.hit))
         self.done_tourner = False
 
         
@@ -975,22 +935,27 @@ class Combat:
         self.next_text = False
         self.activate = True
 
+    """Fonction qui tronque le compteur de tours a 0"""
     def reset_compteur(self):
         if self.compteur_tour >= len(self.liste_tours):
             self.compteur_tour = 0
 
 
-
+    """Fonction qui gere quoi faire en cas de deces d un perso"""
     def mourir(self,player):
         global list_case
         current_tour = self.liste_tours[self.compteur_tour]
+        self.compteur_tour = self.liste_tours.index(current_tour)
         if (not player.is_alive):
             list_case[player.n_case].in_case = None
             for l in self.liste_tours:
                 if l[2] == player:
                     self.liste_tours.remove(l)
-        self.compteur_tour = self.liste_tours.index(current_tour)
+                    for perso in l[2].crew_mate:
+                        perso.crew_mate.remove(l[2])
+        # self.compteur_tour = self.liste_tours.index(current_tour)
 
+    """Fonction qui gere quoi faire en cas de deces d un monstre"""
     def mourir_monstre(self):
         for monstre in self.liste_monstre:
             monstre.check_alive()
@@ -1017,4 +982,4 @@ class Combat:
                 return i
             i += 1
 
-#j ai ajoute un attribut ac au perso et un dex au monstre
+

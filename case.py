@@ -64,15 +64,17 @@ class Case():
         if self.is_select:
             screen.blit(case_select, self.cordo())
     
+    """Cette fonction est l inverse de select_neighbour pour que une fois le sort fini on inverse l affichage"""
     def select_neighbour_inverse(self, list_case,k):
-        # if self.in_case != None:
         for x in list_case:
             x.is_select = False
             for i in range(-1-k,2+k):
                 for j in range(-1-k,2+k):
                     if x.j+j == self.j and x.i+i == self.i:
                         x.select(False)
-                        
+
+
+    """Cette fonction est l inverse de print_effect pour que une fois le sort fini on inverse l affichage"""                   
     def print_effect_inverse(self,list_case,k=0,m=0):
         for x in list_case:
             x.select(False)
@@ -102,7 +104,6 @@ class Case():
             x.select(False)
             if x.j-1-k == self.j and x.i+1+k == self.i:
                 x.effect_neighbour(list_case,m,liste_hit)
-        print("liste hit ", liste_hit)
         return liste_hit
 
     
