@@ -1,0 +1,5 @@
+J'ai des problèmes à propos d'essayer mon code. Je ne peux pas ouvrir "pause menu" comme la version originale en master. Mais je n'ai rien changé de votre part.
+Quelqu'un peut m'aider à résoudre ce problème?
+Merci beaucoup !
+
+Long
