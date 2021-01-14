@@ -11,9 +11,8 @@ from settings.screen import screen
 
 class Sorcerer(Perso):
     "proficient with all simple weapons but cannot wear armor"
-    def __init__(self,STR=8,DEX=8,CON=8,INT=8,WIS=8,CHA=8,level=0,xp=0):
-        super().__init__(classe="sorcerer",hit_dice=6)
-        self.name="anthozgg"
+    def __init__(self,px=100,py=100,STR=8,DEX=8,CON=8,INT=8,WIS=8,CHA=8,hp=5,hp_max=5,level=0,xp=0,name=None):
+        super().__init__(x=px,y=py,classe="sorcerer",hit_dice=6,name=name,STR=STR,DEX=DEX,CON=CON,INT=INT,WIS=WIS,CHA=CHA,hp=hp,hp_max=hp_max)
         self.attack=0
         self.sPoints=0
         self.spells_slots=[0,0]

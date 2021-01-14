@@ -18,8 +18,8 @@ class Object():
 
 
 class Perso(Entity):
-    def __init__(self,STR=8,DEX=8,CON=8,INT=8,WIS=8,CHA=8,hp=5,hp_max=5,inventaire=10,name=None,classe=None,level=0,xp=0,hit_dice=0):
-        super().__init__(100,100,pygame.transform.scale(pygame.image.load(r"Image\perso.png"),(96,147)),name,"perso")
+    def __init__(self,x,y,STR=8,DEX=8,CON=8,INT=8,WIS=8,CHA=8,hp=5,hp_max=5,inventaire=10,name=None,classe=None,level=0,xp=0,hit_dice=0):
+        super().__init__(x,y,pygame.transform.scale(pygame.image.load(r"Image\perso.png"),(96,147)),name,"perso")
         ### Stats ###
         self.classe = classe
         self.level = level
@@ -202,15 +202,21 @@ class Perso(Entity):
                 return bonus_deg+self.score("dex")
         if self.armor[4]!=None and self.armor[5]!=None:
             if all([key[self.armor[4]].wpn_type!="Two Handed",key[self.armor[4]].wpn_type!="RANGED",key[self.armor[5]].wpn_type!="RANGED"]):
-                bonus_deg+=self.action.dice(key[armor[5]].dmg)
+                bonus_deg+=self.action.dice(key[armo    r[5]].dmg)
             elif key[self.armor[4]].wpn_type=="Two Handed":
                 bonus_deg+=self.score("str")//2    
         return bonus_deg+self.score("str")
     
+    def saving_throw(self,cara,damage,dc):
+        select={0 : "dex",1 : "con", 2 : "wis"}
+        if self.lvl//2+self.score(select[cara])>= dc:
+            return damage//2
+        return damage
+
+    
     ######## All the following fonctions will be for the caractersheet ############
 
     def caracter_sheet(self):
-        #assert(self.name!=None and self.classe!=None), "perso not initialised"
         screenS=screen.copy()
         running=True
         "Creer un board et y met les attributs qui ne sont pas censer bouger"

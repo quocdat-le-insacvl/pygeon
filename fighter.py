@@ -10,10 +10,9 @@ from settings import color
 
 class Fighter(Perso):
 
-    def __init__(self):
+    def __init__(self,px=100,py=500,STR=8,DEX=8,CON=8,INT=8,WIS=8,CHA=8,hp=5,hp_max=5,level=0,xp=0,name="anthozgg"):
         "proficent avec toutes les armes"
-        super().__init__(classe="fighter")
-        self.hit_dice=10
+        super().__init__(x=px,y=py,classe="fighter",hit_dice=10,name=name,STR=STR,DEX=DEX,CON=CON,INT=INT,WIS=WIS,CHA=CHA,hp=hp,hp_max=hp_max)
         "si SW (Second Wind) est a true il est utilisable"
         self.SW=False
 
