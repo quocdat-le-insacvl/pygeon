@@ -8,6 +8,7 @@ from settings.color import *
 from Button import *
 from settings.setting import *
 from settings.police import *
+fontObj = pygame.font.Font('FreeSansBold.ttf', 32)
 class ControlsMenu():
     def __init__(self, game):
         self.ctrl_list=[int(ctrl) for ctrl in self.search_keys(SETTINGS[2][12:-1])]
@@ -63,7 +64,7 @@ class ControlsMenu():
                 butt.text='_'
                 butt.text_surface = butt.font_obj.render('_', True, pygame.Color(butt.text_color))
                 butt.display_button()
-                butt.color_on_mouse(WHITE_HEX)
+                butt.color_on_mouse(WHITE)
                 self.redraw_screen()
                 run=True
                 while run:  #wait for a keys to be pressed
