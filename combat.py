@@ -14,11 +14,17 @@ from settings.load_img import *
 from script import list_mooving_entity, list_static_entity
 from sorcerer import *
 
+# Message pour Christine: 
+#   Pour print sur le log: 
+# self.chat_box.write_log(("combat", "You play an attack!"))
+# gardes le mot "combat", change le message ("You play an attack")
+# Il faut que l'argument soit un tuple
 
 class Combat:
 
     def __init__(self, game, list_monstre):
         self.game = game
+        self.chat_box = self.game.chat_box
         self.stop_running = False
         self.texts = pygame.sprite.Group()
         self.score = 0  # pour le dice
@@ -318,8 +324,15 @@ class Combat:
             # """ FPS
             draw_text("FPS: %i" % (self.game.clock.get_fps()),
                       ColderWeather, WHITE, screen, 100, 100)
+            
+            # update + draw chatbox
+            self.game.chat_box.update()
+            self.game.chat_box.draw()
+
+            # print(self.log)
             pygame.display.update()
             self.game.clock.tick(64)
+                
 
     def check_nbvivants(self):
         liste_vivants = []
@@ -564,6 +577,10 @@ class Combat:
         global click
         click = True
         if (b1 and pygame.mouse.get_pressed()[0]):
+            print("attack")
+            self.chat_box.write_log(("combat", "You play an attack!"))
+            self.clic = False
+            # self.attack()
             print("sorts")
             #self.clic = False
             self.options_sorts, self.player_nbmvt, self.options_bonus= True, False, False
@@ -740,6 +757,8 @@ class Combat:
             self.player_nbmvt, self.clic, self.get_num = False, False, True
 
     def mouvement(self):
+        # print("compteur mouvement "+str(self.compteur_mouvement))
+        self.chat_box.write_log("compteur mouvement "+str(self.compteur_mouvement))
         global list_case, ki, kj
         ki, kj = list_case[self.liste_tours[self.compteur_tour][2].n_case].i , list_case[self.liste_tours[self.compteur_tour][2].n_case].j 
         if (self.bouton1_mvt_cliqué and pygame.mouse.get_pressed()[0]):

@@ -372,17 +372,27 @@ class ChatBox:
         return active
 
     def print_log(self):
+        # print(self.log)
         x = 5
         y = self.y_start
         sp = max(0, len(self.log) - 8)
         offset = min(self.input_box.camera, sp)
         for i in range(offset, len(self.log)):
             # type(text) == str
-            txt_surface = self.font.render(self.log[i], True, (255, 255, 255))
+            # print(self.log[i])
+            if type(self.log[i]) == tuple:
+                if self.log[i][0] == "combat":
+                    txt_surface = self.font.render(self.log[i][1], True, (255, 0, 0))
+            else:
+                txt_surface = self.font.render(self.log[i], True, (255, 255, 255))
             self.game.screen.blit(txt_surface, (x, y))
             y -= 25
             if y < self.rect.top:
                 break
+
+    def write_log(self, text):
+        self.log.insert(0, text)
+        self.input_box.camera = 0
 
 
 class InputBox:
