@@ -480,11 +480,12 @@ class Perso_game(Perso):
         self.swap_entity = False
         self.change_level = False   
         self.change_hupper_level = False  
+        self.monstre_near = False
         self.mouvement = [False,False,False,False]
         self.deplacement = [0,0]
         self.nbre_direct = 0
         self.interact_range = (10,10)
-
+        self.know_map = []
     def refresh_animation_and_mouvement(self):
         if self.mouvement[0]:
             self.deplacement = [10,-5]
@@ -508,7 +509,8 @@ class Perso_game(Perso):
         self.swap_entity = False
         self.change_level = False
         self.change_hupper_level = False  
-
+        self.monstre_near = False
+        entity = None
         possible = True
         for x in dict_collision['change_camera_entity']:
             if pixel_mask.overlap(self.masks,((self.pos_x+self.deplacement[0]+10)-x[0],(self.pos_y+self.deplacement[1]+self.img.get_height()-15)-x[1])):
@@ -522,8 +524,10 @@ class Perso_game(Perso):
         for x in list_with_collide:
             if x.collide_box.mask.overlap(self.masks,((self.pos_x+self.deplacement[0]+10)-x.collide_box.pos_x,(self.pos_y+self.deplacement[1]+self.img.get_height()-15)-x.collide_box.pos_y)):
                 self.entity_near = True
+                entity =  x
         for x in list_monster:
             if x.collide_box_interact.mask.overlap(self.masks,((self.pos_x+self.deplacement[0]+10)-x.collide_box_interact.pos_x,(self.pos_y+self.deplacement[1]+self.img.get_height()-15)-x.collide_box_interact.pos_y)) and self.visible:
+                self.monstre_near = True
                 return x 
         for x in dict_collision['collision_change_camera']:
             if pixel_mask.overlap(self.masks,((self.pos_x+self.deplacement[0]+10)-x[0],(self.pos_y+self.deplacement[1]+self.img.get_height()-15)-x[1])):
@@ -540,7 +544,8 @@ class Perso_game(Perso):
         if possible:
             self.pos_x += self.deplacement[0]
             self.pos_y += self.deplacement[1]
-            return None
+
+            return entity
         """def move_player():
         Permet de déplcer le player_rect de mouvement check si le joeurs ne collide pas avec un chamgement de caméra ou une entité"""
     def check_user(self,event):

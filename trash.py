@@ -76,6 +76,7 @@ class Map():
         self.static_entity = list_static_entity
         self.collision_hupper_level = []
         self.list_monster = []
+        self.list_shop = []
         self.dict_collision = dict()
         self.spawn_point = (0,0)
     def load_map(self):
@@ -124,15 +125,18 @@ class Map():
         line=1
         self.list_shop = []
         for i in range(self.all_shop[0]):
-            inv = Inventaire(7,5)
-            for x in self.all_shop[line+2]:
-                if self.all_shop[line+2][x] != None:
-                    inv.ajouteritems(key[self.all_shop[line+2][x]])
-            inter_x = int(self.all_shop[line])
-            inter_y = int(self.all_shop[line+1])
-            x,y = (inter_y-inter_x)*190//2+9000,(inter_y+inter_x)*190//4
-            list_seller.append(Shop(inv,x,y,list_npc[self.all_shop[line+3]],"Marc",'Seller',talking="Bienvenue dans mon magasin !",size_collide_box=2))
-            line+=4
+            if self.all_shop[line+4] == int(self.path[10]):
+                inv = Inventaire(7,5)
+                for x in self.all_shop[line+3]:
+                    if self.all_shop[line+3][x] != None:
+                        inv.ajouteritems(key[self.all_shop[line+3][x]])
+                inter_x = int(self.all_shop[line+1])
+                inter_y = int(self.all_shop[line+2])
+                x,y = (inter_y-inter_x)*190//2+9000,(inter_y+inter_x)*190//4
+                self.list_shop.append(Shop(inv,x,y,list_npc[self.all_shop[line+4]],"Marc",'Seller',talking="Bienvenue dans mon magasin !",size_collide_box=2))
+                self.list_shop[len(self.list_shop)-1].update_pos_collide()
+                self.display.blit(self.list_shop[len(self.list_shop)-1].img,(self.list_shop[len(self.list_shop)-1].pos_x,self.list_shop[len(self.list_shop)-1].pos_y))
+            line+=5
     def print_ground(self):
         i=0
         for layer in self.map:
@@ -301,10 +305,11 @@ class Game():
         interact = False
         pause_menu = False
         running = True
-        
+        """
         for x in list_seller:
             x.update_pos_collide()
             self.map.display.blit(x.img,(x.pos_x,x.pos_y))
+            """
         n= 1
         f=0
         g=0
@@ -330,11 +335,11 @@ class Game():
         draw_interact = True
         frame = 1
         nb_crew = 0
+        self.player.know_map.append(self.current_level)
         while running:
             if pygame.time.get_ticks() > time_line:
                 time_line += 160
                 frame = (frame)%6 +1 
-
             #""" If Press M : Zoom map === PAUSE"""
             
             if self.zoom_map:
@@ -394,50 +399,47 @@ class Game():
                 x.moove_patrouille(self.player,self.map.list_monster)
             #self.map.list_monster[0].moove_patrouille(self.player,self.map.list_monster)
             
-
-            '''for entity in self.list_mooving_entity:
-                if entity.name == "test_demon":
-                    entity.pos_y += 1
-                    entity.pos_x += 3'''
             #self.print_frog(player_rect,screen,case_connue,center_x,center_y)
 
             #screen.blit(player.mask_surface,(center_x+self.player.pos_x+20,center_y+self.player.pos_y+self.player.img.get_height()-15))
 
             '''Action si contact avec entité'''
-            if self.player.entity_near:
-                entity = self.player.find_nearest_entity(list_seller)
-                if draw_interact: draw_text("Press I for interact %s"%entity.name,ColderWeather,WHITE,screen,500,500)
-                if interact:
-                    draw_interact = False
-                    is_talking = self.interact(entity,is_talking)
-                    self.player.mouvement = [False,False,False,False]
-            else:
-                draw_interact = True
+            
             if self.player.change_level:
                 if draw_interact: draw_text("Press I for go under",ColderWeather,WHITE,screen,500,500)
                 if interact:
-                    #print("Je suis etage",self.current_level)
-                    
+                    pygame.image.save(self.fog.surface,'fog_'+str(self.current_level)+ '.png')
                     print(donjon)
                     for x in donjon:
                         x_ = x[0]-self.player.pos_x
-                        
                         y = x[1] - self.player.pos_y
-                       
+
                         if abs(x[0]-self.player.pos_x) < 200 and abs(x[1]-self.player.pos_y) < 200 :
-                            #print("Je vais etage",donjon[len(donjon)-1-nb][3])
                             self.map = list_map[x[3]-1]
                             self.current_level = x[3]
                             self.fog = Fog(self)
+                            if not self.player.know_map.__contains__(self.current_level):
+                                self.player.know_map.append(self.current_level)
+                            else:
+                                self.fog.surface = pygame.image.load('fog_' + str(self.current_level)+ '.png')
+
+
                         if self.map.spawn_point != (0,0):
                             self.player.pos_x = self.map.spawn_point[0]
                             self.player.pos_y = self.map.spawn_point[1]
                     interact = False
+
+
+
+
+
             if self.player.change_hupper_level:
                 if draw_interact: draw_text("Press I for go hupper",ColderWeather,WHITE,screen,500,500)
+
                 if interact:
-                    print(self.current_level)
                     nb=0
+                    pygame.image.save(self.fog.surface,'fog_'+str(self.current_level)+ '.png')
+
                     for x in donjon:
                         if x[3] == self.current_level:
                             nb+=1
@@ -445,8 +447,11 @@ class Game():
                         self.map = list_map[x[2]-1]
                         self.current_level = x[2]
                         self.fog = Fog(self)
+                        if not self.player.know_map.__contains__(self.current_level):
+                            self.player.know_map.append(self.current_level)
+                        else:
+                            self.fog.surface = pygame.image.load('fog_' + str(self.current_level)+ '.png')
                     interact = False
-                    print(self.current_level)
             '''Set caméra / player pos pour sauvegarde'''
 
             center_x -= (self.player.pos_x + center_x - 900)//20
@@ -505,15 +510,27 @@ class Game():
                         if event.key == K_m:
                             self.zoom_map = False
 
-            monstre = self.player.move_player(self.map.dict_collision,list_seller,self.map.list_monster)
-            if monstre != None:
+            monstre = self.player.move_player(self.map.dict_collision,self.map.list_shop,self.map.list_monster)
+            if self.player.entity_near:
+                if draw_interact: draw_text("Press I for interact %s"%monstre.name,ColderWeather,WHITE,screen,500,500)
+                if interact:
+                    draw_interact = False
+                    is_talking = self.interact(monstre,is_talking)
+                    self.player.mouvement = [False,False,False,False]
+            else:
+                draw_interact = True
+            if self.player.monstre_near and monstre != None:
+
                 f = Combat(self,monstre.group_monster)
                 f.affichage()
-                self.print_combat_screen(monstre.group_monster)
-
-
+                if f.player.crew_mate[0].hp > 0 or f.player.crew_mate[1].hp > 0  or f.player.hp > 0:
+                    for x in monstre.group_monster:
+                        print(1)
+                        self.map.list_monster.remove(x)
+                monstre = None
 
             self.player.animate_map(frame%2+1)
+            
             """
             if g != 255:
                 for x in range(255):
@@ -526,10 +543,11 @@ class Game():
             if show_characteresheet:
                 self.player.caracter_sheet()
                 show_characteresheet = False
-            
-            """draw_text("FPS: %i, x : %i , y : %i" % (clock.get_fps(),self.player.pos_x,self.player.pos_y
-                                                    ,), ColderWeather, WHITE, screen, 100, 100)"""
+            """
+            draw_text("FPS: %i, x : %i , y : %i" % (clock.get_fps(),self.player.pos_x,self.player.pos_y
+                                                    ,), ColderWeather, WHITE, screen, 100, 100)
             draw_text("Donjon.x: %i, Donjon.y : %i ,x : %i, y : %i" % (len(self.map.list_monster),donjon[0][1],self.player.pos_x,self.player.pos_y), ColderWeather, WHITE, screen, 100, 100)
+            """
             self.player.spell_bar()
             
             # update skill
@@ -542,7 +560,42 @@ class Game():
             
             pygame.display.update()
             clock.tick(64)
-
+    def print_pause_menu(self):
+        display = pygame.Surface((1980, 1000))
+        display.set_colorkey(LIGHT_GREY)
+        running = True
+        while running:
+            display.fill(LIGHT_GREY)
+            printbackgrounds(display)
+            if create_text_click("Resume", Drifftype, GREY, display, self.click, display.get_width()//2, display.get_height()//3):
+                break
+            if create_text_click('Sauvegarder', Drifftype, GREY, display, self.click, display.get_width()//2, display.get_height()//2.1):
+                global player_for_save
+                player_for_save.load_player(self.player)
+                player_for_save,self.fog.surface = load_game(self.click, player_for_save,self.fog.surface)
+                print(player_for_save.name)
+                self.player.load_player(player_for_save)
+            if create_text_click('Quit', Drifftype, GREY, display, self.click, display.get_width()//2, display.get_height()//1.6):
+                if Validation_screen("Voulez-vous quittez sans sauvegarder ?", display, self.click):
+                    sys.exit()
+            screen.blit(pygame.transform.scale(display, WINDOWS_SIZE), (0, 0))
+            pygame.display.update()
+            running, self.click = basic_checkevent(self.click)
+        self.click = False
+        """Affiche un menu pause classique"""
+    def load_fog(self,display_fog):
+        self.fog.display = display_fog
+    def interact(self,entity,is_talking):
+        display_talk = pygame.Surface((1800,1080))
+        display_talk.set_colorkey((0,0,0))
+        if entity.type == "Seller":
+            if entity.talking != None:
+                if is_talking == True or Validation_screen(entity.talking,display_talk,self.click):
+                    is_talking = True
+                    entity.print_shop(self.player,self.click)
+                screen.blit(display_talk,(0,0))
+        return is_talking
+"""
     def print_combat_screen(self, list_monstre):
         running = True
         pixel_mask = pygame.mask.from_surface(pixel_red)
@@ -639,48 +692,15 @@ class Game():
 
             pygame.display.update()
             running, self.click = basic_checkevent(self.click)
-        """Affichage plateau + action souris
+        Affichage plateau + action souris
         principe de fonctionnement :
         Le principe de la carte est le suivant :
         Le jeu crée un object Case(i,j) a partir d'une map dans un text (qui contient des W)
         Ensuite la boucle for x in list_case permet d'imprimer toute les cases sur le screen
-        la boucle d'après permet de voir si la souris (le mask) overlap la case c'est a dire si la souris collide avec la case, si elle overlap le programme cherche l'object Case(i,j) et utilise sa fonction select pour faire un affichage visuel de la case choisi"""
+        la boucle d'après permet de voir si la souris (le mask) overlap la case c'est a dire si la souris collide avec la case, si elle overlap le programme cherche l'object Case(i,j) et utilise sa fonction select pour faire un affichage visuel de la case choisi
+"""
 
-    def print_pause_menu(self):
-        display = pygame.Surface((1980, 1000))
-        display.set_colorkey(LIGHT_GREY)
-        running = True
-        while running:
-            display.fill(LIGHT_GREY)
-            printbackgrounds(display)
-            if create_text_click("Resume", Drifftype, GREY, display, self.click, display.get_width()//2, display.get_height()//3):
-                break
-            if create_text_click('Sauvegarder', Drifftype, GREY, display, self.click, display.get_width()//2, display.get_height()//2.1):
-                global player_for_save
-                player_for_save.load_player(self.player)
-                player_for_save,self.fog.surface = load_game(self.click, player_for_save,self.fog.surface)
-                print(player_for_save.name)
-                self.player.load_player(player_for_save)
-            if create_text_click('Quit', Drifftype, GREY, display, self.click, display.get_width()//2, display.get_height()//1.6):
-                if Validation_screen("Voulez-vous quittez sans sauvegarder ?", display, self.click):
-                    sys.exit()
-            screen.blit(pygame.transform.scale(display, WINDOWS_SIZE), (0, 0))
-            pygame.display.update()
-            running, self.click = basic_checkevent(self.click)
-        self.click = False
-        """Affiche un menu pause classique"""
-    def load_fog(self,display_fog):
-        self.fog.display = display_fog
-    def interact(self,entity,is_talking):
-        display_talk = pygame.Surface((1800,1080))
-        display_talk.set_colorkey((0,0,0))
-        if entity.type == "Seller":
-            if entity.talking != None:
-                if is_talking == True or Validation_screen(entity.talking,display_talk,self.click):
-                    is_talking = True
-                    entity.print_shop(self.player,self.click)
-                screen.blit(display_talk,(0,0))
-        return is_talking
+    
 
 #player_direct = Perso(0,0,0,0,0,0,0,0,0,[])
 # game = Game(player_direct)

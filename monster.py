@@ -34,7 +34,7 @@ class Monster(Entity):
         self.mouvement = [0,0]
         self.STR = 16
         self.hit = False
-        self.hp = 10
+        self.hp = 0
         self.ac = 10
         self.is_alive = True
         self.case = None

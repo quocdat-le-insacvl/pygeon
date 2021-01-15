@@ -167,8 +167,7 @@ class Map_editor:
                 running = False
             pygame.display.update()
         
-        
-        self.list_shop.append([self.current_npc,self.taille_x-1-case[0],case[1],loot_inv,self.type_img_npc])
+        self.list_shop.append([self.current_npc,self.taille_x-1-case[0],case[1],loot_inv,self.type_img_npc,self.num_level-1])
         self.current_npc = None
         self.type_npc = ""
     
@@ -386,6 +385,8 @@ class Map_editor:
         fichier.write("\n")
 
         for x in self.list_shop:
+            fichier.write(str(x[5]))
+            fichier.write("\n")
             fichier.write(str(x[1]))
             fichier.write("\n")
             fichier.write(str(x[2]))
@@ -394,6 +395,7 @@ class Map_editor:
             fichier.write("\n")
             fichier.write(str(x[4]))
             fichier.write("\n")
+            
         fichier.close()
 
         fichier = open("donjon.json","w")
@@ -401,8 +403,6 @@ class Map_editor:
             json.dump(x,fichier)
             fichier.write("\n")
         fichier.close
-
-
     def print_menu_editor(self):
         self.init_collid()
         self.init_cord()

@@ -7,7 +7,7 @@ from settings.police import Drifftype,ColderWeather,Rumbletumble,coeff,coeff1,co
 from settings.load_img import *
 from settings.color import *
 from fonction import *
-from entity import Entity
+from entity import Entity,Collide_box
 from items import *
 
 key = list(Wikitem.keys())
@@ -202,6 +202,7 @@ class Shop(Entity):
     def __init__(self,inventory,pos_x,pos_y,img,name,which_type,animation_dict=None,talking=None,size=(0,0),size_collide_box=1):
         Entity.__init__(self,pos_x,pos_y,img,name,which_type,animation_dict,talking,size,size_collide_box=1)
         self.show = True
+        
         self.inventory = inventory
     def print_shop(self,perso,click,just_print = False):
         display_talk = pygame.Surface((1800,1080))
