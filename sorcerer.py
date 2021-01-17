@@ -25,7 +25,7 @@ class Sorcerer(Perso):
         self.WIS = WIS
         self.CHA = CHA
         self.spell={"magic missile" : 0, "firebolt" : 1, "fireball" : 2}
-        self.bonus={"Convert Sorcery points" : 0, "Convert Spells slots" : 1, "Quickspell" : 2}
+        self.bonus={"Convert Sorcery points" : 3, "Convert Spells slots" : 4, "Quickspell" : 5}
 
     def levelupchange(self):
         if super().levelupchange():
@@ -354,9 +354,9 @@ class Sorcerer(Perso):
             return self.fireball()
     
     def select_bonus(self, choice):
-        if choice==0:
+        if choice==3:
             self.convertSP()
-        elif choice==1:
+        elif choice==4:
             self.convertSpellS()
-        elif choice==2:
+        elif choice==5:
             self.quick_spell()
