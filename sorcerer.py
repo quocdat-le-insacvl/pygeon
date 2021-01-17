@@ -24,6 +24,8 @@ class Sorcerer(Perso):
         self.INT = INT
         self.WIS = WIS
         self.CHA = CHA
+        self.spell={"magic missile" : 0, "firebolt" : 1, "fireball" : 2}
+        self.bonus={"Convert Sorcery points" : 0, "Convert Spells slots" : 1, "Quickspell" : 2}
 
     def levelupchange(self):
         if super().levelupchange():
@@ -38,7 +40,6 @@ class Sorcerer(Perso):
                 self.sort2=True
             elif self.level==4:
                 self.spells_slots[1]=3
-            
             if self.level>=2:
                 self.sPoints=self.level
                 self.attack=trunc(self.level/2)
@@ -195,10 +196,8 @@ class Sorcerer(Perso):
         [montant degat/soins,type (0=soins, 1=degats), le nombre de cible (ex 1=1 carré), la zone d'effet (1 carré ou 2 cône,
         0 si l'élement précédent est 1),la range du sort (cible à 4 carrées max), la type de cible (0=soit même, 1=ennemies, 2=alliées),
         dc (si 0 pas de saving throw possible),type de saving thow (si 0 à dc 0 au type)]"""
-        if self.actionP>0 or self.bonusAction>0:
+        if self.actionP>0:
             listdeg.append([self.action.dice(9)+1,1,1,0,24,1,0,0])
-            if self.bonusAction>0:
-                self.bonusAction-=1
             else:
                 self.actionP-=1 
             if self.level>=5:
@@ -346,3 +345,18 @@ class Sorcerer(Perso):
     def quickened_spell(self):  (optional)
     def Distant_spell(self): (optional)"""
     
+    def select_spell(self, choice):
+        if choice==0:
+            return self.magic_missile()
+        elif choice==1:
+            return self.firebolt()
+        elif choice==2:
+            return self.fireball()
+    
+    def select_bonus(self, choice):
+        if choice==0:
+            self.convertSP()
+        elif choice==1:
+            self.convertSpellS()
+        elif choice==2:
+            self.quick_spell()
