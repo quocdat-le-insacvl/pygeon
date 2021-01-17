@@ -217,7 +217,7 @@ class Sorcerer(Perso):
             [montant degat/soins,type (0=soins, 1=degats), le nombre de cible (ex 1=1 carré de proximité, 2 tous les carrés contact a la cible),
             la zone d'effet (1 carré ou 2 cône,0 si l'élement précédent est 1),la range du sort (cible à 4 carrées max),
             la type de cible (0=soit même, 1=ennemies, 2=alliées),dc (si 0 pas de saving throw possible),
-            type de saving thow (si 0 à dc 0 au type),1 pour dex, 2 pour con,3 pour will]"""   
+            type de saving thow (si 0 à dc 0 au type,1 pour dex, 2 pour con,3 pour will)]"""   
             deg=self.action.dice(6)+self.action.dice(6)+self.action.dice(6)+self.action.dice(6)+self.action.dice(6)+self.action.dice(6) 
             listdeg.append([deg,1,2,1,24,1,10+3+self.score("con"),1]) 
             self.spells_slots[1]-=1

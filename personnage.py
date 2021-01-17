@@ -52,6 +52,7 @@ class Perso(Entity):
         self.action=Actions()
         self.actionP=1
         self.bonusAction=1
+        self.crit=False
         ### extern elements ###
         self.difficulty = 10
         self.inventaire = inventaire
@@ -164,54 +165,7 @@ class Perso(Entity):
         pygame.draw.rect(surface, barmax_color, barmax_position)
         pygame.draw.rect(surface, bar_color, bar_position)
 
-    def score(self,comp):
-        """basic version of the skills effect just to provide proficiency
-        this fonction must be call for all the calculs wich need ability modifier"""
-        select={"str" : 0,"dex" : 1, "con" : 2, "int" : 3, "wis" : 4, "cha" : 5}
-        assert(comp in select), "wrong argument for score()" 
-        if self.skills[select[comp]]:
-            return self.ability_score(select[comp])+self.proficiency
-        else :
-            return self.ability_score(select[comp])
     
-    def handicap(self,comp):
-        "calcul les différents handicapes, liés au poids de l'armure par exemple"
-        if comp==1 and self.armor[1]!=None:
-            if self.stats[comp]>8+self.key[self.armor[1]].dex_bonus:
-                return 8+self.key[self.armor[1]].dex_bonus
-        return self.stats[comp]
-
-    def calcul_armor(self, type_of_calcul=0):
-        """ refresh the value of the class armor, must add calcul with """
-        assert(type_of_calcul==1 or type_of_calcul==0), "must add a valide type of calcul : 1 without armor"
-        if type_of_calcul==0:
-            if self.armor[1]!=None:
-                return self.score("dex")+10+key[armor[1]].armor_bonus
-        return self.score("dex")+10
-    
-    def damage(self):
-        "calcule les dommages en fonction de l'arme équipée"
-        bonus_deg=0
-        if self.armor[4]!=None:
-            bonus_deg=self.action.dice(key[armor[4]].dmg)
-            if key[self.armor[4]].wpn_type=="RANGED" or key[self.armor[5]].wpn_type=="RANGED":
-                return bonus_deg+self.score("dex")
-        elif self.armor[5]!=None and self.armor[4]==None:
-            bonus_deg=self.action.dice(key[armor[5]].dmg)
-            if key[self.armor[4]].wpn_type=="RANGED" or key[self.armor[5]].wpn_type=="RANGED":
-                return bonus_deg+self.score("dex")
-        if self.armor[4]!=None and self.armor[5]!=None:
-            if all([key[self.armor[4]].wpn_type!="Two Handed",key[self.armor[4]].wpn_type!="RANGED",key[self.armor[5]].wpn_type!="RANGED"]):
-                bonus_deg+=self.action.dice(key[armo    r[5]].dmg)
-            elif key[self.armor[4]].wpn_type=="Two Handed":
-                bonus_deg+=self.score("str")//2    
-        return bonus_deg+self.score("str")
-    
-    def saving_throw(self,cara,damage,dc):
-        select={0 : "dex",1 : "con", 2 : "wis"}
-        if self.lvl//2+self.score(select[cara])>= dc:
-            return damage//2
-        return damage
 
     
     ######## All the following fonctions will be for the caractersheet ############
@@ -403,3 +357,69 @@ class Perso(Entity):
                     self.chose_skill=False
                     running=False
         screen.blit(screenS,(0,0))
+
+    """fonctions utiles pour le combat"""
+
+    def score(self,comp):
+        """basic version of the skills effect just to provide proficiency
+        this fonction must be call for all the calculs wich need ability modifier"""
+        select={"str" : 0,"dex" : 1, "con" : 2, "int" : 3, "wis" : 4, "cha" : 5}
+        assert(comp in select), "wrong argument for score()" 
+        if self.skills[select[comp]]:
+            return self.ability_score(select[comp])+self.proficiency
+        else :
+            return self.ability_score(select[comp])
+    
+    def handicap(self,comp):
+        "calcul les différents handicapes, liés au poids de l'armure par exemple"
+        if comp==1 and self.armor[1]!=None:
+            if self.stats[comp]>8+self.key[self.armor[1]].dex_bonus:
+                return 8+self.key[self.armor[1]].dex_bonus
+        return self.stats[comp]
+
+    def calcul_armor(self, type_of_calcul=0):
+        """ refresh the value of the class armor, must add calcul with """
+        assert(type_of_calcul==1 or type_of_calcul==0), "must add a valide type of calcul : 1 without armor"
+        if type_of_calcul==0:
+            if self.armor[1]!=None:
+                return self.score("dex")+10+key[armor[1]].armor_bonus
+        return self.score("dex")+10
+    
+    def calcul_attack_score(self):
+        "renvoie le score de l'attaque roll pour savoir si le joueur touvhe le monstre"
+        i=self.action.dice(20)
+        if i==1:
+            return 0
+        elif i==20:
+            self.crit=True
+            return float("inf")
+        return i+self.attack
+    
+    def damage(self):
+        "calcule les dommages en fonction de l'arme équipée"
+        bonus_deg=0
+        crit=1
+        if self.crit:
+            crit=2
+            self.crit=False
+        if self.armor[4]!=None:
+            bonus_deg=self.action.dice(key[armor[4]].dmg)
+            if key[self.armor[4]].wpn_type=="RANGED" or key[self.armor[5]].wpn_type=="RANGED":
+                return bonus_deg+self.score("dex")*crit
+        elif self.armor[5]!=None and self.armor[4]==None:
+            bonus_deg=self.action.dice(key[armor[5]].dmg)
+            if key[self.armor[4]].wpn_type=="RANGED" or key[self.armor[5]].wpn_type=="RANGED":
+                return bonus_deg+self.score("dex")*crit
+        if self.armor[4]!=None and self.armor[5]!=None:
+            if all([key[self.armor[4]].wpn_type!="Two Handed",key[self.armor[4]].wpn_type!="RANGED",key[self.armor[5]].wpn_type!="RANGED"]):
+                bonus_deg+=self.action.dice(key[armor[5]].dmg)
+            elif key[self.armor[4]].wpn_type=="Two Handed":
+                bonus_deg+=self.score("str")//2    
+        return bonus_deg+self.score("str")*crit
+    
+    def saving_throw(self,cara,damage,dc):
+        """fonction à utiliser pour resister à un sort"""
+        select={0 : "dex",1 : "con", 2 : "wis"}
+        if self.lvl//2+self.score(select[cara])>= dc:
+            return damage//2
+        return damage
