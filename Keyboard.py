@@ -24,6 +24,7 @@ class ControlsMenu():
         self.warning_text = Validation_screen("Touches qui se chevauchent", display, self.click)
         self.list_button=[Button(self.game, SCREEN_WIDTH*(2+2*(i%2))//5, SCREEN_HEIGHT//3+50*(i//2), pygame.key.name(self.ctrl_list[i]), ColderWeather, BLACK, 30,button,buttonp) for i in range(len(self.ctrl_list))]
         self.save_button = Button(self.game, 175, 150, "Save", ColderWeather, WHITE, 50,background=button)
+        self.return_button = Button(self.game, 175, 50, "Return", ColderWeather, WHILE, 50,background=button)
         self.background = printbackgrounds(display)
     def search_keys(self,ligne):
         "Get the key from the settings"
@@ -98,5 +99,4 @@ class ControlsMenu():
                 self.warning_text[0],self.save_text[0]=False,False
             else: self.warning_text[0]=True
         if self.return_button.is_clicked(event):
-            self.game.current_menu = self.game.options_menu
-            self.run_display = False        
+            break        
