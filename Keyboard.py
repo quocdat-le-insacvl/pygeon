@@ -17,13 +17,14 @@ class ControlsMenu():
         #init name of key
         for k in KEYS_DICO:
             KEYS_DICO[k]=self.ctrl_list[i]
-            self.list_action.append(Text(self.game.display, SCREEN_WIDTH*(1+2*(i%2))//5, SCREEN_HEIGHT//3+50*(i//2), k[1:], ColderWeather, WHITE, 40, False))
+            self.list_action.append(Text1(self.game.display, LARGEUR*(1+2*(i%2))//5, LONGUEUR//3+50*(i//2), k[1:], ColderWeather, WHITE, 40, False))
             i+=1
         #init button
         self.save_text = Validation_screen("Voulez-vous enregistrer ?", display, self.click)
         self.warning_text = Validation_screen("Touches qui se chevauchent", display, self.click)
-        self.list_button=[Button(self.game, SCREEN_WIDTH*(2+2*(i%2))//5, SCREEN_HEIGHT//3+50*(i//2), pygame.key.name(self.ctrl_list[i]), ColderWeather, BLACK, 30,button,buttonp) for i in range(len(self.ctrl_list))]
+        self.list_button=[Button(self.game, LARGEUR*(2+2*(i%2))//5, LONGUEUR//3+50*(i//2), pygame.key.name(self.ctrl_list[i]), ColderWeather, BLACK, 30,button,buttonp) for i in range(len(self.ctrl_list))]
         self.save_button = Button(self.game, 175, 150, "Save", ColderWeather, WHITE, 50,background=button)
+        self.return_button = Button(self.game, 175, 50, "Return", ColderWeather, WHILE, 50,background=button)
         self.background = printbackgrounds(display)
     def search_keys(self,ligne):
         "Get the key from the settings"
@@ -97,6 +98,4 @@ class ControlsMenu():
                 self.save_button.text_surface = self.save_button.font_obj.render(self.save_button.text, True, pygame.Color(WHITE))
                 self.warning_text[0],self.save_text[0]=False,False
             else: self.warning_text[0]=True
-        if self.return_button.is_clicked(event):
-            self.game.current_menu = self.game.options_menu
-            self.run_display = False        
+              
