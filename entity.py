@@ -74,7 +74,9 @@ class Entity():
             self.display.blit(animation[self.type_animation + "_" + str(int(self.frame)) + ".png"], (self.img.get_width()//2-animation[self.type_animation + "_" + str(int(self.frame)) + ".png"].get_width()//2+150-int(
                 self.img.get_width()//2)+self.decalage[0], self.img.get_height()-animation[self.type_animation + "_" + str(int(self.frame)) + ".png"].get_height()+300-self.img.get_height()+self.decalage[1]))
         else:
+            
             self.display.blit(self.img, (0, 0))
+        print(f'Taille de l image ({self.img.get_width()},{self.img.get_height()})\n')
         return one_complete
             #self.display.blit(animation[ self.type_animation + "_" + str(int(self.frame)) + ".png"],(150-animation[ self.type_animation + "_" + str(int(self.frame)) + ".png"].get_width()//2,self.img.get_height()-animation[ self.type_animation + "_" + str(int(self.frame)) + ".png"].get_height()+300-self.img.get_height()+self.decalage_display[1]))
     def animate_map(self, flip=False,scale=None):
@@ -93,13 +95,9 @@ class Entity():
                     animation[self.type_animation + "_" + str(int(self.frame)) + ".png"], True, False)
                 
                 self.img.set_colorkey(BLACK)
-<<<<<<< HEAD
             if scale != None:
                     self.img = pygame.transform.scale(self.img,scale)
 
-=======
-    
->>>>>>> 0266169eca772f6a5cf1d0b0d9d2afdc99ad8140
     def refresh_display(self):
         self.display.fill((0, 0, 0))
         self.display.set_colorkey((0, 0, 0))

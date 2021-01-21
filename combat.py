@@ -30,49 +30,9 @@ pixel_red.set_colorkey(BLACK)
 
 class Combat:
 
-    def __init__(self, list_monstre,chat_box,player):
+    def __init__(self, game,list_monstre):
         self.game = game
         self.chat_box = self.game.chat_box
-<<<<<<< HEAD
-        self.stop_running = False
-        self.texts = pygame.sprite.Group()
-        self.score = 0  # pour le dice
-        self.diceevt = DiceEvent(self)
-        self.pause = False
-        self.tourm = True  # cette valeur est a True si c'est le tour du monstre de jouer
-        self.perso1 = player
-        self.perso2 = player.player.crew_mate[0]
-        # a modifier quand on definit sur la map 3 joueurs
-        self.perso3 = player.player.crew_mate[1]
-        self.stop = False  # pour la generation du nombre aleatoire
-        self.actdamage = False  # pour activer le calcul des degats
-        self.liste_monstre = list_monstre  # a modifier
-        #self.monstre = Monstre(18,17)  # a remplacer plus tard
-        self.angle = 0
-        self.message_hp = "perso 1 hp:" + \
-            str(self.perso1.hp)+" perso 2 hp:"+str(self.perso2.hp) + \
-            " perso 3 hp:"+str(self.perso3.hp)
-        self.player = player
-        self.n_entrees = 0
-        self.liste_tours = []  # liste de listes
-        # pour faire le parcours des tours
-        self.compteur_tour, self.compteur_mouvement = 0, 0
-        self.text = "Score: "
-        self.text_tour = "Tour: "
-        self.message = Text(self, text="Generation des tours ...", size_font=30, pos=[
-                           image_box.get_width()+50, 20], life_time=5000)
-        self.texts.add(self.message)
-        self.diceevt.all_dices.add(self.diceevt.dice)
-        self.next_dice, self.next_text, self.player_mvt, self.player_nbmvt = False, False, False, False
-        self.clic, self.bloc = False, False  # pour les bouttons
-        self.temps = pygame.time.get_ticks()
-        self.message_final = Text(self, life_time=0)
-        self.player.nbre_direct = 0
-        self.get_num, self.options_sorts, self.get_rang, self.options_bonus = False, False, False, False
-        self.sort_choisi = False
-        self.liste_sort,self.list_hit, self.get_listehit =[[0 for i in range(8)]], [], False
-        self.nb_monstres, self.nb_attack_monstre = 0, 0 # a remodifier
-=======
         self.perso1 = self.game.player
         self.liste_monstre = list_monstre
         self.player = self.game.player
@@ -80,7 +40,6 @@ class Combat:
 
         self.map = None
         self.mask = None
->>>>>>> 0266169eca772f6a5cf1d0b0d9d2afdc99ad8140
 
         self.select_menu = False
         self.select_attack = False
@@ -123,12 +82,6 @@ class Combat:
             self.list_tour.append(x)
             list_case[i].in_case = x
             i += 1
-<<<<<<< HEAD
-        #self.game.player.transform_display_for_combat()
-        list_case[self.player.n_case].in_case = self.player
-        list_case[65].in_case = self.player.crew_mate[0]
-        list_case[51].in_case = self.player.crew_mate[1]
-=======
         list_case[59].in_case = self.game.player
         self.list_tour.append(self.game.player)
         list_case[65].in_case = self.game.player.crew_mate[0]
@@ -137,7 +90,6 @@ class Combat:
         list_case[51].in_case = self.game.player.crew_mate[1]
         self.game.player.crew_mate[1].DEX = 9
         self.list_tour.append(self.game.player.crew_mate[1])
->>>>>>> 0266169eca772f6a5cf1d0b0d9d2afdc99ad8140
 
         #VOIR TOUT LES MONSTRES
         self.nb_monstres= len(self.liste_monstre)

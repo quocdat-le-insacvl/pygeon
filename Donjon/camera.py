@@ -52,6 +52,7 @@ class Camera():
                             special_flags=pygame.BLEND_MULT)
         self.minimap.draw_minimap()
         pygame.display.update()
+    
     def init(self,perso):
         self.center_x = -perso.pos_x+900
         self.center_y = -perso.pos_y+400

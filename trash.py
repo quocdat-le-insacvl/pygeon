@@ -1,6 +1,6 @@
 from skill import Stealth
 from personnage import Perso
-from entity import ChatBox
+from entity import ChatBox,Chest
 from fog import Fog
 from minimap import Minimap
 import pygame
@@ -95,7 +95,7 @@ class Game():
                     for j in range(len(self.map.map_decoration[i])):
                             
                             if self.map.map_decoration[i][j]=='8' or self.map.map_decoration[i][j]=='9':
-                                donj = Donjon(2,self.screen,self.player)
+                                donj = Donjon(2,self.screen,self.player,game=self)
                                 donj.creationDonjon()
                                 self.list_dungeon[(i,j)] = donj
 

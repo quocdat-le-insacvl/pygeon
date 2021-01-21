@@ -30,8 +30,9 @@ class Donjon():
     #screen : la surface surlaquelle print les salles du donjons
     #peros : self.personnage que l'on doit déplacer -> sert pour les collisions
     #nbreEtage : De base on est a 3, mais on peut faire +
-    def __init__(self,difficulte,screen,perso,nbreEtage=3):
+    def __init__(self,difficulte,screen,perso,game=None,nbreEtage=3):
 
+        self.game = game
         self.difficulty = difficulte
         self.nbEtage = nbreEtage
         self.pieces = []
@@ -188,19 +189,21 @@ class Donjon():
             #print '{}: tick={}, fps={}'.format(i+1, clock.tick(fps), clock.get_fps())
             clock.tick(64)
             monstre = None
+            
             for x in self.liste_monstre[self.actuel]:
                 if x.collide_box_interact.mask.overlap(self.perso.masks,((self.perso.pos_x+10)-x.collide_box_interact.pos_x,(self.perso.pos_y+self.perso.img.get_height()-15)-x.collide_box_interact.pos_y)):
                     
                     self.perso.monstre_near = True
                     monstre = x
             if self.perso.monstre_near and monstre != None:
-                g = Game(self.perso,self.pieces[self.actuel],reload=False)
-                f = Combat(g,monstre.group_monster)
+                for i in monstre.group_monster:
+                    i.img = list_img_monstre[i.type-1]
+                f = Combat(self.game,monstre.group_monster)
                 f.affichage()
+                
                 if f.player.crew_mate[0].hp > 0 or f.player.crew_mate[1].hp > 0  or f.player.hp > 0:
                     for x in monstre.group_monster:
-                        print(1)
-                        self.map.list_monster.remove(x)
+                        self.liste_monstre.remove(x)
                 monstre = None
             self.cam.afficher()
             
@@ -298,7 +301,7 @@ class Donjon():
         for salle in self.pieces:
             
             self.liste_monstre[indexPiece] =[]
-            for i in range(2*self.difficulty):
+            for i in range(3*self.difficulty+5):
                 which_monster = random.randint(1,len(list_img_monstre))
                 while position != True:
                     y= random.randint(0,len(salle.piece)-1)
@@ -316,7 +319,7 @@ class Donjon():
 
 
                 position = False
-                self.liste_monstre[indexPiece].append(Monster(pos_x,pos_y,pygame.transform.scale(list_img_monstre[which_monster-1],(50,80)),"","Zgeg",\
+                self.liste_monstre[indexPiece].append(Monster(pos_x,pos_y,pygame.transform.scale(list_img_monstre[which_monster-1],(50,80)),"",which_monster-1,\
                 size=list_size_monstre[which_monster-1],animation_dict=list_animation_monstre[which_monster-1],\
-                    decalage=list_decalage_monstre[0],))
+                    decalage=list_decalage_monstre[which_monster-1],))
                 print(f"A MONSTER HAS SPAWNED ON COORD ({pos_x},{pos_y})\n")
