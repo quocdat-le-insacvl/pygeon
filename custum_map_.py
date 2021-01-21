@@ -92,7 +92,7 @@ dict_case['h'] = pygame.transform.scale(chair_2,(TILESIZE,TILESIZE*2))
 dict_case['i'] = pygame.transform.scale(chair_3,(TILESIZE,TILESIZE*2))
 dict_case['j'] = pygame.transform.scale(chest,(TILESIZE,TILESIZE*2))
 dict_case['k'] = pygame.transform.scale(table,(TILESIZE,TILESIZE*2))
-
+dict_case['l'] = grass_1
 
 
 list_entity_animation = [demon_1_idle["idle_1.png"],demon_idle["idle_1.png"],squelton_idle["idle_1.png"],wizard_hide["idle_1.png"],dark_wizard_idle["idle_1.png"]]
@@ -409,6 +409,19 @@ class Map_editor:
         choose=False
         choose_quest = False
         color_1,color_2,color_3 = WHITE
+
+        self.map_ground = load_map(self.path+ '_level_'+str(1) + '.txt')
+        self.map_decoration = load_map(self.path_deco+ '_level_'+str(1)+'.txt')
+        self.list_monstre = [json.loads(line) for line in open(self.path_monstre+ '_level_'+str(1)+'.json', 'r')]
+        
+        self.taille_x,self.taille_y = len(self.map_ground),len(self.map_ground[0])
+        self.init_custom_map(True)
+        self.num_level -=1
+        #self.init_monster()
+        self.refresh()
+
+        
+       
         while self.running:
             
             screen.fill(DARKGRAY)
@@ -418,7 +431,7 @@ class Map_editor:
             x= screen.get_width()//2-img_inventaire.get_width()//2
             y =screen.get_height()//2-img_inventaire.get_height()//2
             # SAUVEGARDER
-            draw_text("Level : %i"%self.num_level,ColderWeather,WHITE,screen,500,500)
+            draw_text("x : %i, y : %i"%(self.taille_x,self.taille_y),ColderWeather,WHITE,screen,500,500)
             if creation_img_text_click(img_next,"Sauvegarder",ColderWeather,WHITE,screen,self.other_click,right=1):
                 self.save_map(self.path+ '_level_'+str(self.num_level)+'.txt',self.path_deco+ '_level_'+str(self.num_level)+ '.txt',self.path_monstre+ '_level_'+str(self.num_level))
 
@@ -503,7 +516,7 @@ class Map_editor:
                     self.taille_x,self.taille_y = len(self.map_ground[0]),len(self.map_ground[0])
                     self.init_custom_map(True)
                     self.num_level -=1
-                    self.init_monster()
+                    #self.init_monster()
                     self.refresh()
                     self.other_click = False
             if self.num_level < self.number_create_level:
@@ -514,7 +527,7 @@ class Map_editor:
                     self.taille_x,self.taille_y = len(self.map_ground[0]),len(self.map_ground[0])
                     self.init_custom_map(True)
                     self.num_level +=1
-                    self.init_monster()
+                    #self.init_monster()
                     self.refresh()
                     self.other_click = False
             
@@ -668,6 +681,6 @@ def iso_vec_into_standard(x,y):
     x_stand = 0.5*x - y
     y_stand = 0.5*x + y
     return (x_stand,y_stand)
-
-mapp = Map_editor(20,20)
-mapp.print_menu_editor()
+"""
+mapp = Map_editor(200,200)
+mapp.print_menu_editor()"""

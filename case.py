@@ -11,18 +11,22 @@ class Case():
         self.in_case = None
         self.display = pygame.Surface(
             (pixel_red.get_width(), pixel_red.get_height()))
+        self.display.set_colorkey(WHITE)
         self.display.blit(case, (0, 0))
         self.display.set_colorkey(BLACK)
         self.i = i
         self.j = j
         self.is_select = False
 
-    def print_contains(self):
+    def print_contains(self,flip=True,x=0,y=0):
         if self.in_case != None:
             #screen.blit(self.in_case.display,(self.cordo()[0]+self.in_case.display.get_width()//2,self.cordo()[1]-self.in_case.display.get_height()//2))
-            flip = pygame.transform.flip(self.in_case.display,True,False)
-            flip.set_colorkey(BLACK)
-            screen.blit(flip,(self.cordo()[0]-self.in_case.display.get_width()//2+self.in_case.decalage[0],self.cordo()[1]-self.in_case.display.get_height()//2+self.in_case.decalage[1]))
+            if flip:
+                display = pygame.transform.flip(self.in_case.display,True,False)
+                display.set_colorkey(BLACK)
+                screen.blit(display,(self.cordo()[0]-self.in_case.display.get_width()//2+self.in_case.decalage[0]+100+x,self.cordo()[1]-self.in_case.display.get_height()//2+self.in_case.decalage[1]-50+y))
+            else:
+                screen.blit(self.in_case.display,(self.cordo()[0]-self.in_case.display.get_width()//2+self.in_case.decalage[0]+100+x,self.cordo()[1]-self.in_case.display.get_height()//2+self.in_case.decalage[1]-50+y))
     def cordo(self):
         return ((self.j-self.i)*(pixel_red.get_width()+45)//2+screen.get_width()//2-pixel_red.get_width()//2, (self.j+self.i)*(pixel_red.get_width()+45)//4-100)
 
@@ -36,7 +40,7 @@ class Case():
             self.is_select = False
 
     """Cette fonction va me rendre l ensemble des neighbours touches par le sort"""
-    def select_neighbour(self, list_case,k):
+    def select_neighbour(self, list_case,k=0):
         # if self.in_case != None:
         for x in list_case:
             x.is_select = False
@@ -54,11 +58,11 @@ class Case():
                     x.select(True)
 
     "Initialement cette fonction donne un range de 1"
-    def print_effect(self,list_case,k=0,m=0):
+    def print_effect(self,list_case,j=0,i=0):
         for x in list_case:
             x.select(False)
-            if x.j-1-k == self.j and x.i+1+k == self.i:
-                x.select_neighbour(list_case,m)
+            if x.j+j == self.j and x.i+i== self.i:
+                x.select_neighbour(list_case)
 
     def checkIfSelected(self):
         if self.is_select:

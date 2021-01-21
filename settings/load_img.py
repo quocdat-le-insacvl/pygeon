@@ -11,6 +11,8 @@ path_police = path.join(path_addon, 'Police')
 path_menu = path.join(path_addon, 'Menu')
 path_ava = path.join(path_addon, 'avata')
 path_light = path.join(path_addon, 'Light')
+path_icon = path.join(path_addon, 'icons')
+path_fighter = path.join(path_addon, 'Fighter')
 
 
 button=pygame.image.load(path.join(path_addon,'Menu\TextBTN_Medium.png'))
@@ -233,3 +235,50 @@ lvl2=pygame.image.load(r"Addon\spell\lvl2.png")
 
 parchment=pygame.image.load(path.join(path_menu,"UI board Large  parchment.png"))
 img_description = pygame.image.load(path.join(path_menu,"UI board Large stone.png"))
+
+monstre_loot = pygame.image.load(path.join(path_addon,"coffre.png"))
+monstre_loot = pygame.transform.scale(monstre_loot,(monstre_loot.get_width()//2,monstre_loot.get_height()//2))
+monstre_loot_open = pygame.image.load(path.join(path_addon,"coffre_1.png"))
+monstre_loot_open = pygame.transform.scale(monstre_loot_open,(monstre_loot_open.get_width()//2,monstre_loot_open.get_height()//2))
+monstre_loot_light = pygame.image.load(path.join(path_addon,"coffre_2.png"))
+monstre_loot_light = pygame.transform.scale(monstre_loot_light,(monstre_loot_light.get_width()//2,monstre_loot_light.get_height()//2))
+
+test = pygame.image.load(path.join(path_addon,"anim.png"))
+test = pygame.transform.scale(test,(test.get_width()*3,test.get_height()*3))
+
+idle_sorcerer =dict(image_loader(path.join(path_addon, 'sorcerer/idle/')))
+transform_image(idle_sorcerer)
+walk_bottom_sorcerer =dict(image_loader(path.join(path_addon, 'sorcerer/bottom/')))
+transform_image(walk_bottom_sorcerer)
+walk_right_sorcerer = dict(image_loader(path.join(path_addon, 'sorcerer/right/')))
+transform_image(walk_right_sorcerer)
+walk_left_sorcerer = dict(image_loader(path.join(path_addon, 'sorcerer/left/')))
+transform_image(walk_left_sorcerer)
+walk_top_sorcerer = dict(image_loader(path.join(path_addon, 'sorcerer/top/')))
+transform_image(walk_top_sorcerer)
+attack_sorcerer = dict(image_loader(path.join(path_addon, 'sorcerer/attack/')))
+transform_image(attack_sorcerer)
+ranged_sorcerer = dict(image_loader(path.join(path_addon, 'sorcerer/attack_ranged/')))
+transform_image(ranged_sorcerer)
+
+player_animation_sorcerer = dict()
+player_animation_sorcerer["idle"] = idle_sorcerer
+player_animation_sorcerer["walk_bottom"] = walk_bottom_sorcerer
+player_animation_sorcerer["walk_right"] = walk_right_sorcerer
+player_animation_sorcerer["walk_left"] = walk_left_sorcerer
+player_animation_sorcerer["walk_top"] = walk_top_sorcerer
+player_animation_sorcerer["attack"] = attack_sorcerer
+player_animation_sorcerer["ranged"] = ranged_sorcerer
+
+explosion = dict(image_loader(path.join(path_addon, 'images/')))
+transform_image(explosion,multi=1)
+explosion_heal = dict(image_loader(path.join(path_addon, 'explosion_heal/')))
+transform_image(explosion,multi=2)
+
+"icons"
+wizard_icon=pygame.image.load(path.join(path_icon,'wizard.png'))
+neutre_icon=pygame.image.load(path.join(path_icon,'neutre.png'))
+fighter_icon=pygame.image.load(path.join(path_icon,'fighter.png'))
+
+"Fighter img"
+fighter_img=pygame.image.load(path.join(path_fighter,'fighter.png'))

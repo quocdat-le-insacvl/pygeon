@@ -32,7 +32,7 @@ class Map():
         self.path = path
         self.path_deco = path_deco
         self.path_monster = path_monstre
-        self.map_decoration = load_map(path_deco,reverse=True)
+        self.map_decoration = load_map(path_deco,reverse=False)
         self.all_monstre = [json.loads(line) for line in open(path_monstre, 'r')]
         self.all_shop = load_inv()
         self.collision = []
@@ -41,7 +41,7 @@ class Map():
         self.tree_position = []
         self.collision_under_level = []
         self.change_camera_entity = []
-        self.map = load_map(path,reverse=True)
+        self.map = load_map(path,reverse=False)
         self.display = pygame.Surface((18000,10000))
         self.display_tree = pygame.Surface((18000,10000))
         self.cubesize = cubesize
@@ -87,12 +87,6 @@ class Map():
             x.init()
         for x in self.list_monster:
             x.set_group_monster(self.list_monster)
-
-    """    for x in self.all_monstre:
-            print(x[1])
-            if len(x) !=0:
-                self.list_monster.append(Monster(x[0],x[1],dict_img_monstre[str(x[2])],"",x[2],size_collide_box=4,size=dict_size_monstre[str(x[2])],animation_dict=dict_animation_monstre[x[2]],decalage=dict_decalage_monstre[str(x[2])]))
-    """
     def init_shop(self):
         line=1
         self.list_shop = []
@@ -117,45 +111,6 @@ class Map():
                 x = (j-i)*self.cubesize//2+9000
                 y = (j+i)*self.cubesize//4
                 if self.map[i][j] != None:
-                    if self.map[i][j] == '1' or self.map[i][j] == '2' :
-                        n = random.randint(1,5)
-                        self.display.blit(grass['grass_' + str(n) + '.png'],(x,y))
-                    if self.map[i][j] == '2' :
-                        self.collision_change_camera.append(((j-i+1)*self.cubesize//2+9000,(j+i-1)*self.cubesize//4))
-                        self.collision_change_camera.append(((j-i)*self.cubesize//2+9000,(j+i-2)*self.cubesize//4))
-                        self.collision_change_camera.append(((j-i-1)*self.cubesize//2+9000,(j+i-1)*self.cubesize//4))
-                        self.collision_change_camera.append(((j-i+1)*self.cubesize//2+9000,(j+i-3)*self.cubesize//4))
-                        self.collision_change_camera.append(((j-i-1)*self.cubesize//2+9000,(j+i-3)*self.cubesize//4))
-                        self.collision_change_camera.append(((j-i)*self.cubesize//2+9000,(j+i-4)*self.cubesize//4))
-                        self.collision_change_camera.append(((j-i+1)*self.cubesize//2+9000,(j+i-5)*self.cubesize//4))
-                        self.collision_change_camera.append(((j-i)*self.cubesize//2+9000,(j+i-5)*self.cubesize//4))
-
-                        self.collision.append((x,y))
-                        self.tree_position.append((x,y))
-                        self.display.blit(pixel_red,(((j-i-1)*self.cubesize//2+9000,(j+i+1)*self.cubesize//4)))
-                    if self.map[i][j] == '5' :
-                        self.display.blit(end_game,(x,y))
-                        self.collision.append((x,y))
-                        #display.blit(pixel_red,(x,y))
-                    if self.map[i][j] == '3' or self.map[i][j] == '9' or self.map[i][j] == '7':
-                        self.display.blit(grass['grass_' + str(1) + '.png'],(x,y))
-                        self.collision.append((x,y))
-                    if self.map[i][j] == '4':
-                        self.display.blit(road,(x,y))
-                    if self.map[i][j] == '6':
-                        self.display.blit(grass['grass_' + str(1) + '.png'],(x,y))
-                        self.collision_entity.append((x,y))
-                    if self.map[i][j] == '8':
-                        self.display.blit(grass["grass_blue_1.png"],(x,y))
-                    if self.map[i][j] == 'c':
-                        n = random.randint(1,5)
-                        self.display.blit(grass['grass_' + str(n) + '.png'],(x,y))
-                        self.change_camera_entity.append((x,y))
-                    if self.map[i][j] == 'a':
-                        self.collision.append((x,y))
-                        self.display.blit(wall,(x,y-100))
-                    if self.map[i][j] == 'b':
-                        self.display.blit(void,(x,y-100))
                     if self.map[i][j] == '1':
                         self.collision.append((x,y))
                         self.display.blit(void,(x,y))
@@ -176,19 +131,21 @@ class Map():
                     if self.map[i][j] == '7':
                         n = random.randint(1,5)
                         self.display.blit(grass['grass_blue_' + str(n) + '.png'],(x,y))
+                    if self.map[i][j] == 'a':
+                        self.display.blit(grass['grass_' + str(1) + '.png'],(x,y))
+                        self.change_camera_entity.append((x,y))
+                    
                     
                 j+=1
             i+=1
         i=0
     def print_tree(self):
         i=0
-        for layer in self.map:
+        for layer in self.map_decoration:
             j=0
             for tile in layer:
                 x = (j-i)*self.cubesize//2+9000
                 y = (j+i)*self.cubesize//4
-                if(0<=i<=3 and 15<=j<=3):
-                    self.map_decoration[i][j] = '8'
                 if self.map_decoration[i][j] != None:
                     if self.map_decoration[i][j] == 'a' :
                         self.collision_change_camera.append(((j-i+1)*self.cubesize//2+9000,(j+i-1)*self.cubesize//4))
@@ -239,7 +196,6 @@ class Map():
                         self.collision.append((x,y))
                         self.display.blit(table,(x,y)) 
                     if self.map_decoration[i][j] == '8':
-                        
                         self.collision_under_level.append((x,y))
                         self.display.blit(pygame.transform.scale(rune_1,(190,95)),(x,y))
                     if self.map_decoration[i][j] == '9':

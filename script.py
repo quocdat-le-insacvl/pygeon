@@ -14,9 +14,10 @@ player_2 = Perso_game(10,10,10,10,10,10,100,150,pack_bis,walk_bottom['walk_botto
 
 player = Perso_game(10,10,10,10,10,10,100,100,pack,walk_bottom['walk_bottom_' + str(1) +'.png'],8680,800,decalage=[30,80],size=(300,300))
 player_3 = Perso_game(50,10,10,10,10,10,100,100,pack,walk_bottom['walk_bottom_' + str(1) +'.png'].copy(),8680,800,decalage=[30,80],size=(300,300))
-sorcerer = Sorcerer(inventaire=pack,decalage=[10,80],size=(300,300), name= "Perso1",n_case = 59)
-sorcerer_2 = Sorcerer(decalage=[10,80],size=(300,300), name = "Perso2",n_case = 65)
-sorcerer_3 = Sorcerer(decalage=[10,80],size=(300,300), name= "Perso3", n_case = 51)
+sorcerer = Sorcerer(inventaire=pack,size=(300,300), name= "Perso1",n_case = 59)
+
+sorcerer_2 = Sorcerer(inventaire=pack,size=(300,300), name = "Perso2",n_case = 65)
+sorcerer_3 = Sorcerer(inventaire=pack,size=(300,300), name= "Perso3", n_case = 51)
 
 player.xp = 500
 
@@ -38,7 +39,7 @@ pack.ajouteritems(Sword5)
 pack.ajouteritems(Sword6)
 pack.ajouteritems(Sword7)
 pack.ajouteritems(Sword8)
-
+pack.ajouteritems(Bow10)
 ### Fixing PATH
 path_pygeon = path.dirname(__file__)
 path_addon = path.join(path_pygeon, 'Addon')
@@ -78,12 +79,12 @@ list_static_entity = []
 
 
 
-"""
+
 list_static_entity.append(tavern_1)
 list_static_entity.append(tavern_2)
 list_static_entity.append(tavern_3)
 list_static_entity.append(tavern_4)
-list_static_entity.append(tavern_5)"""
+list_static_entity.append(tavern_5)
 
 list_mooving_entity = []
 
