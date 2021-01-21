@@ -1,6 +1,7 @@
 import pygame
 from sorcerer import Sorcerer
 from fighter import Fighter
+from rogue import Rogue
 #it will be from game import perso
 from math import trunc
 from settings.screen import screen,WINDOWS_SIZE
@@ -16,7 +17,7 @@ class Interface():
         self.case=0
         self.listCase=[]
         self.ini_state=0
-        self.perso=Fighter()
+        self.perso=Sorcerer()
         # self.background = pygame.image.load('assets/grass.jpg')
 
 

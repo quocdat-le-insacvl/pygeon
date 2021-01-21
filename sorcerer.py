@@ -25,7 +25,7 @@ class Sorcerer(Perso):
         self.WIS = WIS
         self.CHA = CHA
         self.spell={"magic missile" : 0, "firebolt" : 1, "fireball" : 2}
-        self.bonus={"Convert Sorcery points" : 3, "Convert Spells slots" : 4, "Quickspell" : 5}
+        self.bonus={"Convert Sorcery points" : 0, "Convert Spells slots" : 2, "Quickspell" : 3}
 
     def levelupchange(self):
         if super().levelupchange():
@@ -54,44 +54,45 @@ class Sorcerer(Perso):
         lvl_s=False
         running=True
         click=False
-        if any([self.armor[0],self.armor[1],self.armor[2],self.armor[3]]):
-            running=board_error("cannot lunch spell and wear armor")
-            return False
-        board=board_with_msg("Choose a lvl to cast your spell, esc pour annuler")
-        boardrect=screen.blit(board,(screen.get_width()//4,screen.get_height()//4))
-        rect_list_choice=choices_clickable(board,[lvl1,lvl2],boardrect)
-        screen.blit(board,(screen.get_width()//4,screen.get_height()//4))
-        pygame.display.flip()
-        while running:
-            indice=collides(pygame.mouse.get_pos(),rect_list_choice)
-            running,click=basic_checkevent(click)
-            "vérifie si il reste des spells slots au joueur"
-            if (self.spells_slots[0]!=0 or self.spells_slots[1]!=0) and self.actionP>0:
-                if click and indice!=-1:
-                    if indice==0:
-                        if self.spells_slots[0]==0:
-                            running=board_error("Not enough spell slot for this lvl")
-                        else:
-                            lvl_s=1
-                            self.spells_slots[0]-=1
-                            running=False
-                            self.actionP-=1
-                    elif indice==1:
-                        if self.spells_slots[1]==0:
-                            running=board_error("Not enough spell slot for this lvl")
-                        else:
-                            lvl_s=2
-                            self.spells_slots[1]-=1
-                            running=False
-                            self.actionP-=1
-            else:
-                running=board_error("no spell slot anymore or no action left")
-        if lvl_s:
-                """la liste prend la forme de liste de liste, chaque liste de liste est une action indépendente de la forme
-                    [montant degat/soins,type (0=soins, 1=degats), le nombre de cible (ex 1=1 carré), la zone d'effet (1 carré ou 2 cône,
-                    0 si l'élement précédent est 1),la range du sort (cible à 4 carrées max), la type de cible (0=soit même, 1=ennemies, 2=alliées),
-                    dc (si 0 pas de saving throw possible),type de saving thow (si 0 à dc 0 au type)]"""
-                listdeg=[[self.action.dice(4)+1,1,1,0,24,1,0,0] for n in range(lvl_s)] 
+        if confirmation_board("lunch missile wich deals 1-5 dmg"):
+            if any([self.armor[0],self.armor[1],self.armor[2],self.armor[3]]):
+                running=board_error("cannot lunch spell and wear armor")
+                return False
+            board=board_with_msg("Choose a lvl to cast your spell, esc pour annuler")
+            boardrect=screen.blit(board,(screen.get_width()//4,screen.get_height()//4))
+            rect_list_choice=choices_clickable(board,[lvl1,lvl2],boardrect)
+            screen.blit(board,(screen.get_width()//4,screen.get_height()//4))
+            pygame.display.flip()
+            while running:
+                indice=collides(pygame.mouse.get_pos(),rect_list_choice)
+                running,click=basic_checkevent(click)
+                "vérifie si il reste des spells slots au joueur"
+                if (self.spells_slots[0]!=0 or self.spells_slots[1]!=0) and self.actionP>0:
+                    if click and indice!=-1:
+                        if indice==0:
+                            if self.spells_slots[0]==0:
+                                running=board_error("Not enough spell slot for this lvl")
+                            else:
+                                lvl_s=1
+                                self.spells_slots[0]-=1
+                                running=False
+                                self.actionP-=1
+                        elif indice==1:
+                            if self.spells_slots[1]==0:
+                                running=board_error("Not enough spell slot for this lvl")
+                            else:
+                                lvl_s=2
+                                self.spells_slots[1]-=1
+                                running=False
+                                self.actionP-=1
+                else:
+                    running=board_error("no spell slot anymore or no action left")
+            if lvl_s:
+                    """la liste prend la forme de liste de liste, chaque liste de liste est une action indépendente de la forme
+                        [montant degat/soins,type (0=soins, 1=degats), le nombre de cible (ex 1=1 carré), la zone d'effet (1 carré ou 2 cône,
+                        0 si l'élement précédent est 1),la range du sort (cible à 4 carrées max), la type de cible (0=soit même, 1=ennemies, 2=alliées),
+                        dc (si 0 pas de saving throw possible),type de saving thow (si 0 à dc 0 au type)]"""
+                    listdeg=[[self.action.dice(5),1,1,0,24,1,0,0] for n in range(lvl_s)] 
         screen.blit(screenS,(0,0))
         if listdeg:
             return listdeg
@@ -197,57 +198,63 @@ class Sorcerer(Perso):
         0 si l'élement précédent est 1),la range du sort (cible à 4 carrées max), la type de cible (0=soit même, 1=ennemies, 2=alliées),
         dc (si 0 pas de saving throw possible),type de saving thow (si 0 à dc 0 au type)]"""
         if self.actionP>0:
-            listdeg.append([self.action.dice(9)+1,1,1,0,24,1,0,0])
-            else:
-                self.actionP-=1 
-            if self.level>=5:
+            if confirmation_board("lunch firebolt.s deals between 1 and 10 damage"):
                 listdeg.append([self.action.dice(10),1,1,0,24,1,0,0])
+                self.actionP-=1 
+                if self.level>=5:
+                    listdeg.append([self.action.dice(10),1,1,0,24,1,0,0])
         if listdeg:
             return listdeg
 
     def fireball(self):
         "ce sort renvoi une liste de liste qui a la taille de son nombre de hit si le spell peut être lancé, spell lvl3"
         listdeg=[]
-        if any([self.armor[0],self.armor[1],self.armor[2],self.armor[3]]):
-            running=board_error("cannot lunch spell and wear armor")
-            return False
-        if self.spells_slots[1]>0 and self.actionP>0:
-            """la liste prend la forme de liste de liste, chaque liste de liste est une action indépendente de la forme
-            [montant degat/soins,type (0=soins, 1=degats), le nombre de cible (ex 1=1 carré de proximité, 2 tous les carrés contact a la cible),
-            la zone d'effet (1 carré ou 2 cône,0 si l'élement précédent est 1),la range du sort (cible à 4 carrées max),
-            la type de cible (0=soit même, 1=ennemies, 2=alliées),dc (si 0 pas de saving throw possible),
-            type de saving thow (si 0 à dc 0 au type,1 pour dex, 2 pour con,3 pour will)]"""   
-            deg=self.action.dice(6)+self.action.dice(6)+self.action.dice(6)+self.action.dice(6)+self.action.dice(6)+self.action.dice(6) 
-            listdeg.append([deg,1,2,1,24,1,10+3+self.score("con"),1]) 
-            self.spells_slots[1]-=1
-            self.actionP-=1
-        elif self.sort2==False:
-            running=True
-            screenS=screenSave()
-            while running:
-                running=board_error("this spell is not unlock for now")
-            screen.blit(screenS,(0,0))
+        if confirmation_board("cost lvl 2 spell deals between 6-36 damage in area"):
+            if any([self.armor[0],self.armor[1],self.armor[2],self.armor[3]]):
+                running=board_error("cannot lunch spell and wear armor")
+                return False
+            if self.spells_slots[1]>0 and self.actionP>0:
+                """la liste prend la forme de liste de liste, chaque liste de liste est une action indépendente de la forme
+                [montant degat/soins,type (0=soins, 1=degats), le nombre de cible (ex 1=1 carré de proximité, 2 tous les carrés contact a la cible),
+                la zone d'effet (1 carré ou 2 cône,0 si l'élement précédent est 1),la range du sort (cible à 4 carrées max),
+                la type de cible (0=soit même, 1=ennemies, 2=alliées),dc (si 0 pas de saving throw possible),
+                type de saving thow (si 0 à dc 0 au type,1 pour dex, 2 pour con,3 pour will)]"""   
+                deg=self.action.dice(6)+self.action.dice(6)+self.action.dice(6)+self.action.dice(6)+self.action.dice(6)+self.action.dice(6) 
+                listdeg.append([deg,1,2,1,24,1,10+3+self.score("con"),1]) 
+                self.spells_slots[1]-=1
+                self.actionP-=1
+            elif self.sort2==False:
+                running=True
+                screenS=screenSave()
+                while running:
+                    running=board_error("this spell is not unlock for now")
+                screen.blit(screenS,(0,0))
+            else:
+                running=True
+                screenS=screenSave()
+                while running:
+                    running=board_error("not enough spell slot or action to cast this spell")
+                screen.blit(screenS,(0,0))
+            if listdeg:
+                return listdeg
         else:
-            running=True
-            screenS=screenSave()
-            while running:
-                running=board_error("not enough spell slot or action to cast this spell")
-            screen.blit(screenS,(0,0))
-        if listdeg:
-            return listdeg
+            return False
     
     def quick_spell(self):
-        if any([self.armor[0],self.armor[1],self.armor[2],self.armor[3]]):
-            running=board_error("cannot lunch spell and wear armor")
-            return False
-        if self.masterAction>0 and self.bonusAction>0:
-            self.Action=2
-            self.masterAction-=1
-            self.bonusAction-=1
+        if confirmation_board("give you 2 actions insted of 1"):
+            if any([self.armor[0],self.armor[1],self.armor[2],self.armor[3]]):
+                running=board_error("cannot lunch spell and wear armor")
+                return False
+            if self.masterAction>0 and self.bonusAction>0:
+                self.Action=2
+                self.masterAction-=1
+                self.bonusAction-=1
+            else:
+                running=True
+                while running:
+                    running=board_error("no bonus action or Master Action left")
         else:
-            running=True
-            while running:
-                running=board_error("no bonus action or Master Action left")
+            return False
     
     ### caracter sheet du sorcerer ###
 
@@ -279,9 +286,7 @@ class Sorcerer(Perso):
         board_level1=board_with_msg("Unlock at level 1")
         rect_board1=replace_rect(rectboard,pygame.Rect(trunc(board.get_width()*0.45),trunc(board.get_height()*0.03),0,0))
         rect_choices.append(choices_clickable(board_level1,[image['S_Magic01.png'],image['S_Fire01.png']],rect_board1))
-        print(rect_choices)
         board_level1,rect_choices[0]=replace_rects_scale((trunc(board.get_width()*0.5),trunc(board.get_height()*0.2)),board_level1,rect_choices[0],rect_board1)
-        print(rect_choices)
         board_level2=board_with_msg("Unlock at level 2")
         rect_board2=replace_rect(rectboard,pygame.Rect(trunc(board.get_width()*0.45),trunc(board.get_height()*0.21),0,0))
         rect_choices.append(choices_clickable(board_level2,[image['S_Shadow02.png'],image['S_Buff01.png']],rect_board2))
@@ -354,9 +359,9 @@ class Sorcerer(Perso):
             return self.fireball()
     
     def select_bonus(self, choice):
-        if choice==3:
+        if choice==0:
             self.convertSP()
-        elif choice==4:
+        elif choice==1:
             self.convertSpellS()
-        elif choice==5:
+        elif choice==2:
             self.quick_spell()

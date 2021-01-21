@@ -15,12 +15,15 @@ class Fighter(Perso):
         super().__init__(x=px,y=py,classe="fighter",hit_dice=10,name=name,STR=STR,DEX=DEX,CON=CON,INT=INT,WIS=WIS,CHA=CHA,hp=hp,hp_max=hp_max)
         "si SW (Second Wind) est a true il est utilisable"
         self.SW=False
+        self.spell={"Second Wind" : 0}
+        self.bonus={"Extra attack" : 0}
 
     def levelupchange(self):
         if super().levelupchange() :
             self.attack=self.level
             if self.level==1:
                 self.SW=True
+            self.attack=self.level
 
     def rest(self):
         super().rest()
@@ -31,16 +34,20 @@ class Fighter(Perso):
         if self.SW==True:
             if self.Action>0:
                 if self.level>=3:
-                    self.Action-=1
+                    if confirmation_board("recover hp equal to your level for 3 allies")!=True:
+                        return False
+                    self.actionP-=1
                     self.SW=False
                     return [[self.level,0,1,0,12,2,0,0]for n in range(3)]
                 else:
+                    if confirmation_board("recover hp 1-10 for your self")!=True:
+                        return False
                     hp_bonus=self.action.dice(10)
                     if hp_bonus+self.hp>self.hp_max:
                         self.hp=self.hp_max
                     else:
                         self.hp+=hp_bonus
-                    self.Action-=1
+                    self.actionP-=1
                     self.SW=False
         else:
             running=True
@@ -49,8 +56,10 @@ class Fighter(Perso):
 
     ### Bonus Actions ###
     def extra_attack(self):
+        if confirmation_board("give you 2 actions insted of 1")!=True:
+            return False
         if self.masterAction>0 and self.bonusAction>0:
-            self.Action=2
+            self.actionP=2
             self.masterAction-=1
             self.bonusAction-=1
         else:
@@ -153,6 +162,15 @@ class Fighter(Perso):
                         running=False
                 pygame.display.flip()
         screen.blit(screenS,(0,0))
+
+
+    def select_spell(self, choice):
+        if choice==0:
+            return self.secondWind()
+    
+    def select_bonus(self, choice):
+        if choice==0:
+            self.extra_attack()
 
 """to do:
     def action_surge(self): |lvl1

@@ -15,7 +15,7 @@ while running:
     pygame.display.flip()
     for event in pygame.event.get():
         if event.type==pygame.MOUSEBUTTONDOWN:
-            interface.perso.caracter_sheet()
+            interface.perso.quick_spell()
         if event.type == pygame.KEYDOWN:
             if event.key==pygame.K_ESCAPE:
                 running=False

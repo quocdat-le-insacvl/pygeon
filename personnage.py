@@ -5,7 +5,7 @@ from entity import Entity
 from fonctions import *
 from items import Sword1,Sword10,Wikitem
 from fonction import basic_checkevent,draw_text
-from settings.load_img import wizard_icon, neutre_icon,fighter_icon
+from settings.load_img import wizard_icon, neutre_icon,fighter_icon, rogue_icon
 import pygame
 key = list(Wikitem.keys())
 buttona,buttons,buttonpa,buttonps=init_buttonsas()
@@ -183,6 +183,8 @@ class Perso(Entity):
             icone=pygame.transform.scale(wizard_icon,(board_icon.get_width()//2,board_icon.get_height()))
         if self.classe=='fighter':
             icone=pygame.transform.scale(fighter_icon,(board_icon.get_width(),board_icon.get_height()))
+        if self.classe=='rogue':
+            icone=pygame.transform.scale(rogue_icon,(board_icon.get_width(),board_icon.get_height()))
         icone.set_colorkey((255,255,255))
         board_icon.blit(icone,(board_icon.get_width()//2-icone.get_width()//2,0))
         rect_icon=screen.blit(board_icon,(rectboard.x-board_icon.get_width()//1.5,rectboard.y+board_icon.get_height()//0.8))

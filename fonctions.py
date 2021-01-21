@@ -25,6 +25,8 @@ def wred(police,msg):
     return police.render(msg, True, color.RED)
 def wyellow(police,msg):
     return police.render(msg, True, color.YELLOW)
+def wblack(police,msg):
+    return police.render(msg, True, color.BLACK)
 
 def board_init(i=0):
     # create a board and return it
@@ -36,7 +38,6 @@ def board_init(i=0):
 
 def board_with_msg(message):
     #take a message as argument (string) and creat a board wich is returned
-    assert(len(message)<60 and type(message)==str), "message invalid in boarb_with_message"
     text2=subtitle.render(message,True,color.BROWN)
     text2=pygame.transform.scale(text2, (screen.get_width()//2,trunc(text2.get_height()*2)))
     board=pygame.transform.scale(pygame.image.load(r"Addon\Menu\UI board Small  parchment.png"),(int(text2.get_width()*1.2),text2.get_width()//2))
@@ -152,7 +153,28 @@ def board_with_text(msg):
         screen.blit(board,(pygame.mouse.get_pos()[0]-board.get_width(),pygame.mouse.get_pos()[1]-board.get_height()))
     
     
-    
+def confirmation_board(description):
+    screenS=screenSave()
+    board=board_with_msg(description)
+    s=wblack(subtitle,"CONFIRM")
+    d=wblack(subtitle,"CANCEL")
+    board_rect=pygame.Rect(screen.get_width()//8,screen.get_height()//8,0,0)
+    list_choice=choices_clickable(board,[s,d],board_rect)
+    board_rect=screen.blit(board,(screen.get_width()//8,screen.get_height()//8))
+    pygame.display.flip()
+    running=True
+    click=False
+    while running:
+        indice=collides(pygame.mouse.get_pos(), list_choice)
+        running,click=basic_checkevent(click)
+        if click==True:
+            if indice==0:
+                screen.blit(screenS,(0,0))
+                return True
+            elif indice==1:
+                running=False
+    screen.blit(screenS,(0,0))
+
 
 
 title=pygame.font.Font(r'Addon\Police\ColderWeather-Regular.ttf', board_init().get_height()//10)
