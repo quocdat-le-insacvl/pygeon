@@ -37,22 +37,45 @@ class Entity():
         self.shadow = img
         self.collide_box = Collide_box(size_collide_box)
 
+    
     def update_center(self):
         self.center = [self.pos_x + self.img.get_width()//2,
                        self.pos_y + self.img.get_height()//2]
 
-    def animate(self):
+    def trouver_case(self,liste_case):
+        for x in liste_case:
+            if x.in_case == self:
+                return x
+        return liste_case[0]
+    def animate_attack(self):
+        one_complete = False
         if self.type_animation != "" and self.animation_dict != None:
             animation = self.animation_dict[self.type_animation]
-            self.frame += 0.05
+            self.frame += 0.17
             if self.frame > len(animation)+1:
                 self.frame = 1
+                one_complete=True
             self.refresh_display()
             self.display.blit(animation[self.type_animation + "_" + str(int(self.frame)) + ".png"], (self.img.get_width()//2-animation[self.type_animation + "_" + str(int(self.frame)) + ".png"].get_width()//2+150-int(
                 self.img.get_width()//2)+self.decalage[0], self.img.get_height()-animation[self.type_animation + "_" + str(int(self.frame)) + ".png"].get_height()+300-self.img.get_height()+self.decalage[1]))
         else:
             self.display.blit(self.img, (0, 0))
-
+        return one_complete
+            #self.display.blit(animation[ self.type_animation + "_" + str(int(self.frame)) + ".png"],(150-animation[ self.type_animation + "_" + str(int(self.frame)) + ".png"].get_width()//2,self.img.get_height()-animation[ self.type_animation + "_" + str(int(self.frame)) + ".png"].get_height()+300-self.img.get_height()+self.decalage_display[1]))
+    def animate(self):
+        one_complete = False
+        if self.type_animation != "" and self.animation_dict != None:
+            animation = self.animation_dict[self.type_animation]
+            self.frame += 0.08
+            if self.frame > len(animation)+1:
+                self.frame = 1
+                one_complete=True
+            self.refresh_display()
+            self.display.blit(animation[self.type_animation + "_" + str(int(self.frame)) + ".png"], (self.img.get_width()//2-animation[self.type_animation + "_" + str(int(self.frame)) + ".png"].get_width()//2+150-int(
+                self.img.get_width()//2)+self.decalage[0], self.img.get_height()-animation[self.type_animation + "_" + str(int(self.frame)) + ".png"].get_height()+300-self.img.get_height()+self.decalage[1]))
+        else:
+            self.display.blit(self.img, (0, 0))
+        return one_complete
             #self.display.blit(animation[ self.type_animation + "_" + str(int(self.frame)) + ".png"],(150-animation[ self.type_animation + "_" + str(int(self.frame)) + ".png"].get_width()//2,self.img.get_height()-animation[ self.type_animation + "_" + str(int(self.frame)) + ".png"].get_height()+300-self.img.get_height()+self.decalage_display[1]))
     def animate_map(self, flip=False):
         if self.type_animation != "" and self.animation_dict != None:
@@ -68,7 +91,7 @@ class Entity():
                 self.img = pygame.transform.flip(
                     animation[self.type_animation + "_" + str(int(self.frame)) + ".png"], True, False)
                 self.img.set_colorkey(BLACK)
-
+    
     def refresh_display(self):
         self.display.fill((0, 0, 0))
         self.display.set_colorkey((0, 0, 0))
@@ -104,9 +127,9 @@ class Entity():
 
 class Chest(Entity):
     def __init__(self, pos_x, pos_y, img, name, which_type, inventaire):
-        super().__init__(pos_x, pos_y, img, name, which_type)
+        super().__init__(pos_x, pos_y, img, name, which_type,size_collide_box=2)
         self.inventaire = inventaire
-
+        
     def loot_chest(self):
         self.inventaire.loot_chest()
 
@@ -348,8 +371,7 @@ class ChatBox:
         self.rect = self.surface.get_rect()
         self.rect.bottomleft = (0, self.game.screen.get_height())
         self.font = pygame.font.Font(None, 24)
-        self.log = ["Hi Anthony", "Hi Pierre", "Hi Gabriel", "Hi Christine",
-                    "Hi Long", "Hi Dat", "Hello World", "Bonjour", "Xin Chao"]
+        self.log = []
         # self.COLOR_INACTIVE = pygame.Color("lightskyblue3")
         # self.COLOR_ACTIVE = pygame.Color((255, 255, 255))
         # self.active = False
@@ -383,6 +405,8 @@ class ChatBox:
             if type(self.log[i]) == tuple:
                 if self.log[i][0] == "combat":
                     txt_surface = self.font.render(self.log[i][1], True, (255, 0, 0))
+                if self.log[i][0] == "info":
+                    txt_surface = self.font.render(self.log[i][1], True, (255, 255, 255))
             else:
                 txt_surface = self.font.render(self.log[i], True, (255, 255, 255))
             self.game.screen.blit(txt_surface, (x, y))

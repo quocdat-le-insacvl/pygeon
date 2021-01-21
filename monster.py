@@ -1,20 +1,39 @@
 from settings.setting_monster import MONSTER_SIZE
 from entity import Entity,Collide_box
+from personnage import Stats
 import pygame
 from settings.load_img import *
 from settings.screen import *
 from settings.color import *
 from settings.load_img import ava_perso
+from items import Wikitem
 import random
-
+key = list(Wikitem.keys())
 liste_type_monste = [demon_1_animation,demon_animation,squelton_animation,wizard_animation,dark_wizard_animation]
 
+stats_nv1 = [8,8,8,8,8,8,10]
+
+stats_nv2 = [8,8,8,8,8,8,10]
+
+stats_nv3 = [8,8,8,8,8,8,10]
+
+stats_nv4 = [8,8,8,8,8,8,10]
+
+stats_nv5 = [8,8,8,8,8,8,10]
 
 
+list_stats = []
+list_stats.append(stats_nv1)
+list_stats.append(stats_nv2)
+list_stats.append(stats_nv3)
+list_stats.append(stats_nv4)
+list_stats.append(stats_nv5)
 
-class Monster(Entity):
+
+class Monster(Entity,Stats):
     def __init__(self, pos_x, pos_y, img, name, which_type, animation_dict=None, talking='', size=(0,0), decalage=[0,0], size_monster='Small', walking_speed=30,size_collide_box = 1):
         super().__init__(pos_x, pos_y, img, name, which_type, animation_dict=animation_dict, talking=talking, size=size, decalage=decalage,size_collide_box=size_collide_box)
+        Stats.__init__(self,list_stats[int(which_type)-1][0],list_stats[int(which_type)-1][1],list_stats[int(which_type)-1][2],list_stats[int(which_type)-1][3],list_stats[int(which_type)-1][4],list_stats[int(which_type)-1][5],list_stats[int(which_type)-1][6])
         # Rule : https://www.dndbeyond.com/sources/basic-rules/monsters#Challenge
         self.challenge = 0
         # Size of a monster => A monster can be Tiny, Small, Medium, Large, Huge, or Gargantuan.
@@ -32,22 +51,20 @@ class Monster(Entity):
         self.is_aggresive = True
         self.change_direction = 0
         self.mouvement = [0,0]
-        self.STR = 16
-        self.hit = False
-        self.hp = 0
-        self.ac = 10
-        self.is_alive = True
-        self.case = None
+        self.is_player = False
+        self.xp = 201
 
+        self.stats=list_stats[int(which_type)-1]
+        self.skills=[0,0,0,0,0,0]
+        self.proficiency=2
+        self.armor = dict()
+        
+        for i in range(0,6):     # 0 : HEAD 1 : TORSE 2 : COUE  3 BOTTE 4 : MAIN GAUCHE : 5 MAIN DROITE
+            self.armor[i] = None
+        self.armor_class=self.calcul_armor()
     def check_alive(self):
         if self.hp <= 0:
-            self.is_alive = False
-
-    def trouver_case(self,liste_case):
-        for x in liste_case:
-            if x.in_case == self:
-                return x
-        
+            self.is_alive = False 
     def init_collide_patrouille(self):
         self.collide_patrouille.pos_x = int ( self.pos_x - self.collide_patrouille.img_collide.get_width()//2 + self.img.get_width()//2)
         self.collide_patrouille.pos_y = int ( self.pos_y + self.img.get_height() - self.collide_patrouille.img_collide.get_height()//2)
@@ -166,3 +183,33 @@ class Monster(Entity):
             if x.collide_box.mask.overlap(self.collide_box.mask,(self.collide_box.pos_x-x.collide_box.pos_x,self.collide_box.pos_y-x.collide_box.pos_y)):
                 if not self.group_monster.__contains__(x):
                     self.group_monster.append(x)
+    def score(self,comp):
+        """basic version of the skills effect just to provide proficiency
+        this fonction must be call for all the calculs wich need ability modifier"""
+        select={"str" : 0,"dex" : 1, "con" : 2, "int" : 3, "wis" : 4, "cha" : 5}
+        assert(comp in select), "wrong argument for score()" 
+        if self.skills[select[comp]]:
+            return self.ability_score(select[comp])+self.proficiency
+        else :
+            return self.ability_score(select[comp])
+    
+    def handicap(self,comp):
+        "calcul les différents handicapes, liés au poids de l'armure par exemple"
+        if comp==1 and self.armor[1]!=None:
+            if self.stats[comp]>8+key[self.armor[1]].dex_bonus:
+                return 8+key[self.armor[1]].dex_bonus
+        return self.stats[comp]
+
+    def calcul_armor(self, type_of_calcul=0):
+        """ refresh the value of the class armor, must add calcul with """
+        assert(type_of_calcul==1 or type_of_calcul==0), "must add a valide type of calcul : 1 without armor"
+        if type_of_calcul==0:
+            if self.armor[1]!=None:
+                return self.score("dex")+10+key[self.armor[1]].armor_bonus
+        return self.score("dex")+10
+    def ability_score(self,caracteristique):
+        """calcul basique du score en fonction d'une caractéristique passée en paramètre
+        STR=0, DEX=1, CON=2, INT=3, WIS=4, CHA=5"""
+
+        return (self.handicap(caracteristique)-10)//2
+    

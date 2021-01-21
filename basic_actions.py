@@ -3,7 +3,10 @@ from random import randrange
 class Actions():
 
     def dice(self,taille):
-        return randrange(1,taille)
+        if taille == 1:
+            return 1
+        else:
+            return randrange(1,taille)
     
     def disadvantage(self):
         lance1=self.dice(20)

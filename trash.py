@@ -1,6 +1,6 @@
 from skill import Stealth
 from personnage import Perso
-from entity import ChatBox, Fog, Minimap
+from entity import ChatBox, Fog, Minimap,Chest
 import pygame
 import sys
 import pickle
@@ -42,7 +42,7 @@ dict_img_npc = dict()
 
 list_img_monstre = [list_entity_animation[0],list_entity_animation[1],list_entity_animation[2],list_entity_animation[3],list_entity_animation[4]]
 list_animation_monstre = [demon_1_animation,demon_animation,squelton_animation,wizard_animation,dark_wizard_animation]
-list_decalage_monstre = [[0,0],[0,0],[-30,-30],[-30,-30],[70,20]]
+list_decalage_monstre = [[0,0],[0,0],[-30,0],[-30,0],[70,0]]
 list_size_monstre = [(500,400),(500,400),(300,300),(300,300),(600,500)]
 
 dict_img_npc['1']= list_npc[0]
@@ -60,7 +60,7 @@ class Map():
         self.path = path
         self.path_deco = path_deco
         self.path_monster = path_monstre
-        self.map_decoration = load_map(path_deco,reverse=True)
+        self.map_decoration = load_map(path_deco,reverse=False)
         self.all_monstre = [json.loads(line) for line in open(path_monstre, 'r')]
         self.all_shop = load_inv()
         self.collision = []
@@ -69,7 +69,7 @@ class Map():
         self.tree_position = []
         self.collision_under_level = []
         self.change_camera_entity = []
-        self.map = load_map(path,reverse=True)
+        self.map = load_map(path,reverse=False)
         self.display = pygame.Surface((18000,10000))
         self.display_tree = pygame.Surface((18000,10000))
         self.cubesize = cubesize
@@ -204,13 +204,17 @@ class Map():
                     if self.map[i][j] == '7':
                         n = random.randint(1,5)
                         self.display.blit(grass['grass_blue_' + str(n) + '.png'],(x,y))
+                    if self.map[i][j] == 'a':
+                        self.display.blit(grass['grass_' + str(1) + '.png'],(x,y))
+                        self.change_camera_entity.append((x,y))
+                    
                     
                 j+=1
             i+=1
         i=0
     def print_tree(self):
         i=0
-        for layer in self.map:
+        for layer in self.map_decoration:
             j=0
             for tile in layer:
                 x = (j-i)*self.cubesize//2+9000
@@ -293,11 +297,22 @@ class Game():
         self.current_level = 1
         self.screen = screen
         self.chat_box = ChatBox(self)
-        
+        self.list_coffre = []
+        self.key = dict()
+        self.key["move right"] = K_RIGHT
+        self.key["move left"] = K_LEFT
+        self.key["move up"] = K_UP
+        self.key["move down"] = K_DOWN
+        self.key["interact"] = K_e
+        self.key["inventaire"] = K_i
+        self.key["charactere sheet"] = K_c 
+        self.key["swap"] = K_s
+        self.key["map"] = K_m
     def main_game(self):
         global time_line
         self.player.name = 'gh'
         self.player.classe = 'l'
+        
         center_x,center_y=0,0
         '''Set de toute les variables d'actions'''
         transition = pygame.Surface((screen.get_width(),screen.get_height()))
@@ -325,8 +340,8 @@ class Game():
     
         for x in donjon:
             x[0],x[1] = (x[1]-x[0])*190//2+9000,(x[1]+x[0])*190//4
-
-       
+        look_level = False
+        mp = 0 
         ###
         show_inventory = False
         show_characteresheet = False
@@ -336,12 +351,22 @@ class Game():
         frame = 1
         nb_crew = 0
         self.player.know_map.append(self.current_level)
+        self.player.xp += 12000
+        self.player.levelupchange()
+        self.player.levelupchange()
+        self.player.levelupchange()
+        self.player.levelupchange()
+        self.player.levelupchange()
+        self.player.levelupchange()
+        self.player.levelupchange()
+        self.player.levelupchange()
+        self.player.levelupchange()
         while running:
             if pygame.time.get_ticks() > time_line:
                 time_line += 160
                 frame = (frame)%6 +1 
             #""" If Press M : Zoom map === PAUSE"""
-            
+
             if self.zoom_map:
                 screen.fill(BLACK)
                 self.minimap.zoom_minimap()
@@ -470,26 +495,21 @@ class Game():
                 # handle chatbox
                 chatting = self.chat_box.handle_event(event)
                 if not chatting:
-                    self.player.check_user(event)
+                    self.player.check_user(event,self.key)
                     if event.type == QUIT:
                         sys.exit()
                     if event.type == KEYDOWN:
-                        if event.key == K_i:
+                        if event.key == self.key["interact"]:
                             interact = not interact
-                        if event.key == K_m:
+                        if event.key == self.key["map"]:
                             self.zoom_map = True
-                        if event.key == K_j:
+                        if event.key == self.key["inventaire"]:
                             show_inventory = not show_inventory
-                        """if event.key == K_ESCAPE:
-                            self.map.load_map()
-                            self.map.init_map()"""
-                        if event.key == K_u:
+                       
+                        if event.key == self.key["charactere sheet"]:
                             show_characteresheet = not show_characteresheet
-                        # Error !!! @Anthony
-                        # if event.key == K_l:
-                        #     self.map = map_2
-                        #     self.map.init_map()
-                        if event.key == K_v:
+                        
+                        if event.key == self.key["swap"]:
                             
                             self.player = self.player.crew_mate[0]
                             self.fog.player = self.player
@@ -507,10 +527,11 @@ class Game():
                         #     self.player.skills[1].cast()
                         
                     if event.type == KEYUP:
-                        if event.key == K_m:
+                        if event.key == self.key["map"]:
                             self.zoom_map = False
 
-            monstre = self.player.move_player(self.map.dict_collision,self.map.list_shop,self.map.list_monster)
+            monstre = self.player.move_player(self.map.dict_collision,self.map.list_shop,self.map.list_monster,self.list_coffre)
+            self.player.animate_map()
             if self.player.entity_near:
                 if draw_interact: draw_text("Press I for interact %s"%monstre.name,ColderWeather,WHITE,screen,500,500)
                 if interact:
@@ -523,14 +544,27 @@ class Game():
 
                 f = Combat(self,monstre.group_monster)
                 f.affichage()
+                self.player.mouvement = [False,False,False,False]
+                dec = 0
+                
                 if f.player.crew_mate[0].hp > 0 or f.player.crew_mate[1].hp > 0  or f.player.hp > 0:
                     for x in monstre.group_monster:
-                        print(1)
+                        if self.player.levelupchange():
+                            look_level = True
+                        self.player.xp += x.xp
+                        inv_chest = Inventaire(7,7)
+                        inv_chest.add_random_drop(3)
+                        self.list_coffre.append(Chest(self.player.pos_x+dec,self.player.pos_y+dec,monstre_loot,"Coffre","Coffre",inv_chest))
+                        self.list_coffre[len(self.list_coffre)-1].update_pos_collide()
                         self.map.list_monster.remove(x)
+                        dec += 70
+                
+                print(self.player.level)
                 monstre = None
 
-            self.player.animate_map(frame%2+1)
             
+            for x in self.list_coffre:
+                screen.blit(x.img,(center_x +x.pos_x,center_y +x.pos_y))
             """
             if g != 255:
                 for x in range(255):
@@ -543,39 +577,48 @@ class Game():
             if show_characteresheet:
                 self.player.caracter_sheet()
                 show_characteresheet = False
-            """
-            draw_text("FPS: %i, x : %i , y : %i" % (clock.get_fps(),self.player.pos_x,self.player.pos_y
-                                                    ,), ColderWeather, WHITE, screen, 100, 100)
-            draw_text("Donjon.x: %i, Donjon.y : %i ,x : %i, y : %i" % (len(self.map.list_monster),donjon[0][1],self.player.pos_x,self.player.pos_y), ColderWeather, WHITE, screen, 100, 100)
-            """
+            if len(self.list_coffre) > 0:
+                draw_text("Coffre: %i Pos_x : %i Pos_y : %i" % (mp,self.list_coffre[0].pos_x,self.list_coffre[0].pos_y), ColderWeather, WHITE, screen, 100, 100)
+            
+            
             self.player.spell_bar()
             
             # update skill
+            """
             for skill in self.player.skills:
-                skill.update()
-            
+                skill.update()"""
+            if look_level:
+                mp +=1
+            if mp >= 50 and mp <= 200:
+                screen.blit(pygame.transform.scale(pygame.image.load(path.join(path_addon,'Image/lvl_up.png')),(WINDOWS_SIZE[0]//20,WINDOWS_SIZE[1]//20)),(self.player.pos_x+100+center_x,self.player.pos_y+center_y))
+            elif mp>200:
+                look_level = False
+                mp =0
+
             # update + draw chatbox
             self.chat_box.update()
             self.chat_box.draw()
-            
             pygame.display.update()
             clock.tick(64)
     def print_pause_menu(self):
         display = pygame.Surface((1980, 1000))
         display.set_colorkey(LIGHT_GREY)
+        
         running = True
         while running:
             display.fill(LIGHT_GREY)
             printbackgrounds(display)
-            if create_text_click("Resume", Drifftype, GREY, display, self.click, display.get_width()//2, display.get_height()//3):
+            if create_text_click("Resume", Drifftype, GREY, display, self.click, display.get_width()//2, display.get_height()-800):
                 break
-            if create_text_click('Sauvegarder', Drifftype, GREY, display, self.click, display.get_width()//2, display.get_height()//2.1):
+            if create_text_click('Sauvegarder', Drifftype, GREY, display, self.click, display.get_width()//2, display.get_height()-600):
                 global player_for_save
                 player_for_save.load_player(self.player)
                 player_for_save,self.fog.surface = load_game(self.click, player_for_save,self.fog.surface)
                 print(player_for_save.name)
                 self.player.load_player(player_for_save)
-            if create_text_click('Quit', Drifftype, GREY, display, self.click, display.get_width()//2, display.get_height()//1.6):
+            if create_text_click('Options', Drifftype, GREY, display, self.click, display.get_width()//2, display.get_height()-400):
+                self.key_menu()
+            if create_text_click('Quit', Drifftype, GREY, display, self.click, display.get_width()//2, display.get_height()-200):
                 if Validation_screen("Voulez-vous quittez sans sauvegarder ?", display, self.click):
                     sys.exit()
             screen.blit(pygame.transform.scale(display, WINDOWS_SIZE), (0, 0))
@@ -583,6 +626,66 @@ class Game():
             running, self.click = basic_checkevent(self.click)
         self.click = False
         """Affiche un menu pause classique"""
+    def key_menu(self):
+        running = True
+        display = pygame.Surface((1980,1000))
+        list_key = list(self.key.keys())
+        i=0
+        j=0
+        while running:
+            printbackgrounds(display)
+            i=0
+            j=0
+            for x in list_key:
+                if i == 5:
+                    i=0
+                    j+=1
+                
+                text_width, text_height = ColderWeather.size("A")
+                draw_text(x, ColderWeather, GREY, display, display.get_width()//4 - text_width // 2.5+j*500, display.get_height()//6+100*i)
+                bouton_longueur = pygame.Rect(display.get_width()//4 - text_width // 2.5+j*500, display.get_height()//6+1.5*text_height+100*(i-1)+50,text_width, text_height//2)
+                pygame.draw.rect(display,(150,150,150),bouton_longueur,1)
+                
+                i+=1
+                if bouton_click(bouton_longueur,display,self.click):
+
+                    choice = self.checkclavier(display.get_width()//4 - text_width // 2.5+j*500, display.get_height()//6+100*(i-1)+50,display,bouton_longueur)
+                    self.key[x] = pygame.key.key_code(choice)
+                
+                draw_text(pygame.key.name(self.key[x]),ColderWeather,WHITE,display,display.get_width()//4 - text_width // 2.5+j*500, display.get_height()//6+100*(i-1)+50)
+                
+            screen.blit(pygame.transform.scale(display,WINDOWS_SIZE),(0,0))
+            pygame.display.update()
+            running,self.click = basic_checkevent(self.click)
+
+    def checkclavier(self,x,y,display,rect):
+        running = True
+        mot = ''
+        all_key = (K_a,K_b,K_c,K_d,K_e,K_f,K_g,K_h,K_i,K_j,K_k,K_l,K_m,K_n,K_o,K_p,K_q,K_r,K_s,K_t,K_u,K_v,K_w,K_x,K_y,K_z)
+        
+        while running:
+            display.fill(LIGHT_GREY,rect)
+
+            draw_text(mot,ColderWeather,WHITE,display,x,y)
+
+            for event in pygame.event.get():
+                if event.type == QUIT:
+                    sys.exit()
+                if event.type == KEYDOWN :
+                    if event.key == K_ESCAPE or event.key == K_RETURN:
+                        return mot
+                        running = False
+                    if event.key == K_BACKSPACE:
+                        mot = mot[:len(mot)-1]
+                    if len(mot)<=0:
+                        for i in range(len(all_key)):
+                            if event.key == all_key[i]:
+                                mot += chr(97+i)
+                        if event.key == K_SPACE:
+                            mot += ' '
+            screen.blit(pygame.transform.scale(display,WINDOWS_SIZE),(0,0))
+
+            pygame.display.update()
     def load_fog(self,display_fog):
         self.fog.display = display_fog
     def interact(self,entity,is_talking):
@@ -594,118 +697,18 @@ class Game():
                     is_talking = True
                     entity.print_shop(self.player,self.click)
                 screen.blit(display_talk,(0,0))
+        elif entity.type == "Coffre":
+            entity.inventaire.loot_inventory(100,100,700,100,self.player.inventaire)
+            if entity.inventaire.is_empty():
+                entity.img = monstre_loot_open
+            else:
+                entity.img = monstre_loot_light
         return is_talking
-"""
-    def print_combat_screen(self, list_monstre):
-        running = True
-        pixel_mask = pygame.mask.from_surface(pixel_red)
-        souris_surf = pygame.Surface((1, 1))
-        souris_surf.fill(RED)
-        souris_mask = pygame.mask.from_surface(souris_surf)
-        pixel_red.set_alpha(0)
-        Map = [['a', 'a', 'a'], ['a', 'a', 'a']]
-        case.set_colorkey(WHITE)
-        display = pygame.Surface((screen.get_width(), screen.get_height()))
-        display.set_colorkey(BLACK)
-        l = load_map('map2.txt')
-        case_select.set_alpha(100)
-        list_case = []
-        transition = pygame.Surface((screen.get_width(),screen.get_height()))
-        transition.fill((0,0,0))
-        f=0
-        current_selec = None
-        i, j = 0, 0
-        for h in l:
-            j = 0
-            for g in h:
-                if l[i][j] == 'w':
-                    list_case.append(Case(i, j))
-                j += 1
-            i += 1
-        i = 10
-        for x in list_monstre:
-            list_case[i].in_case = x
-            i+=1
-        self.player.transform_display_for_combat()
-        '''
-        list_case[59].in_case = self.player
-        list_case[60].in_case = self.player.crew_mate[0]
-        list_case[61].in_case = self.player.crew_mate[1]'''
-        while running:
-            mx, my = pygame.mouse.get_pos()
-            screen.fill(LIGHT_GREY)
-            screen.blit(fond, (0, 0))
-            screen.blit(souris_surf, (mx, my))
-            i = 0
 
-            for x in list_case:
-                screen.blit(x.display, x.cordo())
-                if x.in_case != None and not x.is_select:
-                    x.in_case.type_animation = "walk"
-                if x.in_case != None and x.is_select:
-                    x.in_case.type_animation = "idle"
-                if x.in_case != None:
-                    x.in_case.animate()
-
-            for x in list_case:
-                x.print_contains()
-            i, j = 0, 0
-            for h in l:
-                j = 0
-                for g in h:
-                    if l[i][j] == 'w':
-                        if pixel_mask.overlap(souris_mask, ((mx-((j-i)*(pixel_red.get_width()+45)//2+screen.get_width()//2-pixel_red.get_width()//2), my-((j+i)*(pixel_red.get_width()+45)//4-100)))):
-                            if self.click:
-                                for x in list_case:
-                                    if x.i == i and x.j == j:
-                                        if current_selec != None and current_selec.in_case != None:
-                                            if x.is_select and x.in_case == None:
-                                                x.in_case = current_selec.in_case
-                                                x.in_case.type_animation = "walk"
-                                                current_selec.in_case = None
-                                        current_selec = x
-
-                                        # x.select(True)
-                                        # x.select_neighbour(list_case)
-                                # print(i, j)
-                    j += 1
-                i += 1
-            draw_text("i =%i j=%i %i" % (i, j, len(list_case)),
-                      ColderWeather, WHITE, screen, 100, 100)
-
-            draw_text("%i" % list_case[0].is_select,
-                      ColderWeather, WHITE, screen, 500, 500)
-            if current_selec != None:
-
-                #current_selec.in_case = list_mooving_entity[0]
-                # current_selec.print_contains()
-                current_selec.select(True)
-                current_selec.select_neighbour(list_case)
-
-
-            if f != 255:
-                for x in range(255):
-                    f+=0.008
-                    transition.set_alpha(int(255-f))
-                screen.blit(transition,(0,0))
-
-
-            pygame.display.update()
-            running, self.click = basic_checkevent(self.click)
-        Affichage plateau + action souris
-        principe de fonctionnement :
-        Le principe de la carte est le suivant :
-        Le jeu crée un object Case(i,j) a partir d'une map dans un text (qui contient des W)
-        Ensuite la boucle for x in list_case permet d'imprimer toute les cases sur le screen
-        la boucle d'après permet de voir si la souris (le mask) overlap la case c'est a dire si la souris collide avec la case, si elle overlap le programme cherche l'object Case(i,j) et utilise sa fonction select pour faire un affichage visuel de la case choisi
-"""
 
     
 
-#player_direct = Perso(0,0,0,0,0,0,0,0,0,[])
-# game = Game(player_direct)
-# while True:
-#     game.main_game()
+
 num = 1
 list_map = []
 while os.path.exists(os.path.join(path.dirname(__file__), 'map_level_'+str(num)+'.txt')):
@@ -714,26 +717,6 @@ while os.path.exists(os.path.join(path.dirname(__file__), 'map_level_'+str(num)+
     list_map.append(level)
     num +=1
 print("Nb map : %i"%len(list_map))
-#map_1 = Map("map_level_1.txt","map_decoration_level_1.txt","map_monstre_level_1.txt",list_static_entity)
-#map_2 = Map("map_level_2.txt","map_decoration_level_2.txt","map_monstre_level_2.txt",list_static_entity)
-
-#map_1.init_map()
-#map_2 = Map(r"tavern_1",[])
-#map_2.init_map()
-
-"""
-player.crew_mate.append(player_2)
-print(player_3.decalage[0])
-print(player_2.decalage[0])
-
-player.crew_mate.append(player_3)
-
-player_2.crew_mate.append(player_3)
-player_2.crew_mate.append(player)
-
-player_3.crew_mate.append(player)
-player_3.crew_mate.append(player_2)
-"""
 
 sorcerer.crew_mate.append(sorcerer_2)
 sorcerer.crew_mate.append(sorcerer_3)

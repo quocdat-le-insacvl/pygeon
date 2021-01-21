@@ -45,7 +45,11 @@ class Inventaire():
                 self.backpack[i] = None
                 self.nb_items -=1
                 self.poid_actuel -= piece.wheight
-
+    def is_empty(self):
+        for i in range(0,self.nb_x*self.nb_y+1):
+            if self.backpack[i] != None:
+                return False
+        return True
     def print_inventory_bis(self,pos_x,pos_y,main=True,mouse=False,print_poids=True,print_info_on_mouse = False):
         display = pygame.Surface((60*(self.nb_x+2),60*(self.nb_y+2)))
         x=display.get_width()//2
@@ -196,7 +200,7 @@ class Inventaire():
         self.print_inventory_bis(pos_self_x,pos_self_y,print_info_on_mouse=print_info_on_mouse)
     def add_random_drop(self,number):
         for i in range(number):
-            j = random.randint(0,len(Droppable))
+            j = random.randint(0,len(Droppable)-10)
             self.ajouteritems(Droppable[j])
 class Shop(Entity):
     def __init__(self,inventory,pos_x,pos_y,img,name,which_type,animation_dict=None,talking=None,size=(0,0),size_collide_box=1):

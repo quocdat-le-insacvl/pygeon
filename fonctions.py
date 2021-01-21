@@ -2,10 +2,13 @@ import pygame
 from settings import police,color
 from settings.screen import WINDOWS_SIZE,screen
 from settings.load_img import parchment,img_description
-from fonction import basic_checkevent
+from fonction import basic_checkevent,draw_text
+from math import trunc
 
 button=pygame.image.load(r"Addon\Menu\TextBTN_Medium.png")
 buttonp=pygame.image.load(r"Addon\Menu\TextBTN_Medium_Pressed.png")
+
+
 
 def exit_checkevent(event):
     if event.type == pygame.QUIT:
@@ -37,9 +40,9 @@ def board_with_msg(message):
     #take a message as argument (string) and creat a board wich is returned
     assert(len(message)<60 and type(message)==str), "message invalid in boarb_with_message"
     text2=subtitle.render(message,True,color.BROWN)
-    text2=pygame.transform.scale(text2, (screen.get_width()//2,text2.get_height()))
+    text2=pygame.transform.scale(text2, (screen.get_width()//2,trunc(text2.get_height()*2)))
     board=pygame.transform.scale(pygame.image.load(r"Addon\Menu\UI board Small  parchment.png"),(int(text2.get_width()*1.2),text2.get_width()//2))
-    board.blit(text2,(board.get_width()//2-text2.get_width()//2,text2.get_height()))
+    board.blit(text2,(board.get_width()//2-text2.get_width()//2,text2.get_height()//2))
     return board
 
 def choices_clickable(board,choices,rectboard=pygame.Rect((0,0),(0,0))):
@@ -65,6 +68,20 @@ def replace_rect(rectsurface,rect):
     rect.x=rect.x+rectsurface.x
     rect.y=rect.y+rectsurface.y
     return rect
+
+def replace_rects_scale(scale_values,board,rects,rectboard):
+    """cette fonction permet de scale une surface avec les rectangles qui sont sur elle,
+    il faut donner, le tuple des nouvelles dimensions, la surface à scale et la liste de 
+    rect sur la surface, renvoie le board scale, puis la liste"""
+    x=scale_values[0]/board.get_width()
+    y=scale_values[1]/board.get_height()
+    for n in range(len(rects)):
+        rects[n].x=trunc((rects[n].x-rectboard.x)*x)+rectboard.x
+        rects[n].width=trunc(rects[n].width*x)
+        rects[n].y=trunc((rects[n].y-rectboard.y)*y)+rectboard.y
+        rects[n].height=trunc(rects[n].height*y)
+    return pygame.transform.scale(board,scale_values),rects
+
 
 def init_buttonsas():
     #initialise les boutons + et -
@@ -106,6 +123,38 @@ def board_error(message):
         if click: running=False
     return running
 
+def board_with_text(msg):
+    """blit a board with a text at the mouse position, word len max 30 caracter"""
+    mots=msg.split(" ")
+    phrase=[""]
+    ligne=[]
+    i=0
+    for n in mots:
+        if len(phrase[i])+1+len(n)>30:
+            ligne.append(wbrown(subtitle,phrase[i]))
+            phrase.append("")
+            i+=1
+        phrase[i]+=n+" "
+    ligne.append(wbrown(subtitle,phrase[i]))
+    i+=1
+    l=ligne[0]
+    for n in ligne:
+        if n.get_width()>l.get_width():
+            l=n
+    board=pygame.transform.scale(board_init(),(l.get_width()+60,ligne[0].get_height()*(i+1)))
+    for nb in range(len(ligne)):
+        board.blit(ligne[nb],(30,ligne[0].get_height()*nb+ligne[0].get_height()//2))
+    if board.get_height()+pygame.mouse.get_pos()[1]<screen.get_height() and board.get_width()+pygame.mouse.get_pos()[0]<screen.get_width():
+        screen.blit(board,pygame.mouse.get_pos())
+    elif board.get_height()+pygame.mouse.get_pos()[1]>=screen.get_height() and board.get_width()+pygame.mouse.get_pos()[0]<screen.get_width():
+        screen.blit(board,(pygame.mouse.get_pos()[0],pygame.mouse.get_pos()[1]-board.get_height()))
+    elif board.get_height()+pygame.mouse.get_pos()[1]<screen.get_height() and board.get_width()+pygame.mouse.get_pos()[0]>=screen.get_width():
+        screen.blit(board,(pygame.mouse.get_pos()[0]-board.get_width(),pygame.mouse.get_pos()[1]))
+    else:
+        screen.blit(board,(pygame.mouse.get_pos()[0]-board.get_width(),pygame.mouse.get_pos()[1]-board.get_height()))
+    
+    
+    
 title=pygame.font.Font(r'Addon\Police\ColderWeather-Regular.ttf', board_init().get_height()//10)
 title2=pygame.font.Font(r'Addon\Police\21 Glyphs.ttf', board_init().get_height()//10)
 subtitle=pygame.font.Font(r'Addon\Police\ColderWeather-Regular.ttf', board_init().get_height()//13)

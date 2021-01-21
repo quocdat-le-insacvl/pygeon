@@ -336,7 +336,6 @@ def confirm_button():
 
 def board_with_msg(message):
     #take a message as argument (string) and creat a board wich is returned
-    assert(len(message)<35 and type(message)==str), "message invalid in boarb_with_message"
     text2=police.Outrun_future.render(message,True,color.RED)
     board=pygame.transform.scale(pygame.image.load(r"Addon\Menu\UI board Small  parchment.png"),(text2.get_width()+200,text2.get_height()*4))
     board.blit(text2,(board.get_width()//2-text2.get_width()//2,text2.get_height()+20))
@@ -404,13 +403,15 @@ def well_print_on_display(display,text,pos_x=0,pos_y=0,color=WHITE):
 def print_turn_batlle(list_turn):
     display = pygame.Surface((250,500))
     display.blit(pygame.transform.scale(img_inventaire,(250,500)),(0,0))
+    display.set_colorkey(BLACK)
     i = 0
     for i in range(4):
         pygame.draw.rect(display,(0,0,1),(20,110*i+30,200,100),1)
-    screen.blit(display,(0,0))
+    screen.blit(display,(screen.get_width()-250,screen.get_height()-500))
     i=1
     for x in list_turn:
-        screen.blit(pygame.transform.scale(x.avata,(200,100)),(20,470-110*i))
+        if i < 5:
+            screen.blit(pygame.transform.scale(x.avata,(200,100)),(20+screen.get_width()-250,470-110*i+screen.get_height()-500))
         i+=1
             
 #combat
