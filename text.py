@@ -17,6 +17,7 @@ class Text(pg.sprite.Sprite):
         self.pos = pos
         self.born = born
 
+    """Fonction qui sert a tuer le message quand son lifetime est depasse"""
     def update(self):
         # print("update "+str(pg.time.get_ticks() - self.spawn_time))
         if pg.time.get_ticks() - self.spawn_time >= self.life_time:

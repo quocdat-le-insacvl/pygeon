@@ -143,12 +143,6 @@ class Combat:
             for x in list_case:
                 x.checkIfSelected()
 
-            ##################################Partie pour les sorts#########################
-            # if self.attack:
-            #     if self.sort_choisi:
-            #         self.bouttons_range(self.liste_sort[0][4])
-            #         list_case[self.liste_tours[self.compteur_tour][2].n_case].print_effect(list_case,k=self.liste_sort[0][4]-1,m=self.liste_sort[0][2]-2)
-            #         self.activate = True
             if self.get_rang:
                 list_case[self.liste_tours[self.compteur_tour][2].n_case].print_effect(list_case,k=rang-1,m=self.liste_sort[0][2]-2)
                 self.activate = True
@@ -310,7 +304,6 @@ class Combat:
     """Fonction qui me permet de determiner les tours si j'ai initialement 3 personnages"""
 
     def check_conditions(self):
-        print("check conditions")
         if self.n_entrees == 1:
             self.diceevt.resume(20, i=500)
             self.liste_tours.append(
@@ -334,15 +327,12 @@ class Combat:
                 self.liste_tours.append(
                     [self.perso3.name, self.perso3.resultat, self.perso3])
                 self.pause = True
-                print(self.liste_tours)
                 self.trier(self.liste_tours)
-                print(self.liste_tours)
                 for liste in self.liste_tours:
                     self.text_tour = self.text_tour + liste[0]+"\n"
                 self.first_Entry = False
                 self.message = Text(self, text=self.text, size_font=30, pos=[
                                     image_box.get_width(), 20], life_time=5000)
-                #print(self.message.spawn_time)
                 self.message_tour = Text(self, text=self.text_tour, size_font=30, pos=[
                                          image_box.get_width(), 50], life_time=5000)
                 self.texts.add(self.message, self.message_tour)
@@ -368,15 +358,12 @@ class Combat:
                 self.liste_tours.append(
                     [perso2.name, perso2.resultat, perso2])
                 self.pause = True
-                print(self.liste_tours)
                 self.trier(self.liste_tours)
-                print(self.liste_tours)
                 for liste in self.liste_tours:
                     self.text_tour = self.text_tour + liste[0]+"\n"
                 self.first_Entry = False
                 self.message = Text(self, text=self.text, size_font=30, pos=[
                                     image_box.get_width(), 20], life_time=5000,born=1000)
-                #print(self.message.spawn_time)
                 self.message_tour = Text(self, text=self.text_tour, size_font=30, pos=[
                                          image_box.get_width(), 50], life_time=5000, born=1000)
                 self.texts.add(self.message, self.message_tour)
@@ -399,15 +386,12 @@ class Combat:
                 self.liste_tours.append(
                     [perso1.name, perso1.resultat, perso1])
                 self.pause = True
-                print(self.liste_tours)
                 self.trier(self.liste_tours)
-                print(self.liste_tours)
                 for liste in self.liste_tours:
                     self.text_tour = self.text_tour + liste[0]+"\n"
                 self.first_Entry = False
                 self.message = Text(self, text=self.text, size_font=30, pos=[
                                     image_box.get_width(), 20], life_time=5000)
-                #print(self.message.spawn_time)
                 self.message_tour = Text(self, text=self.text_tour, size_font=30, pos=[
                                          image_box.get_width(), 50], life_time=5000)
                 self.texts.add(self.message, self.message_tour)
@@ -474,7 +458,6 @@ class Combat:
                                 image_box.get_width(), 20], life_time=18000, born=14000)
             self.message_tour = Text(self, text=self.text_tour, size_font=30, pos=[
                                      image_box.get_width(), 50], life_time=18000, born=14000)
-            print("dernier self.message "+str(self.message.spawn_time))
             self.texts.add(self.message, self.message_tour)
 
     """Fonction responsable de la generation des tours + arreter le combat quand tous les personnages sont morts"""
@@ -515,7 +498,6 @@ class Combat:
             #arreter le combat qd ts les persos sont morts ou qd tous les monstres sonts morts
             if (len(liste_vivants) == 0):
                 self.stop_running = True
-                print("fin combat")
 
             """Il faut faire de meme ici pr la liste des monstres"""
 
@@ -602,7 +584,6 @@ class Combat:
                 self.liste_sort = []
                 self.options_sorts, self.clic = False, False
                 self.liste_sort = self.liste_tours[self.compteur_tour][2].magic_missile()
-                print("liste ",self.liste_sort)
                 if self.liste_sort:
                     self.sort_choisi = True
                 else:
@@ -951,9 +932,8 @@ class Combat:
             for l in self.liste_tours:
                 if l[2] == player:
                     self.liste_tours.remove(l)
-                    for perso in l[2].crew_mate:
-                        perso.crew_mate.remove(l[2])
-        # self.compteur_tour = self.liste_tours.index(current_tour)
+                    # for perso in l[2].crew_mate:
+                    #     perso.crew_mate.remove(l[2])
 
     """Fonction qui gere quoi faire en cas de deces d un monstre"""
     def mourir_monstre(self):
@@ -982,4 +962,8 @@ class Combat:
                 return i
             i += 1
 
+    """Fonction pour recuperer les listes des persos et monstres encore vivants, cette  fonction rend une liste ayant comme premier element la liste des persos vivants et comme second
+    element la liste de monstres vivants"""
+    def recuperer_vivants(self):
+        return [self.check_nbvivants(), self.liste_monstre]
 
