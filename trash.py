@@ -46,7 +46,7 @@ key = list(Wikitem.keys())
 
 
 class Game():
-    def __init__(self,player,map):
+    def __init__(self,player,map,reload=False):
         self.x = 0
         self.player = player
         self.map = map
@@ -61,15 +61,16 @@ class Game():
         self.screen = screen
         self.chat_box = ChatBox(self)
         self.list_dungeon = dict()
-        for i in range(len(self.map.map_decoration)):
-            if self.map.map_decoration[i] != None:
-                for j in range(len(self.map.map_decoration[i])):
-                        
-                        if self.map.map_decoration[i][j]=='8' or self.map.map_decoration[i][j]=='9':
-                            donj = Donjon(2,self.screen,self.player)
-                            donj.creationDonjon()
-                            self.list_dungeon[(i,j)] = donj
-        print(self.list_dungeon)
+        if not reload:
+            for i in range(len(self.map.map_decoration)):
+                if self.map.map_decoration[i] != None:
+                    for j in range(len(self.map.map_decoration[i])):
+                            
+                            if self.map.map_decoration[i][j]=='8' or self.map.map_decoration[i][j]=='9':
+                                donj = Donjon(2,self.screen,self.player)
+                                donj.creationDonjon()
+                                self.list_dungeon[(i,j)] = donj
+
     def main_game(self):
         global time_line
         self.player.name = 'gh'
@@ -165,7 +166,7 @@ class Game():
                 screen.blit(entity_re_print.img,(entity_re_print.pos_x+center_x,entity_re_print.pos_y+center_y))
             
             
-            print_mooving_entity(self, screen,self.map.list_monster,center_x,center_y)
+            print_mooving_entity(self.fog, screen,self.map.list_monster,center_x,center_y)
             for x in self.map.list_monster:
                 x.type_animation = "walk"
                 if x.mouvement[0] < 0 :

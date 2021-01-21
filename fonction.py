@@ -359,7 +359,7 @@ def screenSave():
     screensave.blit(screen,(0,0))
     return screensave
 
-def print_mooving_entity(game, display,list_entity,center_x,center_y):
+def print_mooving_entity(fog, display,list_entity,center_x,center_y):
     for entity in list_entity:
         # Dat's note : 
         # if hidden, check if him go out of the zone visible
@@ -369,7 +369,7 @@ def print_mooving_entity(game, display,list_entity,center_x,center_y):
             # Dat's note : 
             # if hidden, check if him go out of the zone visible
             # Check if the monster in the fog => he is hidden !
-            if game.fog.surface.get_at((entity.pos_x, entity.pos_y)) != NIGHT_COLOR:
+            if fog.surface.get_at((entity.pos_x, entity.pos_y)) != NIGHT_COLOR:
                 entity.is_hidden = False
                 entity.seen = True
                 display.blit(entity.img, (entity.pos_x + center_x, entity.pos_y+center_y))

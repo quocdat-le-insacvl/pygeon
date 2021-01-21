@@ -22,19 +22,19 @@ from sorcerer import *
 
 class Combat:
 
-    def __init__(self, game, list_monstre):
+    def __init__(self, list_monstre,chat_box,player):
         self.game = game
         self.chat_box = self.game.chat_box
         self.stop_running = False
         self.texts = pygame.sprite.Group()
         self.score = 0  # pour le dice
-        self.diceevt = DiceEvent(self, self.game)
+        self.diceevt = DiceEvent(self)
         self.pause = False
         self.tourm = True  # cette valeur est a True si c'est le tour du monstre de jouer
-        self.perso1 = self.game.player
-        self.perso2 = self.game.player.crew_mate[0]
+        self.perso1 = player
+        self.perso2 = player.player.crew_mate[0]
         # a modifier quand on definit sur la map 3 joueurs
-        self.perso3 = self.game.player.crew_mate[1]
+        self.perso3 = player.player.crew_mate[1]
         self.stop = False  # pour la generation du nombre aleatoire
         self.actdamage = False  # pour activer le calcul des degats
         self.liste_monstre = list_monstre  # a modifier
@@ -43,7 +43,7 @@ class Combat:
         self.message_hp = "perso 1 hp:" + \
             str(self.perso1.hp)+" perso 2 hp:"+str(self.perso2.hp) + \
             " perso 3 hp:"+str(self.perso3.hp)
-        self.player = self.game.player
+        self.player = player
         self.n_entrees = 0
         self.liste_tours = []  # liste de listes
         # pour faire le parcours des tours
@@ -105,9 +105,9 @@ class Combat:
             list_case[i].in_case = x
             i += 1
         #self.game.player.transform_display_for_combat()
-        list_case[self.game.player.n_case].in_case = self.game.player
-        list_case[65].in_case = self.game.player.crew_mate[0]
-        list_case[51].in_case = self.game.player.crew_mate[1]
+        list_case[self.player.n_case].in_case = self.player
+        list_case[65].in_case = self.player.crew_mate[0]
+        list_case[51].in_case = self.player.crew_mate[1]
 
         #VOIR TOUT LES MONSTRES
         self.nb_monstres= len(self.liste_monstre)

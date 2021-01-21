@@ -1,24 +1,9 @@
-from monster import Monster
-from Donjon.piece import Piece
+from piece import Piece
 import pygame
-from personnage import Perso
+from perso import Personnage
 from pygame.time import Clock
-from Donjon.camera import Camera
-from custum_map_ import list_entity_animation,list_npc
-from script import player_for_save,player_3,list_static_entity,player_2,playerbis,sorcerer,sorcerer_2,sorcerer_3
-from settings.load_img import *
+from camera import Camera
 import os
-import numpy
-import random
-from fog import Fog
-from minimap import Minimap
-from combat import Combat
-list_img_monstre = [list_entity_animation[0],list_entity_animation[1],list_entity_animation[2],list_entity_animation[3],list_entity_animation[4]]
-list_animation_monstre = [demon_1_animation,demon_animation,squelton_animation,wizard_animation,dark_wizard_animation]
-list_decalage_monstre = [[0,0],[0,0],[-30,-30],[-30,-30],[70,20]]
-list_size_monstre = [(45,80),(45,80),(45,80),(45,80),(45,80)]
-
-
 clock = pygame.time.Clock()
 #classe permettant de créer un donjon
 #un donjon contient un ensemble de piece ainsi que des monstres, des loots, etc...
@@ -40,72 +25,27 @@ class Donjon():
         self.listekey = dict()
         self.perso = perso
         self.interaction = 0
-        self.fogs=[]
-        self.liste_monstre = []
         for i in range(self.nbEtage):
             self.pieces.append(Piece(screen))
-            self.liste_monstre.append([])
-        self.pieces[0].linked = ['Haut','Haut','Gauche','Droite', 'Gauche']        
-        self.pieces[1].linked = ['Droite', 'Gauche','Gauche','Gauche','Haut']
-        self.pieces[2].linked = ['Droite', 'Gauche','Gauche','Gauche','Haut']
+
         #i=0 -> etage 0 ; i=2 -> etage 1 ...
 
         #les etages 0 et 3 n'ont qu'un escalier
         self.pieces[0].max_graphique[8] = self.pieces[self.nbEtage-1].max_graphique[8] = 1
         self.pieces[self.nbEtage-1].max_graphique[8] = self.pieces[0].max_graphique[16] = 0
-        for i in range(1,nbreEtage-1):
-            self.pieces[i].max_graphique[8]=self.pieces[i].max_graphique[16]=1
+        
         self.listekey = {pygame.K_UP : False, pygame.K_DOWN : False, pygame.K_RIGHT:False,pygame.K_LEFT:False,pygame.K_SPACE:False}
 
-
     def creationDonjon(self):
-        j=0
         for salle in self.pieces:
-            
-            direction = 0
-            nbreHaut = 0
-            salle.linked = []
-            for i in range(2+3*self.difficulty):
-                direction = random.randint(0,3)
-                if direction==0:salle.linked.append('Gauche')
-                if direction ==1:salle.linked.append('Droite')
-                if direction==2 and nbreHaut <2:
-                    nbreHaut+=1
-                    salle.linked.append('Haut')
-            print(salle.linked)
-            salle.linked=['Gauche','Haut','Droite','Haut']
             salle.createRoom()
-            salle.linkedPiece()
-            i=0
-            
-
-            
-            while salle.check_jouabilite()!= True:
-                print("Probleme generation piece %i etage %i"%(i,j))
-
-                
+            while salle.check_jouabilite() != True:
                 salle.createRoom()
-                salle.linkedPiece(check_pieces=True)
-                #salle = Piece(self.screen)
-                #salle.linked = ['Haut','Haut','Gauche','Gauche','Droite','Gauche'] 
-                i+=1
-            
-            
+                print("Probleme generation piece")
             salle.afficherPiece()
-            self.fogs.append(Fog(self.perso,salle.afficher()))
-            self.fogs[j].init_fog_for_dungeon()
-            j+=1
-        #implementation des monstres
-        self.perso.pos_x,self.perso.pos_y = (self.pieces[self.actuel].spawn)
-
-        #self.pieces[0].piece = numpy.rot90(self.pieces[0].piece,1)
-        print(any(True if self.pieces[0].piece[y][x] == 16 or self.pieces[0].piece[y][x] == 8 else False for x in range(len(self.pieces[0].piece)) for y in range(len(self.pieces[0].piece))))
-        self.spawn_monster()
-        self.cam = Camera(self.perso,self.pieces[self.actuel],self.liste_monstre[self.actuel])
-        
+        self.cam = Camera(self.perso,self.pieces[self.actuel])
     def update_affichage(self):
         self.perso.afficher()
-
         self.cam.actualiser(self.perso)
         self.cam.display_piece = self.pieces[self.actuel].afficher()
         self.cam.afficher()
@@ -118,51 +58,47 @@ class Donjon():
             self.screen.fill((255,255,255))
             pygame.display.flip()
         
-        self.perso.pos_x,self.perso.pos_y = (self.pieces[self.actuel].spawn)
-        self.cam.fog = self.fogs[self.actuel]
+        self.perso.X,self.perso.Y = (self.pieces[self.actuel].spawn)
         self.cam.actualiser(self.perso)
         
         self.perso.afficher()
-        self.cam.piece = self.pieces[self.actuel]
         self.cam.display_piece = self.pieces[self.actuel].afficher()
-        
         self.cam.afficher()
 
     #fonction de deplacement, très nulle mais ce ne sera pas la version finale
     #juste une version d'essai
     def deplacement(self):
-        
         if self.listekey.get(pygame.K_UP):
             
-            self.perso.pos_y-=2
+            self.perso.deplacerHaut()
             self.interaction = self.pieces[self.actuel].check_interact(self.perso)
             if self.pieces[self.actuel].check_collision(self.perso):
-                self.perso.pos_y+=2
+                self.perso.deplacerBas()
             else:
 
                 self.update_affichage()
                 
         if self.listekey.get(pygame.K_DOWN): 
            
-            self.perso.pos_y+=2
+            self.perso.deplacerBas()
             self.interaction = self.pieces[self.actuel].check_interact(self.perso)
             if self.pieces[self.actuel].check_collision(self.perso):
-                self.perso.pos_y-=2
+                self.perso.deplacerHaut()
             else:
                 self.update_affichage()
         if self.listekey.get(pygame.K_RIGHT):
             
-            self.perso.pos_x +=2
+            self.perso.deplacerDroite()
             self.interaction = self.pieces[self.actuel].check_interact(self.perso)
             if self.pieces[self.actuel].check_collision(self.perso):
-                self.perso.pos_x -=2
+                self.perso.deplacerGauche()
             else:
                 self.update_affichage()
         if self.listekey.get(pygame.K_LEFT):
-            self.perso.pos_x -=2
+            self.perso.deplacerGauche()
             self.interaction = self.pieces[self.actuel].check_interact(self.perso)
             if self.pieces[self.actuel].check_collision(self.perso):
-                self.perso.pos_x +=2
+                self.perso.deplacerDroite()
             else:
                 self.update_affichage()
         if self.listekey.get(pygame.K_i):
@@ -177,34 +113,16 @@ class Donjon():
                 print("ESCALIER BAS", self.actuel)
                 self.descendre_etage()
                 self.interaction=0
-        
+
     #classe permettant de jouer (running classique)
     #il faut prealablement avoir créé le donjon (et l'avoir affiché, c'est mieux quand même)
     def runningDonjon(self):
-        
         while self.listekey[pygame.K_SPACE]==False:
             self.__checkEvent()
             self.deplacement()
             #print '{}: tick={}, fps={}'.format(i+1, clock.tick(fps), clock.get_fps())
             clock.tick(64)
-            monstre = None
-            for x in self.liste_monstre[self.actuel]:
-                if x.collide_box_interact.mask.overlap(self.perso.masks,((self.perso.pos_x+10)-x.collide_box_interact.pos_x,(self.perso.pos_y+self.perso.img.get_height()-15)-x.collide_box_interact.pos_y)):
-                    
-                    self.perso.monstre_near = True
-                    monstre = x
-            if self.perso.monstre_near and monstre != None:
-                g = Game(self.perso,self.pieces[self.actuel],reload=False)
-                f = Combat(g,monstre.group_monster)
-                f.affichage()
-                if f.player.crew_mate[0].hp > 0 or f.player.crew_mate[1].hp > 0  or f.player.hp > 0:
-                    for x in monstre.group_monster:
-                        print(1)
-                        self.map.list_monster.remove(x)
-                monstre = None
-            self.cam.afficher()
-            
-        self.listekey[pygame.K_SPACE] = False
+
 
     #permet de changer de salle
     def monter_etage(self):
@@ -286,37 +204,3 @@ class Donjon():
         fichier.close()
         for salle in self.pieces:
             salle.afficherPiece()
-
-    def spawn_monster(self):
-        currentX = 0
-        currentY = 0
-        position = False # Le monstre a-t'il trouve un spawn
-        indexPiece = 0
-        which_monster = 0
-        pos_x = 0
-        pos_y=0
-        for salle in self.pieces:
-            
-            self.liste_monstre[indexPiece] =[]
-            for i in range(2*self.difficulty):
-                which_monster = random.randint(1,len(list_img_monstre))
-                while position != True:
-                    y= random.randint(0,len(salle.piece)-1)
-
-                    x= random.randint(0,len(salle.piece[y])-1)
-                    currentX= salle.startX + (salle.lengthPiece//2) * (x-y-1)
-                    currentY = salle.startY + (salle.heightPiece//4)*(x+1+y)
-
-                    if salle.piece[y][x] == 1:
-                        position = True
-                        pos_x = currentX+20
-                        pos_y = currentY +5
-                        print("COORD : ",currentX,currentY)
-
-
-
-                position = False
-                self.liste_monstre[indexPiece].append(Monster(pos_x,pos_y,pygame.transform.scale(list_img_monstre[which_monster-1],(50,80)),"","Zgeg",\
-                size=list_size_monstre[which_monster-1],animation_dict=list_animation_monstre[which_monster-1],\
-                    decalage=list_decalage_monstre[0],))
-                print(f"A MONSTER HAS SPAWNED ON COORD ({pos_x},{pos_y})\n")

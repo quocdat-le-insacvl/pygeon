@@ -54,7 +54,7 @@ class Entity():
             self.display.blit(self.img, (0, 0))
 
             #self.display.blit(animation[ self.type_animation + "_" + str(int(self.frame)) + ".png"],(150-animation[ self.type_animation + "_" + str(int(self.frame)) + ".png"].get_width()//2,self.img.get_height()-animation[ self.type_animation + "_" + str(int(self.frame)) + ".png"].get_height()+300-self.img.get_height()+self.decalage_display[1]))
-    def animate_map(self, flip=False):
+    def animate_map(self, flip=False,scale=None):
         if self.type_animation != "" and self.animation_dict != None:
             animation = self.animation_dict[self.type_animation]
             #self.display.blit(animation[ self.type_animation + "_" + str(int(self.frame)) + ".png"],(0,0))
@@ -65,9 +65,13 @@ class Entity():
                 self.img = animation[self.type_animation +
                                      "_" + str(int(self.frame)) + ".png"]
             else:
+                
                 self.img = pygame.transform.flip(
                     animation[self.type_animation + "_" + str(int(self.frame)) + ".png"], True, False)
+                
                 self.img.set_colorkey(BLACK)
+            if scale != None:
+                    self.img = pygame.transform.scale(self.img,scale)
 
     def refresh_display(self):
         self.display.fill((0, 0, 0))

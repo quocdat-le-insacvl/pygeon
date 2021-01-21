@@ -3,7 +3,7 @@ from Dice import Dice
 
 class DiceEvent:
 
-    def __init__(self,combat,game):
+    def __init__(self,combat,game=None):
         #self.compteur = 0
         self.velocity = 2
         self.damage = 0

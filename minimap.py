@@ -67,10 +67,13 @@ class Minimap:
 
         """ Create les regles pour le Rectangle est toujours dans le surface"""
         if self.player.pos_x - self.scale < 0:
-            self.rect.right = 0
+            self.rect.left = 0
+            
         elif self.player.pos_x + self.scale > self.size_big_map[0]:  # width
-            self.rect.left = self.size_big_map[0]
+            self.rect.right = self.size_big_map[0]
+            
         else:
+            
             self.rect.centerx = self.player.pos_x
 
         if self.player.pos_y - self.scale < 0:
@@ -85,6 +88,7 @@ class Minimap:
             self.map_sp = self.display_with_nature.subsurface(self.rect)
             self.map_sp_fog = self.fog.surface.subsurface(self.rect)
         except:
+
             pass
 
         # self.map_sp.blit(
