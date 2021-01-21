@@ -401,23 +401,29 @@ class Perso(Entity):
         "calcule les dommages en fonction de l'arme équipée"
         bonus_deg=0
         crit=1
+        dex=self.score("dex")
+        if dex==-1:
+            dex=0
+        strong=self.score("str")
+        if strong==-1:
+            strong=0
         if self.crit:
             crit=2
             self.crit=False
         if self.armor[4]!=None:
             bonus_deg=self.action.dice(key[armor[4]].dmg)
             if key[self.armor[4]].wpn_type=="RANGED" or key[self.armor[5]].wpn_type=="RANGED":
-                return bonus_deg+self.score("dex")*crit
+                return (bonus_deg+dex)*crit
         elif self.armor[5]!=None and self.armor[4]==None:
             bonus_deg=self.action.dice(key[armor[5]].dmg)
             if key[self.armor[4]].wpn_type=="RANGED" or key[self.armor[5]].wpn_type=="RANGED":
-                return bonus_deg+self.score("dex")*crit
+                return (bonus_deg+dex)*crit
         if self.armor[4]!=None and self.armor[5]!=None:
             if all([key[self.armor[4]].wpn_type!="Two Handed",key[self.armor[4]].wpn_type!="RANGED",key[self.armor[5]].wpn_type!="RANGED"]):
                 bonus_deg+=self.action.dice(key[armor[5]].dmg)
             elif key[self.armor[4]].wpn_type=="Two Handed":
-                bonus_deg+=self.score("str")//2    
-        return bonus_deg+self.score("str")*crit
+                bonus_deg+=(strong//2)*crit  
+        return (bonus_deg+strong)*crit
     
     def saving_throw(self,cara,damage,dc):
         """fonction à utiliser pour resister à un sort"""
