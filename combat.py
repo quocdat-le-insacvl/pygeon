@@ -7,7 +7,7 @@ from settings.color import *
 from fonction import *
 from case import *
 from DiceEvent import *
-from monstre import *  # a remplacer plus tard
+#from monstre import *  # a remplacer plus tard
 from personnage import *
 from text import *
 from settings.load_img import *

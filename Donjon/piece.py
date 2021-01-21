@@ -2,6 +2,9 @@ import pygame
 import os
 import random
 import time
+import numpy
+import sys
+sys.setrecursionlimit(10000)
 class Piece():
 
     def __init__(self,display): 
@@ -19,12 +22,12 @@ class Piece():
         self.nbreChangement = 3
 
         #coordonne d'affichage du (0,0) de la piece
-        self.start = tuple((800,30))
+        self.start = tuple((2500,2500))
         self.startX, self.startY = self.start
         self.donotBlit=[]
         #ecran a afficher
         self.piece =[]
-        self.display = pygame.Surface((10000,10000))
+        self.display = pygame.Surface((7000,7000))
 
         #nom des grapiques a afficher
         #convention de nommage : nom_element000 + 1 chiffre entre 0 et 4
@@ -53,7 +56,8 @@ class Piece():
         #self.graphiique[self.nbre_graphique]
         #dictionnaire definissant le nombre maximum d'elements par piece selon les id
         self.max_graphique = {2:50,3:15,4:25,5:50,6:50,7:50,8:50,9:50,10:50,11:50,12:50,13:50,14:50,15:0}
-        self.max_graphique={x : 9 for x in range(2,self.nbre_graphique)}
+        self.max_graphique={x : 10 for x in range(2,self.nbre_graphique)}
+
         self.max_graphique[15] = 1
         self.max_graphique[16] = self.max_graphique[8] = 1
     
@@ -66,10 +70,13 @@ class Piece():
         self.index_interact_collsion = []
         #taux dapparition des graphiques par piece
         self.rate_graphique={2:1,3:1,4:1,5:1,6:1,7:1,8:1,9:1,10:1,11:1,12:1,13:1,14:1,16:1}
-        self.rate_graphique={x : 0.2 for x in range(2,self.nbre_graphique)}
+        self.rate_graphique={x : 0.1 for x in range(2,self.nbre_graphique)}
         self.rate_graphique[15] = self.rate_graphique[16] = 1
         self.rate_graphique[7] = self.rate_graphique[8] = self.rate_graphique[16] = 1
         self.spawn = tuple()
+
+        self.isSpawn = False 
+        #equivalent = self.spawn != tuple()
         #graphique (id) ne pouvant se trouver que sur des bords
         self.bord_graphique = [2,5,7,8]
         self.graphique_collision = []
@@ -78,6 +85,9 @@ class Piece():
         self.important_graph = [1,7,8,16]
         self.vide = self.createImages("antho.png",forceScale=True,autocolorkey=True)
 
+        self.taille = None
+        self.linked = None
+        self.alreadySpawn = False
     #methode de test pour afficher une liste double
     def afficherListe(self):
         for y in range(len(self.piece)):
@@ -96,7 +106,14 @@ class Piece():
     #la methode tire au sort un nombre entre taille_Min et taille_Max
     def createRoom(self, taille_Min = (15,15), taille_Max = (18,18)):
 
-        self.taille = (random.randint(taille_Min[0],taille_Max[0]), random.randint(taille_Min[1],taille_Max[1]))
+        self.piece = self.__createPiece(taille_Min=taille_Min,taille_Max=taille_Max)
+    def __createPiece(self,taille_Min = (15,15), taille_Max = (18,18)):
+        if self.taille == None:
+                self.taille = (random.randint(taille_Min[0],taille_Max[0]), random.randint(taille_Min[1],taille_Max[1]))
+        while self.taille[0] +2 == self.taille[1]:
+             self.taille = (random.randint(taille_Min[0],taille_Max[0]), random.randint(taille_Min[1],taille_Max[1]))
+
+        #bug sur la taille (16,18)
         x,y = 0,0
         piece = []
         directionMemory = 0
@@ -126,13 +143,50 @@ class Piece():
             piece[self.taille[1]-1][0] = 0
         if piece[self.taille[1]-1][self.taille[0]-2] == piece[self.taille[1] - 2][self.taille[0]-1]: #coin en bas a gauche
             piece[self.taille[1]-1][self.taille[0]-2] = 0
+        graphique_count = dict()
+        #permettant de compter le nombre d'occurences de chaque element
+        for y in range(0,len(piece)):
+            for x in range(0,len(piece[0])):
+                if piece[y][x] ==1:
+                    choosen = random.randint(2,self.nbre_graphique-1) #defini l'element a choisir
+                    rate = random.randint(0,100) #tire un nombre aleatoire pour savoir si l'element va spawn ou non
+                    if rate <= self.rate_graphique[choosen] * 100:
+                        testBord = True
+                        if choosen in self.bord_graphique: #si l'element est obligatoirement a l'extremite d'une piece
+                            if x == 0 or x == len(piece[0]) -1 or y== len(piece) -1 or y ==0:
+                                testBord = True
+                            elif piece[y-1][x] == 0 or piece[y+1][x] == 0 or piece[y][x-1] ==0 or piece[y][x]==0:
+                                testBord = True
+                            else:
+                                testBord = False
+                                x-=1
+                        if choosen in graphique_count and testBord:
+                            if graphique_count[choosen] < self.max_graphique[choosen]: 
+                                graphique_count[choosen] +=1
+                                if choosen ==15 and not self.alreadySpawn:
+                                    self.isSpawn=True
+                                    piece[y][x] = choosen
+                                elif choosen == 15:
+                                    x-=1
+                                else:
+                                    piece[y][x] = choosen
+                        elif testBord and self.max_graphique[choosen] !=0:
+                            graphique_count[choosen] = 1
+                            if choosen==15 and not self.alreadySpawn:
+                                self.isSpawn=True
+                                piece[y][x] = choosen
+                            elif choosen == 15:
+                                x-=1
+                            else:
+                                piece[y][x] = choosen
+        if 15 not in self.piece:
+            piece[0][0] = 15 #provisoirement le spawn du joueur
+        #a remplacer plus tard par un teleporteur
 
-        self.piece = piece
-        self.piece[0][0] = 1
+        return piece
 
-
-        self.__createElts()
-
+    #methode affichant une piece : parquet murs et elements
+    #aucune valeur de retour
     #methode pour les tests
     #ne pas utiliser
     def wait(self):
@@ -167,13 +221,13 @@ class Piece():
                         if choosen in graphique_count and testBord:
                             if graphique_count[choosen] < self.max_graphique[choosen]: 
                                 graphique_count[choosen] +=1
-                                if choosen ==15:spawn=True
+                                if choosen ==15:self.spawn=True
                                 self.piece[y][x] = choosen
                         elif testBord and self.max_graphique[choosen] !=0:
                             graphique_count[choosen] = 1
-                            if choosen==15:spawn=True
+                            if choosen==15:self.spawn=True
                             self.piece[y][x] = choosen
-        if not spawn:
+        if not self.spawn:
             self.piece[0][0] = 15 #provisoirement le spawn du joueur
         #a remplacer plus tard par un teleporteur
 
@@ -211,6 +265,7 @@ class Piece():
             for x in range (len(self.piece[y])):
                 if self.piece[y][x] ==0: #si il n'y a rien et du parquet autour on affiche un mur
                     if (x!=0 and self.piece[y][x-1]!=0) or (y!=0 and self.piece[y-1][x]!=0) or (y!=len(self.piece)-1 and self.piece[y+1][x]!=0 and self.piece[y+1][x]!=15) or (x!=len(self.piece[y])-1 and self.piece[y][x+1]!=0):
+                        
                         self.display.blit(self.mur,(currentX,currentY))
                         self.liste_collision.append((currentX,currentY-8))
                         self.graphique_collision.append(pygame.Rect((currentX,currentY),(self.mur.get_width(),self.mur.get_height())))
@@ -288,7 +343,7 @@ class Piece():
                 y+=1
             self.voisin_collision.append(sorted(liste))
 
-
+        print(f"SPAWN  : {self.spawn} \n")
 
     #methode permettant de load une image pygame
     #arguments : name -> nom du fichier a load /!\ obligatoirement dans le fichier imgs/
@@ -347,7 +402,8 @@ class Piece():
     def check_collision(self,perso):
         
         for x in self.liste_collision:
-            if self.collide_mask.overlap(perso.masks,((round(perso.pos_x))-x[0]+10,(perso.img.get_height()+round(perso.pos_y)-x[1])-15)):
+            if self.collide_mask.overlap(perso.donjon_mask,((round(perso.pos_x))-x[0]+10,(49+round(perso.pos_y)-x[1])-15)):
+                print("COLLISION\n")
                 return True
         
     #gere les interactions entre le perso et les graphs importants (escalier, coffre...)
@@ -355,11 +411,127 @@ class Piece():
         i=0
         interact=0
         for x in self.interact_collision:
-            mask_interaction = self.collide_mask.overlap(perso.masks,((round(perso.pos_x))-x[0]+10,(perso.img.get_height()+round(perso.pos_y)-x[1])-15))
+            mask_interaction = self.collide_mask.overlap(perso.donjon_mask,((round(perso.pos_x))-x[0]+10,(49+round(perso.pos_y)-x[1])-15))
             if mask_interaction:
                 interact = self.index_interact_collsion[i]
             i+=1
         return interact
+    
+    def create_linked(self,nombre_max=5):
+        self.linked = []
+        for i in range(nombre_max):
+            direction = 0
+            nbreHaut = 0
+            self.linked = []
+            for i in range(nombre_max):
+                direction = random.randint(0,3)
+                if direction==0:self.linked.append('Gauche')
+                if direction ==1:self.linked.append('Droite')
+                if direction==2 and nbreHaut <2:
+                    nbreHaut+=1
+                    self.linked.append('Haut')
+    
+    
+    #rajoute une piece liee
+    #la liste des pieces liees donne les positions : 'Droite' 'Gauche' 'Bas' 'Haut'
+    def linkedPiece(self,position=None,tailleCouloir = 5,check_pieces=False):
+        savedPosition = position
+        
+        if self.linked != None:
+            
+            for direction in self.linked:
+                position = savedPosition
+                if direction == 'Droite':
+                    
+                    if position == None:
+                        position= random.randint(0,len(self.taille))
+                        
+                    #while(self.piece[position][-1] != 1):
+                        #position= random.randint(0,len(self.taille))
+                    """self.piece[position][-1] = 1
+                    self.piece[position][-2] = 1"""
+                    nouvellePiece = self.piece
+                    self.createRoom()
+                    while not self.check_jouabilite() and check_pieces:
+                        self.createRoom()
+                    temp = nouvellePiece
+                    nouvellePiece = self.piece
+                    self.piece = temp
+                    nouvellePiece = self.__createPiece()
+                    self.rognerPiece()
+                    
+
+                    for _ in range(0,tailleCouloir):
+                        self.piece[position].append(1)
+                    self.equilibrerTaillePiece()
+                    self.rognerPiece()
+                    self.ajouterMatrice(nouvellePiece)
+                    self.equilibrerTaillePiece()
+                    
+
+                if direction == 'Gauche':
+                    
+
+                    #while(self.piece[position][-1] != 1):
+                        #position = random.randint(0,len(self.taille))
+                    nouvellePiece = self.piece
+                    
+                    self.createRoom()
+                    while(not self.check_jouabilite() and check_pieces):
+                        self.createRoom()
+                    if position == None:
+                        position = random.randint(0,min(len(self.piece),len(nouvellePiece)) -1)
+                    for _ in range(0,tailleCouloir):
+                        self.piece[position].append(1)
+                    self.piece[position][-1] = 1
+                    self.piece[position][-2] = 1
+                    self.equilibrerTaillePiece()
+                    self.rognerPiece()
+                    self.ajouterMatrice(nouvellePiece)
+                    self.equilibrerTaillePiece()
+                    
+
+
+                if direction == 'Haut':
+                    self.piece = numpy.rot90(self.piece,-1).tolist()
+                    self.rognerPiece()
+
+
+                    
+
+                    #while(self.piece[position][-1] != 1):
+                        #position = random.randint(0,len(self.taille))
+                    nouvellePiece = self.piece
+                   
+
+                    self.createRoom()
+                    while not self.check_jouabilite() and check_pieces:
+                        self.createRoom()
+                    if position == None:
+                        position = random.randint(0,min(len(self.piece),len(nouvellePiece)) -1)
+                    nouvellePiece[position][0] =1
+                    nouvellePiece[position][1] = 1
+                    nouvellePiece[position][2]=1
+                    for _ in range(0,tailleCouloir):
+                        self.piece[position].append(1)
+                    self.piece[position][-1] = 1
+                    self.piece[position][-2] = 1
+                    self.piece[position][-3]=1
+                    self.equilibrerTaillePiece()
+                    self.ajouterMatrice(nouvellePiece)
+                   
+                    numpyPiece = numpy.rot90(self.piece,1)
+                    self.piece = numpyPiece.tolist()
+
+            self.alreadySpawn = True
+        self.equilibrerTaillePiece()
+                
+
+
+                
+
+
+
 
 
     #permet de donner un effet de profondeur sur la map:
@@ -371,13 +543,17 @@ class Piece():
         self.retour=[]
         y=0
         for i in self.graphique_collision:
-            if perso.rect_perso.colliderect(i):
-                if perso.rect_perso.y-10 < i.y:
+            if perso.rect_persoDonjon.colliderect(i):
+                if perso.rect_persoDonjon.y-10 < i.y:
                     self.__checkVoisin(y,self.donotBlit,first=True)
             y+=1
         return self.retour
+    
+    
+    
     #methode privee, ne pas utiliser
     #utilisee par update_graph(), elle permet de ne blit que le nombre minimum de meubles
+    #bug connu : mauvais enchainement de blit
     def __checkVoisin(self,index,donotBlit,first=False):
         if index not in self.donotBlit:
             self.donotBlit.append(index)
@@ -392,48 +568,63 @@ class Piece():
     #methode permettant de savoir si une piece est jouable ou non
     #une piece est consideree jouable si le joueur peut acceder a tous les elements du parquet, les escaliers et les coffres
     def check_jouabilite(self):
-        importantPiece = [[1 if self.piece[y][x] in self.important_graph else 0 if self.piece[y][x] == 0 else 100 for x in range(len(self.piece[y]))] for y in range(len(self.piece))]
-        if (self.__checkPath(importantPiece,0,0) == None):
-            return False
+
+
+        self.pathMatrice = [[1 if self.piece[y][x] in self.important_graph else 0 if self.piece[y][x] == 0 else 100 for x in range(len(self.piece[y]))] for y in range(len(self.piece))]
+        #assert len(self.pathMatrice) == len(self.pathMatrice[0])
+        #permet de regarder si tous les endroits importants du donjon
+        #sont atteignables
+        start = [[x,y] for x in range(len(self.piece[0])) for y in range(len(self.piece)) if self.piece[y][x] == 15]
+
+        self.__checkPath(start[0][0],start[0][1])
+        for y in self.pathMatrice:
+            if 1 in y:
+                return False
         return True
 
-    #methode privee utilisee par check_jouabilite()
-    def __checkPath(self,importantPiece,x,y):
-        nbrePossibilite = 0
-        Haut,Bas,Droite,Gauche = False,False,False,False
-        print("Coord: ",(y,x))
-        if importantPiece[y][x] > 0:
-            importantPiece[y][x] = -1
 
-            if (x!=0 and importantPiece[y][x-1] != -1):
+
+    #methode privee utilisee par check_jouabilite()
+    def __checkPath(self,x,y):
+
+
+        #si on est dans un endroit, on a potentiellement acces
+        #aux quatre directions : droite gauche haut bas
+        if self.pathMatrice[y][x] > 0:
+            self.pathMatrice[y][x] = -1
+
+
+            #si on ne vient pas de la gauche
+            #et qu'on n'est pas au bord de la carte
+            if (x!=0 and self.pathMatrice[y][x-1] != -1):
                 if (self.piece[y][x-1] == 1) and self.piece[y][x-1] != 0 :
-                    nbrePossibilite+=1
-                    Gauche = self.__checkPath(importantPiece,x-1,y)
-                if(importantPiece[y][x-1] in self.important_graph):
-                    importantPiece[y][x-1] =-1
-            if(x!=len(self.piece[y])-1 and importantPiece[y][x+1] != -1):
+                    self.__checkPath(x-1,y)
+                if(self.pathMatrice[y][x-1] in self.important_graph):
+                    self.pathMatrice[y][x-1] =-1
+
+            #idem mais droite
+            if(x!=len(self.piece[y])-1 and self.pathMatrice[y][x+1] != -1):
                 if (self.piece[y][x+1] == 1) and self.piece[y][x+1] != 0:
-                    nbrePossibilite+=1
-                    Droite = self.__checkPath(importantPiece,x+1,y)
-                if(importantPiece[y][x+1] in self.important_graph):
-                    importantPiece[y][x+1] =-1
-            if(y!=0 and importantPiece[y-1][x]!=-1):
+                    self.__checkPath(x+1,y)
+                if(self.pathMatrice[y][x+1] in self.important_graph):
+                    self.pathMatrice[y][x+1] =-1
+
+            #idem mais haut
+            if(y!=0 and self.pathMatrice[y-1][x]!=-1):
                 if (self.piece[y-1][x] ==1)and self.piece[y-1][x] != 0:
-                    nbrePossibilite +=1
-                    Haut =self.__checkPath(importantPiece,x,y-1)
-                if(importantPiece[y-1][x] in self.important_graph):
-                    importantPiece[y-1][x] =-1
-            if(y!=len(self.piece)-1 and importantPiece[y+1][x]!=-1):
+                    self.__checkPath(x,y-1)
+                if(self.pathMatrice[y-1][x] in self.important_graph):
+                    self.pathMatrice[y-1][x] =-1
+
+            #idem mais bas
+            if(y!=len(self.piece)-1 and self.pathMatrice[y+1][x]!=-1):
                 if (self.piece[y+1][x] ==1) and self.piece[y+1][x] != 0:
-                    nbrePossibilite +=1
-                    Bas =self.__checkPath(importantPiece,x,y+1)
-                if(importantPiece[y+1][x] in self.important_graph):
-                    importantPiece[y+1][x] =-1
-        if nbrePossibilite == 0:
-            if 1 not in [importantPiece[y][x] for y in range(len(self.piece)) for x in range(len(self.piece[0]))]:
-                return True
-        if Bas or Haut or Gauche or Droite: 
-            return True
+                    self.__checkPath(x,y+1)
+                if(self.pathMatrice[y+1][x] in self.important_graph):
+                    self.pathMatrice[y+1][x] =-1
+        
+
+    #x et y sont le spawn du joueur
 
 
     #methode sauvegardant une piece dans un fichier
@@ -494,11 +685,70 @@ class Piece():
                         chaine =""
                     else:
                         chaine +=things[i]
-            
-        for y in range(len(self.piece)):
-            for x in range(len(self.piece[y]),max):
-                self.piece[y].append(0)
+        self.equilibrerTaillePiece()
         fichier.close()
+
+    def equilibrerTaillePiece(self):
+        nbreMaxLigne = max((len(self.piece[i]) for i in range(len(self.piece))))
+        nbreColonne = len(self.piece)
+        maxTake = max(nbreMaxLigne,nbreColonne)
+        for y in range(len(self.piece)):
+            for x in range(len(self.piece[y]),maxTake):
+                self.piece[y].append(0)
+        for a in range(len(self.piece),maxTake):
+            self.piece.append([0 for y in range(maxTake)])
+        assert len(self.piece[0]) == len(self.piece) == len(self.piece[-1])
+
+    def rognerPiece(self):
+
+        self.equilibrerTaillePiece()
+        lastZeroRow = 0
+        for y in range(len(self.piece)):
+            for i in range(len(self.piece)-1,0,-1):
+                if self.piece[y][i] == 1:
+                    if i+1 > lastZeroRow:
+                        lastZeroRow = i+1
+
+                    break
+        lastZeroCol =0
+        x=0
+        for i in range(len(self.piece[x])):
+            for y in range(len(self.piece)-1,0,-1):
+                if self.piece[y][i] ==1:
+                    if y + 1 > lastZeroCol:
+                        lastZeroCol = y+1
+
+                    break
+                x+=1
+
+
+        firstZeroRow = len(self.piece[0])
+        firstZeroCol = len(self.piece)
+        changedZeroRow = False
+        changedZeroCol = False
+        for y in range(len(self.piece)):
+            for i in range(len(self.piece[i])):
+                if self.piece[y][i] ==1:
+                    if i-1 >= 0 and i-1<firstZeroRow:
+                        firstZeroRow = i-1
+                        changedZeroRow = True
+                    break
+        x=0
+        
+        for i in range(len(self.piece[0])):
+            for y in range(len(self.piece)):
+                if self.piece[y][i] ==1:
+                    if y -1 >= 0 and  y-1< firstZeroCol:
+                        firstZeroCol = y-1
+                        changedZeroCol = True
+
+                    break
+                x+=1    
+        if not changedZeroCol:firstZeroCol=0
+        if not changedZeroRow:firstZeroRow=0
+
+
+        self.piece = [[self.piece[y][x] for x in range(firstZeroRow,lastZeroRow)] for y in range(lastZeroCol)]
 
 
     def refresh(self):
@@ -507,11 +757,40 @@ class Piece():
         for i in range(0,round(self.display.get_height()/self.heightPiece)):
             for j in range(0,round(self.display.get_width()/self.lengthPiece)):
                 self.display.blit(self.vide,(x,y))
-                print("zgeg")
+                
                 x+=self.lengthPiece//2
                 y+= self.heightPiece//4
             y= (self.heightPiece//4)*(i+1)
             x =(self.lengthPiece//2)*(i+1)
+        
+
+    #objectif de cette méthode est de "coller une matrice à une autre"
+    #pour ça
+    def ajouterMatrice(self,matrice):
+        result = [[0 for _ in range(len(self.piece[0]) + len(matrice[0]))] for _ in range(max(len(self.piece), len(matrice)))]
+        
+        for y in range(max(len(self.piece), len(matrice))):
+            for x in range(len(self.piece[0]) + len(matrice[0]) -1):
+                
+
+                if len(self.piece) < len(matrice):
+                    if x < len(self.piece[0]):
+                        if y <len(self.piece):
+                            result[y][x] = self.piece[y][x]
+                    else:
+                        result[y][x] = matrice[y][x-len(self.piece[0])]
+
+
+                else:
+
+                    if x< len(self.piece[0]):
+                        result[y][x] = self.piece[y][x]
+                    else:
+                        if y< len(matrice):
+                            result[y][x] = matrice[y][x-len(self.piece[0])]
+
+        self.piece = result
+     
         
 
 """

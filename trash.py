@@ -1,6 +1,8 @@
 from skill import Stealth
 from personnage import Perso
-from entity import ChatBox, Fog, Minimap,Chest
+from entity import ChatBox
+from fog import Fog
+from minimap import Minimap
 import pygame
 import sys
 import pickle
@@ -24,12 +26,16 @@ from monster import Monster
 from custum_map_ import list_entity_animation,list_npc
 from inventory import Shop,Inventaire
 from case import *
-from combat import *
+from Donjon.donjon import Donjon
+from map import Map,donjon
+from fog import Fog
+#from combat import *
 # from seller_scripts import list_seller
 # from monster import Monster
 # from custum_map_ import list_entity_animation
 from skill import *
-
+load_inv()
+grass
 pygame.init()
 clock = pygame.time.Clock()
 time_line = pygame.time.get_ticks()
@@ -288,7 +294,7 @@ class Game():
         self.player = player
         self.map = map
         self.click = False #Click souris
-        self.fog = Fog(self)
+        self.fog = Fog(self.player,self.map.display)
         self.zoom_map = False
         self.center_x, self.center_y = 0, 0
         # self.list_mooving_entity = list_mooving_entity
@@ -308,6 +314,16 @@ class Game():
         self.key["charactere sheet"] = K_c 
         self.key["swap"] = K_s
         self.key["map"] = K_m
+        self.list_dungeon = dict()
+        for i in range(len(self.map.map_decoration)):
+            if self.map.map_decoration[i] != None:
+                for j in range(len(self.map.map_decoration[i])):
+                        
+                        if self.map.map_decoration[i][j]=='8' or self.map.map_decoration[i][j]=='9':
+                            donj = Donjon(2,self.screen,self.player)
+                            donj.creationDonjon()
+                            self.list_dungeon[(i,j)] = donj
+        print(self.list_dungeon)
     def main_game(self):
         global time_line
         self.player.name = 'gh'
@@ -336,7 +352,7 @@ class Game():
         self.player.crew_mate[1].pos_x = 8680
         self.player.crew_mate[1].pos_y = 1100
         ### Minimap
-        self.minimap = Minimap(self, self.map.display)
+        self.minimap = Minimap(self.map.map,self.fog,self.map.display_tree,self.list_mooving_entity,self.player)
     
         for x in donjon:
             x[0],x[1] = (x[1]-x[0])*190//2+9000,(x[1]+x[0])*190//4
@@ -434,7 +450,19 @@ class Game():
                 if draw_interact: draw_text("Press I for go under",ColderWeather,WHITE,screen,500,500)
                 if interact:
                     pygame.image.save(self.fog.surface,'fog_'+str(self.current_level)+ '.png')
-                    print(donjon)
+                    pos_joueur = (self.player.pos_x,self.player.pos_y)
+                    coordDonjon = self.closest_dungeon(self.list_dungeon.keys(),self.player)
+                    if coordDonjon !=-1:
+                        
+                        self.list_dungeon[coordDonjon].affichageDonjon()
+                        self.list_dungeon[coordDonjon].runningDonjon()
+                        
+                    else: #ne devrait jamais arriver
+                        print("WOLA G CHAUD\n")
+                    
+                    self.player.pos_x = pos_joueur[0]
+                    self.player.pos_y = pos_joueur[1]
+                    """print(donjon)
                     for x in donjon:
                         x_ = x[0]-self.player.pos_x
                         y = x[1] - self.player.pos_y
@@ -451,7 +479,8 @@ class Game():
 
                         if self.map.spawn_point != (0,0):
                             self.player.pos_x = self.map.spawn_point[0]
-                            self.player.pos_y = self.map.spawn_point[1]
+                            self.player.pos_y = self.map.spawn_point[1]"""
+                    
                     interact = False
 
 
@@ -540,6 +569,7 @@ class Game():
                     self.player.mouvement = [False,False,False,False]
             else:
                 draw_interact = True
+            """
             if self.player.monstre_near and monstre != None:
 
                 f = Combat(self,monstre.group_monster)
@@ -561,10 +591,10 @@ class Game():
                 
                 print(self.player.level)
                 monstre = None
-
             
             for x in self.list_coffre:
                 screen.blit(x.img,(center_x +x.pos_x,center_y +x.pos_y))
+            """
             """
             if g != 255:
                 for x in range(255):
@@ -704,6 +734,28 @@ class Game():
             else:
                 entity.img = monstre_loot_light
         return is_talking
+
+    #retourne le donjon le plus proche du joueur
+    #retrouve les donjons les plus chauds de chez toi
+    #listposdungeon est un dictionnaire
+    def closest_dungeon(self,listposdungeon_keys,perso):
+        print("cest")
+        min = -1
+        coordRetour = -1
+        for coord in listposdungeon_keys:
+            x = (coord[1]-coord[0])*self.map.cubesize//2+9000
+            y = (coord[1]+coord[0])*self.map.cubesize//4
+            print(coord)
+            dist = math.sqrt((x - perso.pos_x)**2 + (y - perso.pos_y)**2)
+            if min == -1 or dist < min:
+                min = dist
+                coordRetour = coord
+                print(coord)
+
+        print(f"MIN : {min}\n")
+        print("long")
+        return coordRetour
+        
 
 
     
