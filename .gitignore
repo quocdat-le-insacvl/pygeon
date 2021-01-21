@@ -1,0 +1,4 @@
+__pycache__/
+settings/__pycache__/
+.vscode/
+.VSCodeCounter/
