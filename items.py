@@ -1,6 +1,11 @@
 
 
 import pygame,os
+from math import sqrt
+from random import randrange,randint
+
+
+
 i=0
 Wikitem = {}
 Droppable = {}
@@ -32,7 +37,37 @@ class Consomable(Items):
 class Weapon(Items):
     def __init__(self,prix,wheight,dmg,wpn_name,wpn_type,wpn_img,info=""):
         Items.__init__(self,prix,wheight,wpn_type,wpn_name,wpn_img,info)
-        self.dmg = dmg
+        self.aleas=[0.01,0.03,0.1,0.4,1]
+        if 15<=prix<=20:
+            self.alea=1
+            self.dmg = dmg
+            self.rarete="commun"
+        elif 35<=prix<45:
+            self.dmg = dmg
+            self.alea=0.4
+            self.rarete="rare"
+        elif 75<=prix<=110:
+            self.dmg = dmg
+            self.alea=0.1
+            self.rarete="legendaire"
+        elif 120==prix:
+            self.dmg = dmg
+            self.alea=0.03
+            self.rarete="jul"
+        elif prix==1:
+            self.dmg = 1
+            self.alea=0.01
+            self.rarete="jouet"
+        
+                        
+
+        
+        """16.4634146341 * 41
+        37.7272727273 * 33
+        92.5 * 26
+        120 * 1
+        1*1
+        4446"""
 
 class Armor(Items):
     def __init__(self,value,defense,wheight,armor_name,wpn_type,armor_img,info="",dex_bonus = 0,speed=0):
@@ -81,117 +116,117 @@ Sword7  = Weapon(15,8,6,"One Handed",item_index,image['W_Sword007.png'])
 Sword8  = Weapon(15,8,6,"One Handed",item_index,image['W_Sword008.png'] )
 Sword9  = Weapon(15,8,6,"One Handed",item_index,image['W_Sword009.png'] )
 Sword10  = Weapon(15,8,6,"One Handed",item_index,image['W_Sword010.png'] )
-Sword11  = Weapon(15,8,6,"One Handed",item_index,image['W_Sword011.png'] )
-Sword12  = Weapon(15,8,6,"One Handed",item_index,image['W_Sword012.png'] )
-Sword13  = Weapon(15,8,6,"One Handed",item_index,image['W_Sword013.png'] )
-Sword14  = Weapon(15,8,6,"One Handed",item_index,image['W_Sword014.png'] )
-Sword15  = Weapon(15,8,6,"One Handed",item_index,image['W_Sword015.png'] )
-Sword16  = Weapon(15,8,6,"One Handed",item_index,image['W_Sword016.png'] )
-Sword17  = Weapon(15,8,6,"One Handed",item_index,image['W_Sword017.png'] )
-Sword18  = Weapon(15,8,6,"One Handed",item_index,image['W_Sword018.png'] )
-Sword19  = Weapon(15,8,6,"One Handed",item_index,image['W_Sword019.png'] )
-Sword20  = Weapon(15,8,6,"One Handed",item_index,image['W_Sword020.png'] )
+Sword11  = Weapon(45,6,9,"One Handed",item_index,image['W_Sword011.png'] )
+Sword12  = Weapon(45,6,9,"One Handed",item_index,image['W_Sword012.png'] )
+Sword13  = Weapon(45,6,9,"One Handed",item_index,image['W_Sword013.png'] )
+Sword14  = Weapon(45,6,9,"One Handed",item_index,image['W_Sword014.png'] )
+Sword15  = Weapon(45,6,9,"One Handed",item_index,image['W_Sword015.png'] )
+Sword16  = Weapon(110,6,15,"One Handed",item_index,image['W_Sword016.png'] )
+Sword17  = Weapon(110,6,15,"One Handed",item_index,image['W_Sword017.png'] )
+Sword18  = Weapon(110,6,15,"One Handed",item_index,image['W_Sword018.png'] )
+Sword19  = Weapon(110,6,15,"One Handed",item_index,image['W_Sword019.png'] )
+Sword20  = Weapon(110,6,15,"One Handed",item_index,image['W_Sword020.png'] )
 
     # SPEAR
 
-Spear1 = Weapon(2,6,6,"Two Handed",item_index,image['W_Spear001.png'])
-Spear2 = Weapon(2,6,6,"Two Handed",item_index,image['W_Spear002.png'])
-Spear3 = Weapon(2,6,6,"Two Handed",item_index,image['W_Spear003.png'])
-Spear4 = Weapon(2,6,6,"Two Handed",item_index,image['W_Spear004.png'])
-Spear5 = Weapon(2,6,6,"Two Handed",item_index,image['W_Spear005.png'])
-Spear6 = Weapon(2,6,6,"Two Handed",item_index,image['W_Spear006.png'])
-Spear7 = Weapon(2,6,6,"Two Handed",item_index,image['W_Spear007.png'])
-Spear8 = Weapon(2,6,6,"Two Handed",item_index,image['W_Spear008.png'])
-Spear9 = Weapon(2,6,6,"Two Handed",item_index,image['W_Spear009.png'])
-Spear10 = Weapon(2,6,6,"Two Handed",item_index,image['W_Spear010.png'])
-Spear11 = Weapon(2,6,6,"Two Handed",item_index,image['W_Spear011.png'])
-Spear12 = Weapon(2,6,6,"Two Handed",item_index,image['W_Spear012.png'])
-Spear13 = Weapon(2,6,6,"Two Handed",item_index,image['W_Spear013.png'])
-Spear14 = Weapon(2,6,6,"Two Handed",item_index,image['W_Spear014.png'])
+Spear1 = Weapon(15,6,6,"Two Handed",item_index,image['W_Spear001.png'])
+Spear2 = Weapon(15,6,6,"Two Handed",item_index,image['W_Spear002.png'])
+Spear3 = Weapon(15,6,6,"Two Handed",item_index,image['W_Spear003.png'])
+Spear4 = Weapon(15,6,6,"Two Handed",item_index,image['W_Spear004.png'])
+Spear5 = Weapon(15,6,6,"Two Handed",item_index,image['W_Spear005.png'])
+Spear6 = Weapon(15,6,6,"Two Handed",item_index,image['W_Spear006.png'])
+Spear7 = Weapon(40,6,9,"Two Handed",item_index,image['W_Spear007.png'])
+Spear8 = Weapon(40,6,9,"Two Handed",item_index,image['W_Spear008.png'])
+Spear9 = Weapon(40,6,9,"Two Handed",item_index,image['W_Spear009.png'])
+Spear10 = Weapon(40,6,9,"Two Handed",item_index,image['W_Spear010.png'])
+Spear11 = Weapon(90,6,13,"Two Handed",item_index,image['W_Spear011.png'])
+Spear12 = Weapon(90,6,13,"Two Handed",item_index,image['W_Spear012.png'])
+Spear13 = Weapon(90,6,13,"Two Handed",item_index,image['W_Spear013.png'])
+Spear14 = Weapon(120,6,15,"Two Handed",item_index,image['W_Spear014.png'])
 
     # MACE
 
-Mace1 = Weapon(1,1,1,"One Handed",item_index,image['W_Mace001.png'])
-Mace2 = Weapon(1,1,1,"One Handed",item_index,image['W_Mace002.png'])
-Mace3 = Weapon(1,1,1,"One Handed",item_index,image['W_Mace003.png'])
-Mace4 = Weapon(1,1,1,"One Handed",item_index,image['W_Mace004.png'])
-Mace5 = Weapon(1,1,1,"One Handed",item_index,image['W_Mace005.png'])
-Mace6 = Weapon(1,1,1,"One Handed",item_index,image['W_Mace006.png'])
-Mace7 = Weapon(1,1,1,"One Handed",item_index,image['W_Mace007.png'])
-Mace8 = Weapon(1,1,1,"One Handed",item_index,image['W_Mace008.png'])
-Mace9 = Weapon(1,1,1,"One Handed",item_index,image['W_Mace009.png'])
-Mace10 = Weapon(1,1,1,"One Handed",item_index,image['W_Mace010.png'])
-Mace11 = Weapon(1,1,1,"One Handed",item_index,image['W_Mace011.png'])
-Mace12 = Weapon(1,1,1,"One Handed",item_index,image['W_Mace012.png'])
-Mace13 = Weapon(1,1,1,"One Handed",item_index,image['W_Mace013.png'])
-Mace14 = Weapon(1,1,1,"One Handed",item_index,image['W_Mace014.png'])
+Mace1 = Weapon(15,6,7,"One Handed",item_index,image['W_Mace001.png'])
+Mace2 = Weapon(15,6,7,"One Handed",item_index,image['W_Mace002.png'])
+Mace3 = Weapon(15,6,7,"One Handed",item_index,image['W_Mace003.png'])
+Mace4 = Weapon(15,6,7,"One Handed",item_index,image['W_Mace004.png'])
+Mace5 = Weapon(15,6,7,"One Handed",item_index,image['W_Mace005.png'])
+Mace6 = Weapon(15,6,7,"One Handed",item_index,image['W_Mace006.png'])
+Mace7 = Weapon(35,6,10,"One Handed",item_index,image['W_Mace007.png'])
+Mace8 = Weapon(35,6,10,"One Handed",item_index,image['W_Mace008.png'])
+Mace9 = Weapon(35,6,10,"One Handed",item_index,image['W_Mace009.png'])
+Mace10 = Weapon(35,6,10,"One Handed",item_index,image['W_Mace010.png'])
+Mace11 = Weapon(75,6,14,"One Handed",item_index,image['W_Mace011.png'])
+Mace12 = Weapon(75,6,14,"One Handed",item_index,image['W_Mace012.png'])
+Mace13 = Weapon(75,6,14,"One Handed",item_index,image['W_Mace013.png'])
+Mace14 = Weapon(75,6,14,"One Handed",item_index,image['W_Mace014.png'])
 
 
     # FIST
 
-Fist1 = Weapon(1,1,1,"Fist",item_index,image['W_Fist001.png'])
-Fist2 = Weapon(1,1,1,"Fist",item_index,image['W_Fist002.png'])
-Fist3 = Weapon(1,1,1,"Fist",item_index,image['W_Fist003.png'])
-Fist4 = Weapon(1,1,1,"Fist",item_index,image['W_Fist004.png'])
-Fist5 = Weapon(1,1,1,"Fist",item_index,image['W_Fist005.png'])
+Fist1 = Weapon(35,6,10,"Fist",item_index,image['W_Fist001.png'])
+Fist2 = Weapon(35,6,10,"Fist",item_index,image['W_Fist002.png'])
+Fist3 = Weapon(35,6,10,"Fist",item_index,image['W_Fist003.png'])
+Fist4 = Weapon(35,6,10,"Fist",item_index,image['W_Fist004.png'])
+Fist5 = Weapon(35,6,10,"Fist",item_index,image['W_Fist005.png'])
 
     # DAGGER
 
-Dagger1 = Weapon(1,1,1,"Dagger",item_index,image['W_Dagger001.png'])
-Dagger2 = Weapon(1,1,1,"Dagger",item_index,image['W_Dagger002.png'])
-Dagger3 = Weapon(1,1,1,"Dagger",item_index,image['W_Dagger003.png'])
-Dagger4 = Weapon(1,1,1,"Dagger",item_index,image['W_Dagger004.png'])
-Dagger5 = Weapon(1,1,1,"Dagger",item_index,image['W_Dagger005.png'])
-Dagger6 = Weapon(1,1,1,"Dagger",item_index,image['W_Dagger006.png'])
-Dagger7 = Weapon(1,1,1,"Dagger",item_index,image['W_Dagger007.png'])
-Dagger8 = Weapon(1,1,1,"Dagger",item_index,image['W_Dagger008.png'])
-Dagger9 = Weapon(1,1,1,"Dagger",item_index,image['W_Dagger009.png'])
-Dagger10 = Weapon(1,1,1,"Dagger",item_index,image['W_Dagger010.png'])
-Dagger11 = Weapon(1,1,1,"Dagger",item_index,image['W_Dagger011.png'])
-Dagger12 = Weapon(1,1,1,"Dagger",item_index,image['W_Dagger012.png'])
-Dagger13 = Weapon(1,1,1,"Dagger",item_index,image['W_Dagger013.png'])
-Dagger14 = Weapon(1,1,1,"Dagger",item_index,image['W_Dagger014.png'])
-Dagger15 = Weapon(1,1,1,"Dagger",item_index,image['W_Dagger015.png'])
-Dagger16 = Weapon(1,1,1,"Dagger",item_index,image['W_Dagger016.png'])
-Dagger17 = Weapon(1,1,1,"Dagger",item_index,image['W_Dagger017.png'])
-Dagger18 = Weapon(1,1,1,"Dagger",item_index,image['W_Dagger018.png'])
-Dagger19 = Weapon(1,1,1,"Dagger",item_index,image['W_Dagger019.png'])
-Dagger20 = Weapon(1,1,1,"Dagger",item_index,image['W_Dagger020.png'])
-Dagger21 = Weapon(1,1,1,"Dagger",item_index,image['W_Dagger021.png'])
+Dagger1 = Weapon(20,6,6,"Dagger",item_index,image['W_Dagger001.png'])
+Dagger2 = Weapon(20,6,6,"Dagger",item_index,image['W_Dagger002.png'])
+Dagger3 = Weapon(20,6,6,"Dagger",item_index,image['W_Dagger003.png'])
+Dagger4 = Weapon(20,6,6,"Dagger",item_index,image['W_Dagger004.png'])
+Dagger5 = Weapon(20,6,6,"Dagger",item_index,image['W_Dagger005.png'])
+Dagger6 = Weapon(20,6,6,"Dagger",item_index,image['W_Dagger006.png'])
+Dagger7 = Weapon(35,6,9,"Dagger",item_index,image['W_Dagger007.png'])
+Dagger8 = Weapon(35,6,9,"Dagger",item_index,image['W_Dagger008.png'])
+Dagger9 = Weapon(35,6,9,"Dagger",item_index,image['W_Dagger009.png'])
+Dagger10 = Weapon(35,6,9,"Dagger",item_index,image['W_Dagger010.png'])
+Dagger11 = Weapon(35,6,9,"Dagger",item_index,image['W_Dagger011.png'])
+Dagger12 = Weapon(35,6,9,"Dagger",item_index,image['W_Dagger012.png'])
+Dagger13 = Weapon(35,6,9,"Dagger",item_index,image['W_Dagger013.png'])
+Dagger14 = Weapon(35,6,9,"Dagger",item_index,image['W_Dagger014.png'])
+Dagger15 = Weapon(95,6,15,"Dagger",item_index,image['W_Dagger015.png'])
+Dagger16 = Weapon(95,6,15,"Dagger",item_index,image['W_Dagger016.png'])
+Dagger17 = Weapon(95,6,15,"Dagger",item_index,image['W_Dagger017.png'])
+Dagger18 = Weapon(95,6,15,"Dagger",item_index,image['W_Dagger018.png'])
+Dagger19 = Weapon(95,6,15,"Dagger",item_index,image['W_Dagger019.png'])
+Dagger20 = Weapon(95,6,15,"Dagger",item_index,image['W_Dagger020.png'])
+Dagger21 = Weapon(95,6,15,"Dagger",item_index,image['W_Dagger021.png'])
 
     # BOW
 
-Bow1 = Weapon(1,1,1,"RANGED",item_index,image['W_Bow01.png'])
-Bow2 = Weapon(1,1,1,"RANGED",item_index,image['W_Bow02.png'])
-Bow3 = Weapon(1,1,1,"RANGED",item_index,image['W_Bow03.png'])
-Bow4 = Weapon(1,1,1,"RANGED",item_index,image['W_Bow04.png'])
-Bow5 = Weapon(1,1,1,"RANGED",item_index,image['W_Bow05.png'])
-Bow6 = Weapon(1,1,1,"RANGED",item_index,image['W_Bow06.png'])
-Bow7 = Weapon(1,1,1,"RANGED",item_index,image['W_Bow07.png'])
-Bow8 = Weapon(1,1,1,"RANGED",item_index,image['W_Bow08.png'])
-Bow9 = Weapon(1,1,1,"RANGED",item_index,image['W_Bow09.png'])
-Bow10 = Weapon(10,10,10,"RANGED",item_index,image['W_Bow10.png'])
-Bow11 = Weapon(1,1,1,"RANGED",item_index,image['W_Bow11.png'])
-Bow12 = Weapon(1,1,1,"RANGED",item_index,image['W_Bow12.png'])
-Bow13 = Weapon(1,1,1,"RANGED",item_index,image['W_Bow13.png'])
+Bow1 = Weapon(20,6,5,"RANGED",item_index,image['W_Bow01.png'])
+Bow2 = Weapon(20,6,5,"RANGED",item_index,image['W_Bow02.png'])
+Bow3 = Weapon(20,6,5,"RANGED",item_index,image['W_Bow03.png'])
+Bow4 = Weapon(20,6,5,"RANGED",item_index,image['W_Bow04.png'])
+Bow5 = Weapon(20,6,5,"RANGED",item_index,image['W_Bow05.png'])
+Bow6 = Weapon(20,6,5,"RANGED",item_index,image['W_Bow06.png'])
+Bow7 = Weapon(40,6,8,"RANGED",item_index,image['W_Bow07.png'])
+Bow8 = Weapon(40,6,8,"RANGED",item_index,image['W_Bow08.png'])
+Bow9 = Weapon(40,6,8,"RANGED",item_index,image['W_Bow09.png'])
+Bow10 = Weapon(40,6,8,"RANGED",item_index,image['W_Bow10.png'])
+Bow11 = Weapon(100,6,12,"RANGED",item_index,image['W_Bow11.png'])
+Bow12 = Weapon(100,6,12,"RANGED",item_index,image['W_Bow12.png'])
+Bow13 = Weapon(100,6,12,"RANGED",item_index,image['W_Bow13.png'])
 Bow14 = Weapon(1,1,1,"RANGED",item_index,image['W_Bow14.png'])
 
     # AXE
 
-Axe1 = Weapon(1,1,1,"Axe",item_index,image['W_Axe001.png'])
-Axe2 = Weapon(1,1,1,"Axe",item_index,image['W_Axe002.png'])
-Axe3 = Weapon(1,1,1,"Axe",item_index,image['W_Axe003.png'])
-Axe4 = Weapon(1,1,1,"Axe",item_index,image['W_Axe004.png'])
-Axe5 = Weapon(1,1,1,"Axe",item_index,image['W_Axe005.png'])
-Axe6 = Weapon(1,1,1,"Axe",item_index,image['W_Axe006.png'])
-Axe7 = Weapon(1,1,1,"Axe",item_index,image['W_Axe007.png'])
-Axe8 = Weapon(1,1,1,"Axe",item_index,image['W_Axe008.png'])
-Axe9 = Weapon(1,1,1,"Axe",item_index,image['W_Axe009.png'])
-Axe10 = Weapon(1,1,1,"Axe",item_index,image['W_Axe010.png'])
-Axe11 = Weapon(1,1,1,"Axe",item_index,image['W_Axe011.png'])
-Axe12 = Weapon(1,1,1,"Axe",item_index,image['W_Axe012.png'])
-Axe13 = Weapon(1,1,1,"Axe",item_index,image['W_Axe013.png'])
-Axe14 = Weapon(1,1,1,"Axe",item_index,image['W_Axe014.png'])
+Axe1 = Weapon(15,6,7,"Axe",item_index,image['W_Axe001.png'])
+Axe2 = Weapon(15,6,7,"Axe",item_index,image['W_Axe002.png'])
+Axe3 = Weapon(15,6,7,"Axe",item_index,image['W_Axe003.png'])
+Axe4 = Weapon(15,6,7,"Axe",item_index,image['W_Axe004.png'])
+Axe5 = Weapon(15,6,7,"Axe",item_index,image['W_Axe005.png'])
+Axe6 = Weapon(15,6,7,"Axe",item_index,image['W_Axe006.png'])
+Axe7 = Weapon(15,6,7,"Axe",item_index,image['W_Axe007.png'])
+Axe8 = Weapon(35,6,9,"Axe",item_index,image['W_Axe008.png'])
+Axe9 = Weapon(35,6,9,"Axe",item_index,image['W_Axe009.png'])
+Axe10 = Weapon(35,6,9,"Axe",item_index,image['W_Axe010.png'])
+Axe11 = Weapon(80,6,12,"Axe",item_index,image['W_Axe011.png'])
+Axe12 = Weapon(80,6,12,"Axe",item_index,image['W_Axe012.png'])
+Axe13 = Weapon(80,6,12,"Axe",item_index,image['W_Axe013.png'])
+Axe14 = Weapon(80,6,12,"Axe",item_index,image['W_Axe014.png'])
 
 # BOOK
 
@@ -544,10 +579,35 @@ A_Clothing02  = Armor(1,1,1,"Light armor",item_index,image['A_Clothing02.png'] )
 
 #THROW SECTION
 
-W_Throw001 = Weapon(1,1,1,"W_Throw",item_index,image['W_Throw001.png'])
-W_Throw002 = Weapon(1,1,1,"W_Throw",item_index,image['W_Throw002.png'])
-W_Throw003 = Weapon(1,1,1,"W_Throw",item_index,image['W_Throw003.png'])
-W_Throw004 = Weapon(1,1,1,"W_Throw",item_index,image['W_Throw004.png'])
-W_Throw05 = Weapon(1,1,1,"W_Throw",item_index,image['W_Throw05.png'])
+W_Throw001 = Items(1,1,item_index,"Drop",image['W_Throw001.png'])
+W_Throw002 = Items(1,1,item_index,"Drop",image['W_Throw002.png'])
+W_Throw003 = Items(1,1,item_index,"Drop",image['W_Throw003.png'])
+W_Throw004 = Items(1,1,item_index,"Drop",image['W_Throw004.png'])
+W_Throw05 = Items(1,1,item_index,"Drop",image['W_Throw05.png'])
 
 
+def choisir_alea(self,): 
+    l=randint(0,100)/100
+    for i in Wikitem:
+        if isinstance(Wikitem[i]):
+            for x in Wikitem[i].alea:
+                if l<self.aleas[0]:
+                    if self.aleas[0]==self.alea:
+                        self.dmg = randrange(1,self.dmg)
+                        return i,True
+                elif self.aleas[0]<l<self.aleas[1]:
+                    if self.aleas[1]==self.alea:
+                        self.dmg = randrange(7,self.dmg)
+                        return i,True
+                elif self.aleas[1]<l<self.aleas[2]:
+                    if self.aleas[2]==self.alea:
+                        self.dmg = randrange(8,self.dmg)
+                        return i,True
+                elif self.aleas[2]<l<self.aleas[3]:
+                    if self.aleas[3]==self.alea:
+                        self.dmg = randrange(14,self.dmg)
+                        return i,True
+                elif self.aleas[3]<l<self.aleas[4]:
+                    if self.aleas[4]==self.alea:
+                        self.dmg = 1
+                        return i,True

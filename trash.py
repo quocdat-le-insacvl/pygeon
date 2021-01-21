@@ -46,16 +46,6 @@ key = list(Wikitem.keys())
 
 dict_img_npc = dict()
 
-list_img_monstre = [list_entity_animation[0],list_entity_animation[1],list_entity_animation[2],list_entity_animation[3],list_entity_animation[4]]
-list_animation_monstre = [demon_1_animation,demon_animation,squelton_animation,wizard_animation,dark_wizard_animation]
-list_decalage_monstre = [[0,0],[0,0],[-30,0],[-30,0],[70,0]]
-list_size_monstre = [(500,400),(500,400),(300,300),(300,300),(600,500)]
-
-dict_img_npc['1']= list_npc[0]
-dict_img_npc['2']= list_npc[1]
-dict_img_npc['3']= list_npc[2]
-dict_img_npc['4']= list_npc[3]
-dict_img_npc['5']= list_npc[4]
 
 
 donjon =  [json.loads(line) for line in open('donjon.json', 'r')]
@@ -102,7 +92,6 @@ class Game():
     def main_game(self):
         global time_line
         self.player.name = 'gh'
-        self.player.classe = 'l'
         
         center_x,center_y=0,0
         '''Set de toute les variables d'actions'''
@@ -185,7 +174,8 @@ class Game():
                 # Print animation player
                 screen.blit(self.player.img,(center_x+self.player.pos_x,center_y+self.player.pos_y))
                 for x in self.player.crew_mate:
-                    screen.blit(x.img,(center_x+x.pos_x,center_y+x.pos_y))
+                    if x.hp > 0 :
+                        screen.blit(x.img,(center_x+x.pos_x,center_y+x.pos_y))
                 screen.blit(self.map.display_tree,(center_x,center_y))
                 # Print FOG
                 screen.blit(self.fog.surface, (center_x, center_y),
@@ -196,7 +186,8 @@ class Game():
                 # Print animation player
                 screen.blit(self.player.img,(center_x+self.player.pos_x,center_y+self.player.pos_y))
                 for x in self.player.crew_mate:
-                    screen.blit(x.img,(center_x+x.pos_x,center_y+x.pos_y))
+                    if x.hp > 0 :
+                        screen.blit(x.img,(center_x+x.pos_x,center_y+x.pos_y))
                 # Print FOG
                 screen.blit(self.fog.surface, (center_x, center_y),
                             special_flags=pygame.BLEND_MULT)
@@ -337,7 +328,7 @@ class Game():
             monstre = self.player.move_player(self.map.dict_collision,self.map.list_shop,self.map.list_monster,self.list_coffre)
             self.player.animate_map()
             if self.player.entity_near:
-                if draw_interact: draw_text("Press I for interact %s"%monstre.name,ColderWeather,WHITE,screen,500,500)
+                if draw_interact: draw_text("Press Interact key",ColderWeather,WHITE,screen,500,500)
                 if interact:
                     draw_interact = False
                     is_talking = self.interact(monstre,is_talking)
@@ -363,6 +354,15 @@ class Game():
                         self.list_coffre[len(self.list_coffre)-1].update_pos_collide()
                         self.map.list_monster.remove(x)
                         dec += 70
+            if self.player.hp <=0 and self.player.crew_mate[0].hp <=0 and self.player.crew_mate[1].hp <=0:
+                self.game_over()
+                running = False
+            elif self.player.hp <=0:
+                self.player = self.player.crew_mate[0]
+                self.fog.player = self.player
+                nb_crew+=1
+                if nb_crew ==2:
+                    nb_crew = 0
                 
                 print(self.player.level)
                 monstre = None
@@ -405,6 +405,14 @@ class Game():
             self.chat_box.draw()
             pygame.display.update()
             clock.tick(64)
+    def game_over(self):
+        running = True
+        while running:
+            screen.fill(BLACK)
+            text_width, text_height = ColderWeather.size("GAME OVER")
+            draw_text("GAME OVER",ColderWeather,WHITE,screen,screen.get_width()//2-text_width//2,screen.get_height()//2-text_height//2)
+            running,self.click = basic_checkevent(self.click)
+            pygame.display.update()
     def print_pause_menu(self):
         display = pygame.Surface((1980, 1000))
         display.set_colorkey(LIGHT_GREY)

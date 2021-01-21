@@ -24,7 +24,7 @@ class Case():
             if flip:
                 display = pygame.transform.flip(self.in_case.display,True,False)
                 display.set_colorkey(BLACK)
-                screen.blit(display,(self.cordo()[0]-self.in_case.display.get_width()//2+self.in_case.decalage[0]+100+x,self.cordo()[1]-self.in_case.display.get_height()//2+self.in_case.decalage[1]-50+y))
+                screen.blit(display,(self.cordo()[0]-self.in_case.display.get_width()//2+self.in_case.decalage[0]*2+100+x,self.cordo()[1]-self.in_case.display.get_height()//2+self.in_case.decalage[1]-50+y))
             else:
                 screen.blit(self.in_case.display,(self.cordo()[0]-self.in_case.display.get_width()//2+self.in_case.decalage[0]+100+x,self.cordo()[1]-self.in_case.display.get_height()//2+self.in_case.decalage[1]-50+y))
     def cordo(self):

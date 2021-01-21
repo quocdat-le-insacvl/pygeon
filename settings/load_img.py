@@ -13,7 +13,7 @@ path_ava = path.join(path_addon, 'avata')
 path_light = path.join(path_addon, 'Light')
 path_icon = path.join(path_addon, 'icons')
 path_fighter = path.join(path_addon, 'Fighter')
-
+path_rogue = path.join(path_addon, 'rogue')
 
 button=pygame.image.load(path.join(path_addon,'Menu\TextBTN_Medium.png'))
 buttonp=pygame.image.load(path.join(path_addon,'Menu\TextBTN_Medium_Pressed.png'))
@@ -279,6 +279,10 @@ transform_image(explosion,multi=2)
 wizard_icon=pygame.image.load(path.join(path_icon,'wizard.png'))
 neutre_icon=pygame.image.load(path.join(path_icon,'neutre.png'))
 fighter_icon=pygame.image.load(path.join(path_icon,'fighter.png'))
+rogue_icon=pygame.image.load(path.join(path_icon,'rogue.png'))
 
 "Fighter img"
 fighter_img=pygame.image.load(path.join(path_fighter,'fighter.png'))
+
+"Rogue img"
+Rogue_img=pygame.image.load(path.join(path_rogue,'rogue.png'))

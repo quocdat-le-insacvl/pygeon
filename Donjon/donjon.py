@@ -13,10 +13,11 @@ import random
 from fog import Fog
 from minimap import Minimap
 from combat import Combat
+
 list_img_monstre = [list_entity_animation[0],list_entity_animation[1],list_entity_animation[2],list_entity_animation[3],list_entity_animation[4]]
 list_animation_monstre = [demon_1_animation,demon_animation,squelton_animation,wizard_animation,dark_wizard_animation]
-list_decalage_monstre = [[0,0],[0,0],[-30,-30],[-30,-30],[70,20]]
-list_size_monstre = [(45,80),(45,80),(45,80),(45,80),(45,80)]
+list_decalage_monstre = [[0,0],[0,0],[0,0],[0,0],[0,0]]
+list_size_monstre = [(500,400),(500,400),(300,300),(300,300),(600,500)]
 
 
 clock = pygame.time.Clock()
@@ -200,10 +201,10 @@ class Donjon():
                     i.img = list_img_monstre[i.type-1]
                 f = Combat(self.game,monstre.group_monster)
                 f.affichage()
-                
+                """
                 if f.player.crew_mate[0].hp > 0 or f.player.crew_mate[1].hp > 0  or f.player.hp > 0:
                     for x in monstre.group_monster:
-                        self.liste_monstre.remove(x)
+                        self.liste_monstre.remove(x)"""
                 monstre = None
             self.cam.afficher()
             
@@ -322,4 +323,5 @@ class Donjon():
                 self.liste_monstre[indexPiece].append(Monster(pos_x,pos_y,pygame.transform.scale(list_img_monstre[which_monster-1],(50,80)),"",which_monster-1,\
                 size=list_size_monstre[which_monster-1],animation_dict=list_animation_monstre[which_monster-1],\
                     decalage=list_decalage_monstre[which_monster-1],))
+
                 print(f"A MONSTER HAS SPAWNED ON COORD ({pos_x},{pos_y})\n")

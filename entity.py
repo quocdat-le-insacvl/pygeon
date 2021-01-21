@@ -76,7 +76,6 @@ class Entity():
         else:
             
             self.display.blit(self.img, (0, 0))
-        print(f'Taille de l image ({self.img.get_width()},{self.img.get_height()})\n')
         return one_complete
             #self.display.blit(animation[ self.type_animation + "_" + str(int(self.frame)) + ".png"],(150-animation[ self.type_animation + "_" + str(int(self.frame)) + ".png"].get_width()//2,self.img.get_height()-animation[ self.type_animation + "_" + str(int(self.frame)) + ".png"].get_height()+300-self.img.get_height()+self.decalage_display[1]))
     def animate_map(self, flip=False,scale=None):

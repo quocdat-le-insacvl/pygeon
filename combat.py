@@ -53,7 +53,7 @@ class Combat:
         
     def print_battleground(self):
         screen.fill(BLACK)
-        screen.blit(fond, (0, 0))
+        screen.blit(pygame.transform.scale(fond,(screen.get_width(),screen.get_height())), (0, 0))
     def affichage(self):
         global list_case
         running = True
@@ -82,41 +82,47 @@ class Combat:
             self.list_tour.append(x)
             list_case[i].in_case = x
             i += 1
-        list_case[59].in_case = self.game.player
-        self.list_tour.append(self.game.player)
-        list_case[65].in_case = self.game.player.crew_mate[0]
-        self.game.player.crew_mate[0].DEX = 11
-        self.list_tour.append(self.game.player.crew_mate[0])
-        list_case[51].in_case = self.game.player.crew_mate[1]
-        self.game.player.crew_mate[1].DEX = 9
-        self.list_tour.append(self.game.player.crew_mate[1])
+        if self.game.player.hp > 0:
+            list_case[59].in_case = self.game.player
+            self.list_tour.append(self.game.player)
+            self.player.transform_display_for_combat()
+        if self.game.player.crew_mate[1].hp > 0:
+            list_case[65].in_case = self.game.player.crew_mate[0]
+            self.list_tour.append(self.game.player.crew_mate[0])
+            self.player.crew_mate[0].transform_display_for_combat()
+        if self.game.player.crew_mate[1].hp > 0:
+            list_case[51].in_case = self.game.player.crew_mate[1]
+            self.list_tour.append(self.game.player.crew_mate[1])
+            self.player.crew_mate[1].transform_display_for_combat()
 
         #VOIR TOUT LES MONSTRES
         self.nb_monstres= len(self.liste_monstre)
         
 
-        for x in self.liste_monstre:
-            x.case = x.trouver_case(list_case)
+        
         self.chat_box.write_log(("combat", "You enter into battle !"))
         self.chat_box.write_log(("info", "Generation des tours :"))
 
 
 
         self.list_tour.sort(key=lambda x:x.DEX,reverse=True)
-        self.player.transform_display_for_combat()
-        self.player.crew_mate[0].transform_display_for_combat()
-        self.player.crew_mate[1].transform_display_for_combat()
+        
+        
+        
 
         self.map = l
         self.mask = souris_mask
         while running:
+            
             mx, my = pygame.mouse.get_pos()
             self.print_battleground()
             # Gestion Tours
             i = 0
+            self.show_which_one_play().select(True)
             for x in list_case:
                 screen.blit(x.display, x.cordo())
                 x.checkIfSelected()
+                
                 x.print_contains()
                 if x.in_case != None:
                     x.in_case.type_animation = "idle"
@@ -139,7 +145,7 @@ class Combat:
                                                     self.print_anim(current_selec,x,list_case)
                                                     x.in_case = current_selec.in_case
                                                     current_selec.in_case = None
-                                                    x.in_case.actionP -=1
+                                                    x.in_case.have_mouve = True
                                                     self.chat_box.write_log(("combat", self.show_which_one_play().in_case.name + " se deplace vers la case " + str(x.numero_case(list_case)) )) 
                                             current_selec = x
                                             self.reset_select(list_case)
@@ -152,17 +158,21 @@ class Combat:
             draw_text("FPS: %i" % (clock.get_fps()),
                       ColderWeather, WHITE, screen, 100, 100)
             current_selec = self.show_which_one_play()
-            for x in self.list_tour:
-                if x.is_player:
-                    player_alive = True
-                else:
-                    monster_alive = True
             
-            if self.menu_action():
-                running = False
-            elif not player_alive or not monster_alive:
+            monster_alive = False
+            player_alive = False
+            for x in self.list_tour:
+                if x.hp <=0:
+                    self.list_tour.remove(x)
+                else:
+                    if x.is_player:
+                        player_alive = True
+                    else:
+                        monster_alive = True
+            if not player_alive or not monster_alive:
                 running = False
             else:
+                self.menu_action()
                 running, self.game.click = basic_checkevent(self.game.click)
             #update + draw chatbox
             self.game.chat_box.update()
@@ -266,112 +276,103 @@ class Combat:
                     running,self.game.click=  basic_checkevent(self.game.click)  
     def menu_action(self):
         display_erreur = pygame.Surface((screen.get_width(),screen.get_height()))
-
+        print(self.list_tour[0].is_player)
         if self.list_tour[0].is_player:
-            current_playable = self.list_tour[0]
-
-            if creation_img_text_click(img_next,"Choose what to do",ColderWeather,WHITE,screen,self.game.click,img_next.get_width(),img_next.get_height()//2):
-                self.select_menu = True
+            if self.list_tour[0].actionP ==0:
                 self.reset_select(list_case)
-                self.select_menu_bonus = False
-                self.select_attack = False
-                self.mouvement = False
-                self.select_sort = False
-                self.select_spell = -1
-                self.select_bonus = -1
-            if self.select_menu:
-                if creation_img_text_click(img_next,"Cancel",ColderWeather,WHITE,screen,self.game.click,img_next.get_width()*3,img_next.get_height()//2+600):
+                self.next_round()
+
+            else:
+                current_playable = self.list_tour[0]
+
+                if creation_img_text_click(img_next,"Choose what to do",ColderWeather,WHITE,screen,self.game.click,img_next.get_width(),img_next.get_height()//2):
+                    self.select_menu = True
                     self.reset_select(list_case)
                     self.select_menu_bonus = False
                     self.select_attack = False
                     self.mouvement = False
-                    self.select_menu = False
                     self.select_sort = False
                     self.select_spell = -1
                     self.select_bonus = -1
-                if creation_img_text_click(img_next,"Mouvement",ColderWeather,WHITE,screen,self.game.click,img_next.get_width()*3,img_next.get_height()//2):
-                    self.mouvement = True
-                    if current_playable.actionP >=-5 :
-                        current_playable.hp -= 1 
-                        self.show_which_one_play().select_neighbour(list_case,k=1)
+                if self.select_menu:
+                    if creation_img_text_click(img_next,"Cancel",ColderWeather,WHITE,screen,self.game.click,img_next.get_width()*3,img_next.get_height()//2+600):
+                        self.reset_select(list_case)
+                        self.select_menu_bonus = False
+                        self.select_attack = False
+                        self.mouvement = False
                         self.select_menu = False
-                    else:
-                        Validation_screen("Pas assez de points d'Action ! ",screen,self.game.click)
-                if creation_img_text_click(img_next,"Attack",ColderWeather,WHITE,screen,self.game.click,img_next.get_width()*3,img_next.get_height()//2+150):
-                    self.select_attack = True
-                    self.mouvement = False
-                if self.select_attack:
-                    if creation_img_text_click(img_next,"Basic",ColderWeather,WHITE,screen,self.game.click,img_next.get_width()*4.5,img_next.get_height()//2+150):
-                        self.select_monster = True
-                        self.select_menu = False
-                    if creation_img_text_click(img_next,"Sort",ColderWeather,WHITE,screen,self.game.click,img_next.get_width()*4.5,img_next.get_height()//2+300):
+                        self.select_sort = False
+                        self.select_spell = -1
+                        self.select_bonus = -1
+                    if creation_img_text_click(img_next,"Mouvement",ColderWeather,WHITE,screen,self.game.click,img_next.get_width()*3,img_next.get_height()//2):
+                        self.mouvement = True
+                        if current_playable.actionP > 0 and current_playable.have_mouve == False :
+                            self.show_which_one_play().select_neighbour(list_case,k=1)
+                            self.select_menu = False
+                        else:
+                            board_error("Pas assez de point d'action")
+                    if creation_img_text_click(img_next,"Attack",ColderWeather,WHITE,screen,self.game.click,img_next.get_width()*3,img_next.get_height()//2+150):
+                        self.select_attack = True
+                        self.mouvement = False
+                    if self.select_attack:
+                        if creation_img_text_click(img_next,"Basic",ColderWeather,WHITE,screen,self.game.click,img_next.get_width()*4.5,img_next.get_height()//2+150):
+                            self.select_monster = True
+                            self.select_menu = False
+                        if creation_img_text_click(img_next,"Sort",ColderWeather,WHITE,screen,self.game.click,img_next.get_width()*4.5,img_next.get_height()//2+300):
+                            self.select_menu = False
+                            self.select_attack = False
+                            self.select_sort = True
+                    if creation_img_text_click(img_next,"Bonus Action",ColderWeather,WHITE,screen,self.game.click,img_next.get_width()*3,img_next.get_height()//2+300):
+                        self.select_menu_bonus = True
                         self.select_menu = False
                         self.select_attack = False
-                        self.select_sort = True
-                if creation_img_text_click(img_next,"Bonus Action",ColderWeather,WHITE,screen,self.game.click,img_next.get_width()*3,img_next.get_height()//2+300):
-                    self.select_menu_bonus = True
-                    self.select_menu = False
-                    self.select_attack = False
-                    self.game.click = False
-                
-                if creation_img_text_click(img_next,"Passez",ColderWeather,WHITE,screen,self.game.click,img_next.get_width()*3,img_next.get_height()//2+450):
-                    self.mouvement = False
-                    self.reset_select(list_case)
-                    self.next_round()
+                        self.game.click = False
                     
-                    self.select_menu = False
-            
-            if self.select_sort:
-                key = self.show_which_one_play().in_case.spell.keys()
-                i=0
-                
-                for x in key:
-                    if creation_img_text_click(img_next,x,ColderWeather,WHITE,screen,self.game.click,img_next.get_width()//2+screen.get_width()//2,img_next.get_height()//2+300*i):
+                    if creation_img_text_click(img_next,"Passez",ColderWeather,WHITE,screen,self.game.click,img_next.get_width()*3,img_next.get_height()//2+450):
+                        self.mouvement = False
+                        self.reset_select(list_case)
+                        self.next_round()
                         
-                        self.select_sort = False
-                        self.select_spell = i
-                    i+=1
-                if self.select_spell != -1:
-                    self.lunch_spell()
-            if self.select_menu_bonus:
-                key = self.show_which_one_play().in_case.bonus.keys()
-                i=0
+                        self.select_menu = False
                 
-                for x in key:
-                    if creation_img_text_click(img_next,x,ColderWeather,WHITE,screen,self.game.click,img_next.get_width()//2+screen.get_width()//2+100,img_next.get_height()//2+300*i):
-                        self.select_menu_bonus = False
-                        self.select_bonus = i
-                    i+=1
-            if self.select_bonus != -1:
-                if self.show_which_one_play().in_case.select_bonus(self.select_bonus):
-                    if self.select_bonus ==0:
-                        message = "convert sorcery points"
-                    if self.select_bonus == 1:
-                        message = "convert spells slots"
-                    else:
-                        message = "quickspell"
-                    self.chat_box.write_log(("info", self.show_which_one_play().in_case.name + " use " + message))
-                self.select_bonus = -1
-                self.select_menu_bonus = False
-            
-                """   
-                self.show_which_one_play().select_neighbour(list_case,k=spell_range)
-                list_in_range=[]
-                for x in list_case:
-                    if x.in_case != None and x.is_select and not x.in_case.is_player:
-                        list_in_range.append(x)
-                self.reset_select(list_case)
-                for x in list_in_range:
-                    x.select(True)
-                self.show_which_one_play().select(False)
-                self.select_sort = False
-                """
+                if self.select_sort:
+                    if self.show_which_one_play().in_case.classe != 'rogue':
+                        key = self.show_which_one_play().in_case.spell.keys()
+                        i=0
+                        
+                        for x in key:
+                            if creation_img_text_click(img_next,x,ColderWeather,WHITE,screen,self.game.click,img_next.get_width()//2+screen.get_width()//2,img_next.get_height()//2+300*i):
+                                
+                                self.select_sort = False
+                                self.select_spell = i
+                            i+=1
+                        if self.select_spell != -1:
+                            self.lunch_spell()
+                            self.select_spell = -1
+                if self.select_menu_bonus:
+                    if self.show_which_one_play().in_case.classe != 'rogue':
+                        key = self.show_which_one_play().in_case.bonus.keys()
+                        i=0
+                        
+                        for x in key:
+                            if creation_img_text_click(img_next,x,ColderWeather,WHITE,screen,self.game.click,img_next.get_width()//2+screen.get_width()//2+100,img_next.get_height()//2+300*i):
+                                self.select_menu_bonus = False
+                                self.select_bonus = i
+                            i+=1
+                if self.select_bonus != -1:
+                    if self.show_which_one_play().in_case.select_bonus(self.select_bonus):
+                        if self.select_bonus ==0:
+                            message = "convert sorcery points"
+                        if self.select_bonus == 1:
+                            message = "convert spells slots"
+                        else:
+                            message = "quickspell"
+                        self.chat_box.write_log(("info", self.show_which_one_play().in_case.name + " use " + message))
+                    self.select_bonus = -1
+                    self.select_menu_bonus = False
                 
-
-                """
-
-                if creation_img_text_click(img_next,"Magic Missile",ColderWeather,WHITE,screen,self.game.click,img_next.get_width()//2+screen.get_width()//2,img_next.get_height()//2+300):
-                    self.show_which_one_play().select_neighbour(list_case,k=4)
+                    """   
+                    self.show_which_one_play().select_neighbour(list_case,k=spell_range)
                     list_in_range=[]
                     for x in list_case:
                         if x.in_case != None and x.is_select and not x.in_case.is_player:
@@ -381,48 +382,66 @@ class Combat:
                         x.select(True)
                     self.show_which_one_play().select(False)
                     self.select_sort = False
-                if creation_img_text_click(img_next,"Fire Bolt",ColderWeather,WHITE,screen,self.game.click,img_next.get_width()//2+screen.get_width()//2,img_next.get_height()//2+600):
-                    pass
-                if creation_img_text_click(img_next,"Fire Ball",ColderWeather,WHITE,screen,self.game.click,img_next.get_width()//2+screen.get_width()//2,img_next.get_height()//2+900):
-                    pass
-            """
-                
-            if self.select_monster:
-                what_happen = self.attack(list_case)
-                if what_happen == 0 :
-                    self.select_monster = False
-                    display_erreur.blit(screen,(0,0))
+                    """
+                    
 
-                    Validation_screen("Erreur attack vide ou aucun monstre selectionner",display_erreur,self.game.click)
-                if what_happen == 1 :
-                    pass
-                if what_happen == 2 :
-                    pass
-                if what_happen == 3 :
-                    return True
+                    """
+
+                    if creation_img_text_click(img_next,"Magic Missile",ColderWeather,WHITE,screen,self.game.click,img_next.get_width()//2+screen.get_width()//2,img_next.get_height()//2+300):
+                        self.show_which_one_play().select_neighbour(list_case,k=4)
+                        list_in_range=[]
+                        for x in list_case:
+                            if x.in_case != None and x.is_select and not x.in_case.is_player:
+                                list_in_range.append(x)
+                        self.reset_select(list_case)
+                        for x in list_in_range:
+                            x.select(True)
+                        self.show_which_one_play().select(False)
+                        self.select_sort = False
+                    if creation_img_text_click(img_next,"Fire Bolt",ColderWeather,WHITE,screen,self.game.click,img_next.get_width()//2+screen.get_width()//2,img_next.get_height()//2+600):
+                        pass
+                    if creation_img_text_click(img_next,"Fire Ball",ColderWeather,WHITE,screen,self.game.click,img_next.get_width()//2+screen.get_width()//2,img_next.get_height()//2+900):
+                        pass
+                """
+                    
+                if self.select_monster:
+                    what_happen = self.attack(list_case)
+                    if what_happen == 0 :
+                        self.select_monster = False
+                        display_erreur.blit(screen,(0,0))
+
+                        board_error("Erreur attack vide ou aucun monstre selectionner")
+                    if what_happen == 1 :
+                        pass
+                    if what_happen == 2 :
+                        pass
+                    if what_happen == 3 :
+                        return True
         else:
             have_attacked = False
             current_not_playable = self.list_tour[0]
             case_monstre = current_not_playable.trouver_case(list_case)
             case_monstre.select_neighbour(list_case)
-            #verifie pas pour le self.player
-            for x in self.player.crew_mate:
-                if x.trouver_case(list_case).is_select:
-                    self.chat_box.write_log(("combat",current_not_playable.name+" attack " + x.name ))
-                    self.print_anim(case_monstre,x.trouver_case(list_case),list_case,anim_type="attack",mouvement=False)
-                    self.print_explosion(x.trouver_case(list_case))
-                    self.next_round()
+            print(self.player.name)
+            if self.game.player.trouver_case(list_case).is_select:
+                if self.player.hp > 0:
+                    self.lunch_attack(self.player.trouver_case(list_case))
                     have_attacked = True
+            for x in self.game.player.crew_mate:
+                if x.hp > 0:
+                    if x.trouver_case(list_case).is_select:
+                        self.lunch_attack(x.trouver_case(list_case))
+                        have_attacked = True
             self.reset_select(list_case)
             if not have_attacked:
                 #Trouver le joueur le plus pret
-                if self.game.player.is_alive:
+                if self.game.player.hp > 0:
                    distance = self.find_distance(self.game.player.trouver_case(list_case),case_monstre)
                    nearest=self.game.player     
                 else:
                    distance = 10000
                 for x in self.game.player.crew_mate:
-                    if x.is_alive:
+                    if x.hp > 0:
                        if self.find_distance(x.trouver_case(list_case),case_monstre) <= distance :
                            distance = self.find_distance(x.trouver_case(list_case),case_monstre)
                            print(1)
@@ -441,116 +460,132 @@ class Combat:
                 self.print_anim(case_monstre,nearest_case,list_case,anim_type="walk")
                 nearest_case.in_case = current_not_playable
                 case_monstre.in_case = None
+
+
                 self.reset_select(list_case)
                 nearest_case.select_neighbour(list_case,k=0)
                 if self.game.player.trouver_case(list_case).is_select:
-                    self.chat_box.write_log(("combat",current_not_playable.name+" attack " + self.game.player.name ))
-                    self.print_anim(nearest_case,x.trouver_case(list_case),list_case,anim_type="attack",mouvement=False)
-                    self.print_explosion(x.trouver_case(list_case))
+                    self.lunch_attack(self.game.player.trouver_case(list_case))
                     have_attacked = True
                 if not have_attacked:
                     for x in self.player.crew_mate:
-                        if x.trouver_case(list_case).is_select:
-                            self.chat_box.write_log(("combat",current_not_playable.name+" attack " + x.name ))
-                            self.print_anim(nearest_case,x.trouver_case(list_case),list_case,anim_type="attack",mouvement=False)
-                            self.print_explosion(x.trouver_case(list_case))
-                            have_attacked = True
+                        if x.hp > 0:
+                            if x.trouver_case(list_case).is_select:
+                                self.lunch_attack(x.trouver_case(list_case))
+                                have_attacked = True
                 self.reset_select(list_case)
                 self.next_round()
                 #Passer le tour  
+    def lunch_attack(self,defenseur):
+        attack = self.show_which_one_play().in_case.calcul_attack_score()
+        defense =  defenseur.in_case.calcul_armor()
+        self.chat_box.write_log(("combat", self.show_which_one_play().in_case.name + " tente d'attaquer " + defenseur.in_case.name))
+        self.chat_box.write_log(("combat", "Score d'attack : " + str(attack) + "Score de defense : " + str(defense)))
+        if attack > defense:
+            self.chat_box.write_log(("combat",self.show_which_one_play().in_case.name+" attack " + self.game.player.name ))
+            self.print_anim(self.show_which_one_play(),self.game.player.trouver_case(list_case),list_case,anim_type="attack",mouvement=False)
+            damages = self.show_which_one_play().in_case.damage()
+            self.chat_box.write_log(("combat", "Dammage : " + str(damages))) 
+            self.print_explosion(defenseur)
+            defenseur.in_case.hp -= damages
+            if defenseur.in_case.hp <= 0:
+                self.list_tour.remove(defenseur.in_case)
+                defenseur.in_case = None
+        self.reset_select(list_case)
+        self.next_round()
     def lunch_spell(self):
         running= True
-        spell = [[]]
-        if self.select_spell != -1:
-            if spell == [[]]:
-                spell = self.show_which_one_play().in_case.select_spell(self.select_spell)
-            if not spell:
-                running = False
-                self.select_sort = False
-                self.select_spell = -1
-            if spell != None:
-                for x in spell:
-                    dmg = x[0]
-                    is_healing = x[1]
-                    multi_cible = x[2]
-                    spell_range = x[4]
-        if running != False:
-            self.show_which_one_play().select_neighbour(list_case,k=spell_range)
-            list_in_range = []
-            for x in list_case:
-                if x.is_select:
-                    list_in_range.append(x)
-            self.reset_select(list_case)
-        while running:
-            running,self.game.click = basic_checkevent(self.game.click)
-            mx,my=pygame.mouse.get_pos()
-            self.print_battleground()
-            self.reset_select(list_case)
-            for x in list_case:
-                
-                screen.blit(x.display, x.cordo())
-                x.checkIfSelected()
-                x.print_contains()
-                if x.in_case != None:
-                    x.in_case.type_animation = "idle"
-                    x.in_case.animate()
-            
-                    """for x in list_case:
-                        if x.i+1 == self.show_which_one_play().i and x.j-1 == self.show_which_one_play().j:
-                            x.select(True)
-                        if x.in_case != None and not x.in_case.is_player:
-                            x.select(True)"""
-            
-            i, j = 0, 0
-            for h in self.map:
-                j = 0
-                for g in h:
-                    if self.map[i][j] == 'w':
-                        if pixel_mask.overlap(self.mask, ((mx-((j-i)*(pixel_red.get_width()+45)//2+screen.get_width()//2-pixel_red.get_width()//2), my-((j+i)*(pixel_red.get_width()+45)//4-100)))):
-                            for x in list_case:
-                                if x.i == i and x.j == j:
-
-                                    if list_in_range.__contains__(x):
-                                        x.select_neighbour(list_case ,k=multi_cible)
-                                        if self.game.click:
-                                            self.print_explosion(x)
-                                            for x in list_case:
-                                                if x.is_select and x.in_case != None:
-                                                    self.chat_box.write_log(("combat", self.show_which_one_play().in_case.name + " attack " + x.in_case.name))
-                                                    self.chat_box.write_log(("combat", "Dammage : " + str(dmg)))
-                                                    x.in_case.hp -= dmg
-                                                    if x.in_case.hp <= 0:
-                                                        self.list_tour.remove(x.in_case)
-                                                        x.in_case = None
-                                            self.reset_select(list_case)
-                                            running = False
+        
+        spell = self.show_which_one_play().in_case.select_spell(self.select_spell)
+        if spell != None:
+            for x in spell:
+                running = True
+                dmg = x[0]
+                is_healing = x[1]
+                multi_cible = x[2]
+                spell_range = x[4]
+                self.show_which_one_play().select_neighbour(list_case,k=spell_range)
+                self.show_which_one_play().select(False)
+                list_in_range = []
+                for x in list_case:
+                    if x.is_select:
+                        list_in_range.append(x)
+                self.reset_select(list_case)
+                while running:
+                    
+                    running,self.game.click = basic_checkevent(self.game.click)
+                    mx,my=pygame.mouse.get_pos()
+                    self.print_battleground()
+                    self.reset_select(list_case)
+                    for x in list_case:
+                        screen.blit(x.display, x.cordo())
+                        x.checkIfSelected()
+                        x.print_contains()
+                        if x.in_case != None:
+                            x.in_case.type_animation = "idle"
+                            x.in_case.animate()
+                    
+                    i, j = 0, 0
+                    for h in self.map:
+                        j = 0
+                        for g in h:
+                            if self.map[i][j] == 'w':
+                                if pixel_mask.overlap(self.mask, ((mx-((j-i)*(pixel_red.get_width()+45)//2+screen.get_width()//2-pixel_red.get_width()//2), my-((j+i)*(pixel_red.get_width()+45)//4-100)))):
+                                    for x in list_case:
+                                        if x.i == i and x.j == j:
+                                            if list_in_range.__contains__(x):
+                                                self.reset_select(list_case)
+                                                if multi_cible == 0:
+                                                    x.select(True)
+                                                else:
+                                                    x.select_neighbour(list_case)
+                                                
+                                                if self.game.click:
+                                                    for x in list_case:
+                                                        if x.is_select and x.in_case != None:
+                                                            if is_healing:
+                                                                self.print_explosion(x)
+                                                                self.chat_box.write_log(("combat", self.show_which_one_play().in_case.name + " lance sort " + x.in_case.name))
+                                                                self.chat_box.write_log(("combat", "Dammage : " + str(dmg)))
+                                                                x.in_case.hp -= dmg
+                                                                if x.in_case.hp <= 0:
+                                                                    self.list_tour.remove(x.in_case)
+                                                                    x.in_case = None
+                                                            else:
+                                                                self.print_explosion(x,'heal')
+                                                                self.chat_box.write_log(("combat", self.show_which_one_play().in_case.name + " heal " + x.in_case.name))
+                                                                self.chat_box.write_log(("combat", "Heal : " + str(dmg)))
+                                                                x.in_case.hp += dmg
+                                                                if x.in_case.hp > x.in_case.hp_max:
+                                                                    x.in_case.hp = x.in_case.hp_max
+                                                            
+                                                    self.reset_select(list_case)
                                                     
+                                                    running = False
+                                                    self.select_sort = False
+                                                    self.select_spell = -1
+                                                            
 
-                                        """
-                                        if x.is_select and x.in_case != None:
-                                            self.print_explosion(x)
-                                            key = list(self.show_which_one_play().in_case.spell.keys())
-                                            self.chat_box.write_log(("combat", self.show_which_one_play().in_case.name + " Lance " + key[self.select_spell] + " sur " + x.in_case.name))
-                                            x.in_case.hp -= dmg
-                                            self.chat_box.write_log(("combat", "Damage : " + str(dmg) + " Vie : " + str(x.in_case.hp)))
-                                            
-                                            running = False
-                                            self.select_sort = False
-                                            self.select_spell = -1"""
+                                                
 
-                    j += 1
-                i += 1
-            
-            pygame.display.update()
-            
+                            j += 1
+                        i += 1
+                    
+                    pygame.display.update()
+                print("Coucouc je suis sortis de la boucle")
+                
     def find_distance(self,case_1,case_2):
         return math.dist(case_1.cordo(),case_2.cordo())                       
     def next_round(self):
+        if self.list_tour[0].is_player:
+            self.list_tour[0].actionP = 1
+            self.list_tour[0].bonusAction = 1
+            self.list_tour[0].have_mouve = False
         self.list_tour.append(self.list_tour[0])
         self.list_tour.remove(self.list_tour[0])
     def show_which_one_play(self):
         current_playable = self.list_tour[0]
-        current_playable.trouver_case(list_case).select(True)
+        #current_playable.trouver_case(list_case).select(True)
         return current_playable.trouver_case(list_case)
     def reset_select(self,list_case):
         for x in list_case:
@@ -585,6 +620,7 @@ class Combat:
                                         self.reset_select(list_case)
                                         self.show_which_one_play().select_neighbour(list_case,k=1)
                                         if x.is_select:
+                                            
 
                                             self.chat_box.write_log(("combat", self.show_which_one_play().in_case.name + " attack " + x.in_case.name))
                                             self.print_anim(self.show_which_one_play(),x,list_case,anim_type=anim,mouvement=False)
@@ -593,7 +629,12 @@ class Combat:
                                             defense =  x.in_case.calcul_armor()
                                             self.chat_box.write_log(("combat", "Score d'attack : " + str(attack) + "Score de defense : " + str(defense)))
                                             if attack > defense:
-                                                damages = self.show_which_one_play().in_case.damage()
+                                                if self.show_which_one_play().in_case.classe == 'rogue':
+                                                    damages = self.show_which_one_play().in_case.damage(self.check_player_wall(list_case,x))
+                                                    if self.check_player_wall(list_case,x):
+                                                        self.chat_box.write_log(("combat", "Sneak attack"))
+                                                else:
+                                                    damages = self.show_which_one_play().in_case.damage()
                                                 self.chat_box.write_log(("combat", "Dammage : " + str(damages))) 
                                                 x.in_case.hp -= damages
                                             else:
@@ -607,6 +648,7 @@ class Combat:
                                                     self.chat_box.write_log(("combat", "Fin de combat")) 
                                                     return 3
                                         self.reset_select(list_case)
+                                        self.next_round()
                                         self.select_monster = False
                                         return 1
                                     else:
@@ -624,7 +666,7 @@ class Combat:
         i=0
         j=0
         for x in list_case:
-            if x.is_select and x.in_case.is_player:
+            if x.is_select and x.in_case != None and x.in_case.is_player:
                 j +=1
                 if j ==2:
                     return True

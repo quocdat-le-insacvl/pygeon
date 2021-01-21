@@ -37,6 +37,8 @@ class Camera():
         self.screen.blit(self.perso.donjon_mask.to_surface(),(self.perso.pos_x+self.center_x,self.perso.pos_y+self.center_y))
         print_mooving_entity(self.fog, self.screen,self.list_monster,self.center_x,self.center_y)
         for x in self.list_monster:
+            self.screen.blit(x.collide_box_interact.img_collide,(x.pos_x,x.pos_y))
+        for x in self.list_monster:
                 x.type_animation = "walk"
                 if x.mouvement[0] < 0 :
                     x.animate_map(flip=True,scale=(50,80))

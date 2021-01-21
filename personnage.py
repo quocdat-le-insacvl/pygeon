@@ -107,19 +107,18 @@ class Perso_saveable(): # INTERDICTION DE METTRE DES PYGAMES SURFACE SEULEMENT D
 
 
 class Perso(Entity,Stats):
-    def __init__(self,STR=12,DEX=8,CON=8,INT=8,WIS=8,CHA=8,hp=10,hp_max=10,inventaire=10,name=None,classe=None,level=0,xp=0,hit_dice=0,argent=0,player_animation = None,decalage = [0,0],size=(0,0)):
+    def __init__(self,STR=12,DEX=8,CON=8,INT=8,WIS=8,CHA=8,hp=10,hp_max=10,inventaire=10,name=None,level=0,xp=0,hit_dice=0,argent=0,player_animation = None,decalage = [0,0],size=(0,0)):
         #Entity().__init__(self,1,1,pygame.transform.scale(pygame.image.load(path.join(path_addon,'Image/perso.png'))),name,"Player",animation_dict=player_animation,decalage = decalage,size=size)
         super().__init__(100,100,pygame.transform.scale(pygame.image.load(path.join(path_addon,'Image/perso.png')),(96,147)),name,"Player",animation_dict=player_animation,decalage = decalage,size=size)
         Stats.__init__(self,STR,DEX,CON,INT,WIS,CHA,hp,hp_max)
         ### Stats ###
-        self.classe = classe
         self.level = level
         self.xp=0
         
         self.proficiency=2
         self.attack=0
         self.feet=30
-
+        self.have_mouve = False
         self.stats=[STR,DEX,CON,INT,WIS,CHA]
         #########
         self.stats_eph=[0,0,0,0,0,0]
@@ -316,13 +315,13 @@ class Perso(Entity,Stats):
         board.set_colorkey((255,255,255))
         board_icon=pygame.transform.scale(board_init(),(board.get_width()//5,board.get_height()//5))
         # board_icon.set_colorkey((0,0,0))
+        print(self.classe)
         if self.classe=='sorcerer':
             icone=pygame.transform.scale(wizard_icon,(board_icon.get_width()//2,board_icon.get_height()))
-        elif self.classe=='fighter':
+        if self.classe=='fighter':
             icone=pygame.transform.scale(fighter_icon,(board_icon.get_width(),board_icon.get_height()))
-        else:
-            icone=pygame.transform.scale(fighter_icon,(board_icon.get_width(),board_icon.get_height()))
-
+        if self.classe=='rogue':
+            icone=pygame.transform.scale(rogue_icon,(board_icon.get_width(),board_icon.get_height()))
         icone.set_colorkey((255,255,255))
         board_icon.blit(icone,(board_icon.get_width()//2-icone.get_width()//2,0))
         rect_icon=screen.blit(board_icon,(rectboard.x-board_icon.get_width()//1.5,rectboard.y+board_icon.get_height()//0.8))
@@ -539,28 +538,34 @@ class Perso(Entity,Stats):
         "calcule les dommages en fonction de l'arme équipée"
         bonus_deg=0
         crit=1
+        dex=self.score("dex")
+        if dex==-1:
+            dex=0
+        strong=self.score("str")
+        if strong==-1:
+            strong=0
         if self.crit:
             crit=2
             self.crit=False
         if self.armor[4]!=None:
             bonus_deg=self.action.dice(key[self.armor[4]].dmg)
-            if key[self.armor[4]].wpn_type=="RANGED":
-                return (bonus_deg+self.score("dex"))*crit
+            if key[self.armor[4]].wpn_type=="RANGED" or key[self.armor[5]].wpn_type=="RANGED":
+                return (bonus_deg+dex)*crit
         elif self.armor[5]!=None and self.armor[4]==None:
             bonus_deg=self.action.dice(key[self.armor[5]].dmg)
-            if key[self.armor[5]].wpn_type=="RANGED":
-                return (bonus_deg+self.score("dex"))*crit
+            if key[self.armor[4]].wpn_type=="RANGED" or key[self.armor[5]].wpn_type=="RANGED":
+                return (bonus_deg+dex)*crit
         if self.armor[4]!=None and self.armor[5]!=None:
             if all([key[self.armor[4]].wpn_type!="Two Handed",key[self.armor[4]].wpn_type!="RANGED",key[self.armor[5]].wpn_type!="RANGED"]):
                 bonus_deg+=self.action.dice(key[self.armor[5]].dmg)
             elif key[self.armor[4]].wpn_type=="Two Handed":
-                bonus_deg+=self.score("str")//2    
-        return (bonus_deg+self.score("str"))*crit
+                bonus_deg+=(strong//2)*crit  
+        return (bonus_deg+strong)*crit
     
     def saving_throw(self,cara,damage,dc):
         """fonction à utiliser pour resister à un sort"""
         select={0 : "dex",1 : "con", 2 : "wis"}
-        if self.lvl//2+self.score(select[cara])>= dc:
+        if self.level//2+self.score(select[cara])>= dc:
             return damage//2
         return damage
     
@@ -583,7 +588,7 @@ class Perso(Entity,Stats):
         self.rect_persoDonjon = pygame.Rect((self.pos_x,self.pos_y),(32,49))
         return self.img
 class Perso_game(Perso):
-    def __init__(self,STR,DEX,CON,INT,WIS,CHA,hp,hp_max,inventaire,img,pos_x,pos_y,player_animation = None ,argent = 0,name=None,classe=None,level=1,xp=0,decalage=[0,0],size=(0,0)):
+    def __init__(self,STR,DEX,CON,INT,WIS,CHA,hp,hp_max,inventaire,img,pos_x,pos_y,player_animation = None ,argent = 0,name=None,level=1,xp=0,decalage=[0,0],size=(0,0)):
         Perso.__init__(self,STR,DEX,CON,INT,WIS,CHA,hp,hp_max,inventaire,player_animation=player_animation,name=name,decalage=decalage,size=size)
         self.case_connue = []
         self.sprite = test

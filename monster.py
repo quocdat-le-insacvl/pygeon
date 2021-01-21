@@ -7,19 +7,20 @@ from settings.screen import *
 from settings.color import *
 from settings.load_img import ava_perso
 from items import Wikitem
+from basic_actions import *
 import random
 key = list(Wikitem.keys())
 liste_type_monste = [demon_1_animation,demon_animation,squelton_animation,wizard_animation,dark_wizard_animation]
 
-stats_nv1 = [8,8,8,8,8,8,10]
+stats_nv1 = [12,12,12,12,12,12,15]
 
-stats_nv2 = [8,8,8,8,8,8,10]
+stats_nv2 = [12,12,12,12,12,12,20]
 
-stats_nv3 = [8,8,8,8,8,8,10]
+stats_nv3 = [12,12,12,12,12,12,20]
 
-stats_nv4 = [8,8,8,8,8,8,10]
+stats_nv4 = [13,13,13,13,13,13,25]
 
-stats_nv5 = [8,8,8,8,8,8,10]
+stats_nv5 = [15,15,15,15,15,15,30]
 
 
 list_stats = []
@@ -31,7 +32,7 @@ list_stats.append(stats_nv5)
 
 
 class Monster(Entity,Stats):
-    def __init__(self, pos_x, pos_y, img, name, which_type, animation_dict=None, talking='', size=(0,0), decalage=[0,0], size_monster='Small', walking_speed=30,size_collide_box = 1):
+    def __init__(self, pos_x, pos_y, img, name, which_type, decalage,animation_dict=None, talking='', size=(0,0), size_monster='Small', walking_speed=30,size_collide_box = 1):
         super().__init__(pos_x, pos_y, img, name, which_type, animation_dict=animation_dict, talking=talking, size=size, decalage=decalage,size_collide_box=size_collide_box)
         Stats.__init__(self,list_stats[int(which_type)-1][0],list_stats[int(which_type)-1][1],list_stats[int(which_type)-1][2],list_stats[int(which_type)-1][3],list_stats[int(which_type)-1][4],list_stats[int(which_type)-1][5],list_stats[int(which_type)-1][6])
         # Rule : https://www.dndbeyond.com/sources/basic-rules/monsters#Challenge
@@ -56,6 +57,9 @@ class Monster(Entity,Stats):
 
         self.stats=list_stats[int(which_type)-1]
         self.skills=[0,0,0,0,0,0]
+        self.action = Actions()
+        self.attack = int(which_type)
+        self.crit = False
         self.proficiency=2
         self.armor = dict()
         
@@ -207,6 +211,43 @@ class Monster(Entity,Stats):
             if self.armor[1]!=None:
                 return self.score("dex")+10+key[self.armor[1]].armor_bonus
         return self.score("dex")+10
+    def calcul_attack_score(self):
+        "renvoie le score de l'attaque roll pour savoir si le joueur touvhe le monstre"
+        i=self.action.dice(20)
+        if i==1:
+            return 0
+        elif i==20:
+            self.crit=True
+            return float("inf")
+        return i+self.attack
+    
+    def damage(self):
+        "calcule les dommages en fonction de l'arme équipée"
+        bonus_deg=0
+        crit=1
+        dex=self.score("dex")
+        if dex==-1:
+            dex=0
+        strong=self.score("str")
+        if strong==-1:
+            strong=0
+        if self.crit:
+            crit=2
+            self.crit=False
+        if self.armor[4]!=None:
+            bonus_deg=self.action.dice(key[self.armor[4]].dmg)
+            if key[self.armor[4]].wpn_type=="RANGED" or key[self.armor[5]].wpn_type=="RANGED":
+                return (bonus_deg+dex)*crit
+        elif self.armor[5]!=None and self.armor[4]==None:
+            bonus_deg=self.action.dice(key[self.armor[5]].dmg)
+            if key[self.armor[4]].wpn_type=="RANGED" or key[self.armor[5]].wpn_type=="RANGED":
+                return (bonus_deg+dex)*crit
+        if self.armor[4]!=None and self.armor[5]!=None:
+            if all([key[self.armor[4]].wpn_type!="Two Handed",key[self.armor[4]].wpn_type!="RANGED",key[self.armor[5]].wpn_type!="RANGED"]):
+                bonus_deg+=self.action.dice(key[self.armor[5]].dmg)
+            elif key[self.armor[4]].wpn_type=="Two Handed":
+                bonus_deg+=(strong//2)*crit  
+        return (bonus_deg+strong)*crit
     def ability_score(self,caracteristique):
         """calcul basique du score en fonction d'une caractéristique passée en paramètre
         STR=0, DEX=1, CON=2, INT=3, WIS=4, CHA=5"""
