@@ -7,7 +7,7 @@ from settings.color import *
 from fonction import *
 from case import *
 from DiceEvent import *
-from monstre import *  # a remplacer plus tard
+#from monstre import *  # a remplacer plus tard
 from personnage import *
 from text import *
 from settings.load_img import *
@@ -38,7 +38,7 @@ class Combat:
         self.stop = False  # pour la generation du nombre aleatoire
         self.actdamage = False  # pour activer le calcul des degats
         self.liste_monstre = list_monstre  # a modifier
-        self.monstre = Monstre(18,17)  # a remplacer plus tard
+        #self.monstre = Monstre(18,17)  # a remplacer plus tard
         self.angle = 0
         self.message_hp = "perso 1 hp:" + \
             str(self.perso1.hp)+" perso 2 hp:"+str(self.perso2.hp) + \

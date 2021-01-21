@@ -190,6 +190,7 @@ rune = pygame.image.load(path.join(path_addon, "rune_1.png")).convert_alpha()
 rune_1 = pygame.image.load(path.join(path_addon, "rune_2.png")).convert_alpha()
 
 #combat
+print(getcwd())
 image_boutton = pygame.image.load(getcwd()+'\\Addon\\Menu\\TextBTN_Small.png')
 image_box = pygame.image.load(getcwd()+'\\Addon\\UI board Small Set.png')
 image_boutton1 = pygame.image.load(getcwd()+'\\Addon\\Menu\\TextBTN_XSmall.png')

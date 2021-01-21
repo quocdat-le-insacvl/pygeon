@@ -8,7 +8,7 @@ from settings.screen import screen
 from fonction import *
 from settings.police import *
 from basic_actions import *
-
+from fonctions import collides,choices_clickable,board_error
 key = list(Wikitem.keys())
 pixel_mask = pygame.mask.from_surface(pixel_red)
 
@@ -467,14 +467,17 @@ class Perso(Entity):
     def afficher(self):
         #self.perso_screen.blit(self.perso,(self.pos_x,self.pos_y))
         self.rect_perso = pygame.Rect((self.pos_x,self.pos_y),(self.img.get_width(),self.img.get_height()))
+        self.rect_persoDonjon = pygame.Rect((self.pos_x,self.pos_y),(32,49))
         return self.img
 class Perso_game(Perso):
     def __init__(self,STR,DEX,CON,INT,WIS,CHA,hp,hp_max,inventaire,img,pos_x,pos_y,player_animation = None ,argent = 0,name=None,classe=None,level=1,xp=0,decalage=[0,0],size=(0,0)):
         Perso.__init__(self,STR,DEX,CON,INT,WIS,CHA,hp,hp_max,inventaire,player_animation=player_animation,name=name,decalage=decalage,size=size)
         self.case_connue = []
         self.mask_surface = pygame.Surface((img.get_width()-40,10))
+        self.donjon_surface = pygame.Surface((img.get_width() - 80,10))
         self.mask_surface.fill((255,0,0))
         self.masks = pygame.mask.from_surface(self.mask_surface)
+        self.donjon_mask = pygame.mask.from_surface(self.donjon_surface)
         self.swap = False
         self.entity_near = False
         self.swap_entity = False

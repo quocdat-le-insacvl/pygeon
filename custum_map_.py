@@ -14,7 +14,7 @@ from script import player
 from fonction import *
 from entity import Entity
 from monster import Monster
-from Donjon.donjon import *
+#from Donjon.donjon import Donjon
 from inventory import Inventaire
 from seller_scripts import seller_1_img,seller_2_img,seller_3_img,seller_4_img,seller_5_img
 center_x = 0
