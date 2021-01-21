@@ -131,7 +131,7 @@ class Map():
                     if self.map[i][j] == '7':
                         n = random.randint(1,5)
                         self.display.blit(grass['grass_blue_' + str(n) + '.png'],(x,y))
-                    if self.map[i][j] == 'a':
+                    if self.map[i][j] == 'l':
                         self.display.blit(grass['grass_' + str(1) + '.png'],(x,y))
                         self.change_camera_entity.append((x,y))
                     

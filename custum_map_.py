@@ -410,13 +410,12 @@ class Map_editor:
         choose_quest = False
         color_1,color_2,color_3 = WHITE
 
-        self.map_ground = load_map(self.path+ '_level_'+str(1) + '.txt')
-        self.map_decoration = load_map(self.path_deco+ '_level_'+str(1)+'.txt')
+        self.map_ground = load_map(self.path+ '_level_'+str(1) + '.txt',reverse=True)
+        self.map_decoration = load_map(self.path_deco+ '_level_'+str(1)+'.txt',reverse=True)
         self.list_monstre = [json.loads(line) for line in open(self.path_monstre+ '_level_'+str(1)+'.json', 'r')]
         
-        self.taille_x,self.taille_y = len(self.map_ground),len(self.map_ground[0])
+        self.taille_x,self.taille_y = len(self.map_ground),len(self.map_ground)
         self.init_custom_map(True)
-        self.num_level -=1
         #self.init_monster()
         self.refresh()
 
@@ -681,6 +680,6 @@ def iso_vec_into_standard(x,y):
     x_stand = 0.5*x - y
     y_stand = 0.5*x + y
     return (x_stand,y_stand)
-
+"""
 mapp = Map_editor(200,200)
-mapp.print_menu_editor()
+mapp.print_menu_editor()"""
