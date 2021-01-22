@@ -59,7 +59,7 @@ dict_img_npc['5']= list_npc[4]
 
 
 donjon =  [json.loads(line) for line in open('donjon.json', 'r')]
-
+print(f'TAILLE DU SCREEN {screen.get_width()},{screen.get_height()}')
 
 
 class Game():

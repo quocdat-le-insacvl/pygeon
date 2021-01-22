@@ -681,6 +681,6 @@ def iso_vec_into_standard(x,y):
     x_stand = 0.5*x - y
     y_stand = 0.5*x + y
     return (x_stand,y_stand)
-
+"""
 mapp = Map_editor(200,200)
-mapp.print_menu_editor()
+mapp.print_menu_editor()"""

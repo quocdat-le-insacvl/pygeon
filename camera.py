@@ -3,7 +3,7 @@ from perso import Personnage
 class Camera():
     def __init__(self,perso,piece):
         self.center_x,self.center_y =0,0
-        self.screen = pygame.display.set_mode((0,0), pygame.FULLSCREEN)
+        self.screen = screen
         self.player = perso.perso
         self.perso = perso
         self.piece = piece
