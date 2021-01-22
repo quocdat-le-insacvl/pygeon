@@ -32,7 +32,7 @@ list_stats.append(stats_nv5)
 
 
 class Monster(Entity,Stats):
-    def __init__(self, pos_x, pos_y, img, name, which_type, animation_dict=None, talking='', size=(0,0), decalage=[0,0], size_monster='Small', walking_speed=30,size_collide_box = 1,donjon=False):
+    def __init__(self, pos_x, pos_y, img, name, which_type, decalage,animation_dict=None, talking='', size=(0,0), size_monster='Small', walking_speed=30,size_collide_box = 1,donjon=False):
         super().__init__(pos_x, pos_y, img, name, which_type, animation_dict=animation_dict, talking=talking, size=size, decalage=decalage,size_collide_box=size_collide_box,donjon=donjon)
         Stats.__init__(self,list_stats[int(which_type)-1][0],list_stats[int(which_type)-1][1],list_stats[int(which_type)-1][2],list_stats[int(which_type)-1][3],list_stats[int(which_type)-1][4],list_stats[int(which_type)-1][5],list_stats[int(which_type)-1][6])
         # Rule : https://www.dndbeyond.com/sources/basic-rules/monsters#Challenge
@@ -91,13 +91,14 @@ class Monster(Entity,Stats):
             self.change_direction = 1
         self.change_direction +=1
         if not donjon : 
+            
             mask_to_get = player.masks
             test_mask =mask_to_get.overlap(self.collide_box.mask,((self.collide_box.pos_x )-player.pos_x,(self.collide_box.pos_y)-(player.pos_y+130)))
         else:
             mask_to_get = player.donjon_mask
             test_mask = mask_to_get.overlap(self.collide_box.mask,((self.collide_box.pos_x )-player.pos_x,(self.collide_box.pos_y)-(player.pos_y+50)))
         
-        if not test:
+        if not test_mask:
             if self.collide_patrouille.mask.overlap(self.collide_box_interact.mask,((self.collide_box_interact.pos_x + self.mouvement[0])-self.collide_patrouille.pos_x,(self.collide_box_interact.pos_y+ self.mouvement[1])-self.collide_patrouille.pos_y)):
                 self.pos_x += self.mouvement[0]
                 self.pos_y += self.mouvement[1]

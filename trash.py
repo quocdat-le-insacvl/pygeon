@@ -117,7 +117,7 @@ class Game():
         self.player.crew_mate[1].pos_x = 8680
         self.player.crew_mate[1].pos_y = 1100
         ### Minimap
-        self.minimap = Minimap(self.map.map,self.fog,self.map.display_tree,self.list_mooving_entity,self.player)
+        self.minimap = Minimap(self.map.map,self.fog,self.map.display,self.list_mooving_entity,self.player)
     
         for x in donjon:
             x[0],x[1] = (x[1]-x[0])*190//2+9000,(x[1]+x[0])*190//4
@@ -364,8 +364,6 @@ class Game():
                 nb_crew+=1
                 if nb_crew ==2:
                     nb_crew = 0
-                
-                print(self.player.level)
                 monstre = None
             
             for x in self.list_coffre:

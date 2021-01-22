@@ -17,8 +17,8 @@ from combat import Combat
 
 list_img_monstre = [list_entity_animation[0],list_entity_animation[1],list_entity_animation[2],list_entity_animation[3],list_entity_animation[4]]
 list_animation_monstre = [demon_1_animation,demon_animation,squelton_animation,wizard_animation,dark_wizard_animation]
-list_decalage_monstre = [[0,0],[0,0],[-30,-30],[-30,-30],[70,20]]
-list_size_monstre = [(500,400),(500,400),(300,300),(300,300),(600,500)]
+list_decalage_monstre = [[-80,30],[-90,40],[-30,-10],[-20,0],[-110,+50]]
+list_size_monstre = [(500,400),(500,400),(300,300),(300,300),(700,700)]
 
 
 clock = pygame.time.Clock()
@@ -93,7 +93,7 @@ class Donjon():
                 #salle.linked = ['Haut','Haut','Gauche','Gauche','Droite','Gauche'] 
                 i+=1
             
-            
+            salle.afficherListe()
             salle.afficherPiece()
             self.fogs.append(Fog(self.perso,salle.afficher()))
             self.fogs[j].init_fog_for_dungeon()
