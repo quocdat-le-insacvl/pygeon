@@ -14,6 +14,7 @@ import random
 from fog import Fog
 from minimap import Minimap
 from combat import Combat
+
 list_img_monstre = [list_entity_animation[0],list_entity_animation[1],list_entity_animation[2],list_entity_animation[3],list_entity_animation[4]]
 list_animation_monstre = [demon_1_animation,demon_animation,squelton_animation,wizard_animation,dark_wizard_animation]
 list_decalage_monstre = [[0,0],[0,0],[-30,-30],[-30,-30],[70,20]]
