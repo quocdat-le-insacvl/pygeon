@@ -8,7 +8,7 @@ from pygame.locals import *
 
 class Entity():
 
-    def __init__(self, pos_x, pos_y, img, name, which_type, animation_dict=None, talking=None, size=(0, 0), decalage=[0, 0], size_collide_box=1):
+    def __init__(self, pos_x, pos_y, img, name, which_type, animation_dict=None, talking=None, size=(0, 0), decalage=[0, 0], size_collide_box=1,donjon=False):
         if size == (0, 0):
             size = (img.get_width(), img.get_height())
         self.pos_x = pos_x
@@ -35,7 +35,7 @@ class Entity():
         self.seen = False
         self.last_know_pos = (0, 0)
         self.shadow = img
-        self.collide_box = Collide_box(size_collide_box)
+        self.collide_box = Collide_box(size_collide_box,donjon=donjon)
 
     
     def update_center(self):
@@ -73,8 +73,10 @@ class Entity():
             self.refresh_display()
             self.display.blit(animation[self.type_animation + "_" + str(int(self.frame)) + ".png"], (self.img.get_width()//2-animation[self.type_animation + "_" + str(int(self.frame)) + ".png"].get_width()//2+150-int(
                 self.img.get_width()//2)+self.decalage[0], self.img.get_height()-animation[self.type_animation + "_" + str(int(self.frame)) + ".png"].get_height()+300-self.img.get_height()+self.decalage[1]))
+            #print(f'Taille de l image ({self.img.get_width()},{self.img.get_height()})\n')    
+        
         else:
-            
+             
             self.display.blit(self.img, (0, 0))
         return one_complete
             #self.display.blit(animation[ self.type_animation + "_" + str(int(self.frame)) + ".png"],(150-animation[ self.type_animation + "_" + str(int(self.frame)) + ".png"].get_width()//2,self.img.get_height()-animation[ self.type_animation + "_" + str(int(self.frame)) + ".png"].get_height()+300-self.img.get_height()+self.decalage_display[1]))
@@ -143,10 +145,13 @@ class Chest(Entity):
 
 
 class Collide_box():
-    def __init__(self, size=1):
+    def __init__(self, size=1,donjon=False):
         self.size = size
-        self.img_collide = pygame.transform.scale(
-            collide_monster, (190*self.size*2, 190*self.size))
+        if donjon:
+            self.img_collide = pygame.transform.scale(collide_monster, (60,30))
+        else:
+            self.img_collide = pygame.transform.scale(
+                collide_monster, (190*self.size*2, 190*self.size))
         self.img_collide.set_colorkey(WHITE)
         self.mask = pygame.mask.from_surface(self.img_collide)
         self.pos_x = 0

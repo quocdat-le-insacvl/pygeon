@@ -1,3 +1,4 @@
+from entity import Collide_box
 from monster import Monster
 from Donjon.piece import Piece
 import pygame
@@ -16,7 +17,7 @@ from combat import Combat
 
 list_img_monstre = [list_entity_animation[0],list_entity_animation[1],list_entity_animation[2],list_entity_animation[3],list_entity_animation[4]]
 list_animation_monstre = [demon_1_animation,demon_animation,squelton_animation,wizard_animation,dark_wizard_animation]
-list_decalage_monstre = [[0,0],[0,0],[0,0],[0,0],[0,0]]
+list_decalage_monstre = [[0,0],[0,0],[-30,-30],[-30,-30],[70,20]]
 list_size_monstre = [(500,400),(500,400),(300,300),(300,300),(600,500)]
 
 
@@ -127,7 +128,7 @@ class Donjon():
         self.perso.afficher()
         self.cam.piece = self.pieces[self.actuel]
         self.cam.display_piece = self.pieces[self.actuel].afficher()
-        
+        self.cam.list_monster = self.liste_monstre[self.actuel]
         self.cam.afficher()
 
     #fonction de deplacement, très nulle mais ce ne sera pas la version finale
@@ -136,35 +137,35 @@ class Donjon():
         
         if self.listekey.get(pygame.K_UP):
             
-            self.perso.pos_y-=2
+            self.perso.pos_y-=4
             self.interaction = self.pieces[self.actuel].check_interact(self.perso)
             if self.pieces[self.actuel].check_collision(self.perso):
-                self.perso.pos_y+=2
+                self.perso.pos_y+=4
             else:
 
                 self.update_affichage()
                 
         if self.listekey.get(pygame.K_DOWN): 
            
-            self.perso.pos_y+=2
+            self.perso.pos_y+=4
             self.interaction = self.pieces[self.actuel].check_interact(self.perso)
             if self.pieces[self.actuel].check_collision(self.perso):
-                self.perso.pos_y-=2
+                self.perso.pos_y-=4
             else:
                 self.update_affichage()
         if self.listekey.get(pygame.K_RIGHT):
             
-            self.perso.pos_x +=2
+            self.perso.pos_x +=4
             self.interaction = self.pieces[self.actuel].check_interact(self.perso)
             if self.pieces[self.actuel].check_collision(self.perso):
-                self.perso.pos_x -=2
+                self.perso.pos_x -=4
             else:
                 self.update_affichage()
         if self.listekey.get(pygame.K_LEFT):
-            self.perso.pos_x -=2
+            self.perso.pos_x -=4
             self.interaction = self.pieces[self.actuel].check_interact(self.perso)
             if self.pieces[self.actuel].check_collision(self.perso):
-                self.perso.pos_x +=2
+                self.perso.pos_x +=4
             else:
                 self.update_affichage()
         if self.listekey.get(pygame.K_i):
@@ -188,12 +189,14 @@ class Donjon():
             self.__checkEvent()
             self.deplacement()
             #print '{}: tick={}, fps={}'.format(i+1, clock.tick(fps), clock.get_fps())
-            clock.tick(64)
+            clock.tick(32)
             monstre = None
             
             for x in self.liste_monstre[self.actuel]:
-                if x.collide_box_interact.mask.overlap(self.perso.masks,((self.perso.pos_x+10)-x.collide_box_interact.pos_x,(self.perso.pos_y+self.perso.img.get_height()-15)-x.collide_box_interact.pos_y)):
-                    
+                if x.collide_box_interact.mask.overlap(self.perso.donjon_mask,((self.perso.pos_x+10)-x.collide_box_interact.pos_x,(self.perso.pos_y+90)-x.collide_box_interact.pos_y)):
+                    #self.cam.screen.blit(x.collide_box_interact.img_collide,(x.collide_box_interact.pos_x,x.collide_box_interact.pos_y))
+                    #pygame.display.update()
+                    #self.pieces[self.actuel].wait()
                     self.perso.monstre_near = True
                     monstre = x
             if self.perso.monstre_near and monstre != None:
@@ -201,10 +204,10 @@ class Donjon():
                     i.img = list_img_monstre[i.type-1]
                 f = Combat(self.game,monstre.group_monster)
                 f.affichage()
-                """
+                
                 if f.player.crew_mate[0].hp > 0 or f.player.crew_mate[1].hp > 0  or f.player.hp > 0:
                     for x in monstre.group_monster:
-                        self.liste_monstre.remove(x)"""
+                        self.liste_monstre[self.actuel].remove(x)
                 monstre = None
             self.cam.afficher()
             
@@ -315,13 +318,10 @@ class Donjon():
                         position = True
                         pos_x = currentX+20
                         pos_y = currentY +5
-                        print("COORD : ",currentX,currentY)
 
 
 
                 position = False
                 self.liste_monstre[indexPiece].append(Monster(pos_x,pos_y,pygame.transform.scale(list_img_monstre[which_monster-1],(50,80)),"",which_monster-1,\
                 size=list_size_monstre[which_monster-1],animation_dict=list_animation_monstre[which_monster-1],\
-                    decalage=list_decalage_monstre[which_monster-1],))
-
-                print(f"A MONSTER HAS SPAWNED ON COORD ({pos_x},{pos_y})\n")
+                    decalage=list_decalage_monstre[which_monster-1],donjon=True))

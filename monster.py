@@ -32,8 +32,8 @@ list_stats.append(stats_nv5)
 
 
 class Monster(Entity,Stats):
-    def __init__(self, pos_x, pos_y, img, name, which_type, decalage,animation_dict=None, talking='', size=(0,0), size_monster='Small', walking_speed=30,size_collide_box = 1):
-        super().__init__(pos_x, pos_y, img, name, which_type, animation_dict=animation_dict, talking=talking, size=size, decalage=decalage,size_collide_box=size_collide_box)
+    def __init__(self, pos_x, pos_y, img, name, which_type, animation_dict=None, talking='', size=(0,0), decalage=[0,0], size_monster='Small', walking_speed=30,size_collide_box = 1,donjon=False):
+        super().__init__(pos_x, pos_y, img, name, which_type, animation_dict=animation_dict, talking=talking, size=size, decalage=decalage,size_collide_box=size_collide_box,donjon=donjon)
         Stats.__init__(self,list_stats[int(which_type)-1][0],list_stats[int(which_type)-1][1],list_stats[int(which_type)-1][2],list_stats[int(which_type)-1][3],list_stats[int(which_type)-1][4],list_stats[int(which_type)-1][5],list_stats[int(which_type)-1][6])
         # Rule : https://www.dndbeyond.com/sources/basic-rules/monsters#Challenge
         self.challenge = 0
@@ -47,7 +47,8 @@ class Monster(Entity,Stats):
         # Otherwise, a monster's AC is based on its Dexterity modifier and natural armor, if any. 
         # If a monster has natural armor, wears armor, or carries a shield, this is noted in parentheses after its AC value.
         self.group_monster = []
-        self.collide_box_interact = Collide_box(1)
+
+        self.collide_box_interact = Collide_box(1,donjon=donjon)
         self.collide_patrouille = Collide_box(2)
         self.is_aggresive = True
         self.change_direction = 0
@@ -72,7 +73,7 @@ class Monster(Entity,Stats):
     def init_collide_patrouille(self):
         self.collide_patrouille.pos_x = int ( self.pos_x - self.collide_patrouille.img_collide.get_width()//2 + self.img.get_width()//2)
         self.collide_patrouille.pos_y = int ( self.pos_y + self.img.get_height() - self.collide_patrouille.img_collide.get_height()//2)
-    def moove_patrouille(self,player,list_monster):
+    def moove_patrouille(self,player,list_monster,donjon=False,velocity=2):
         if self.change_direction ==0:
             self.update_collide_monster()
             self.init_collide_patrouille()
@@ -89,7 +90,14 @@ class Monster(Entity,Stats):
 
             self.change_direction = 1
         self.change_direction +=1
-        if not player.masks.overlap(self.collide_box.mask,((self.collide_box.pos_x + self.mouvement[0])-player.pos_x,(self.collide_box.pos_y+ self.mouvement[1])-(player.pos_y+130))):
+        if not donjon : 
+            mask_to_get = player.masks
+            test_mask =mask_to_get.overlap(self.collide_box.mask,((self.collide_box.pos_x )-player.pos_x,(self.collide_box.pos_y)-(player.pos_y+130)))
+        else:
+            mask_to_get = player.donjon_mask
+            test_mask = mask_to_get.overlap(self.collide_box.mask,((self.collide_box.pos_x )-player.pos_x,(self.collide_box.pos_y)-(player.pos_y+50)))
+        
+        if not test:
             if self.collide_patrouille.mask.overlap(self.collide_box_interact.mask,((self.collide_box_interact.pos_x + self.mouvement[0])-self.collide_patrouille.pos_x,(self.collide_box_interact.pos_y+ self.mouvement[1])-self.collide_patrouille.pos_y)):
                 self.pos_x += self.mouvement[0]
                 self.pos_y += self.mouvement[1]
@@ -113,25 +121,25 @@ class Monster(Entity,Stats):
             if not self.is_aggresive :
                 for x in self.group_monster:
                     if (x.pos_x - player.pos_x ) >0:
-                        x.pos_x += 4
+                        x.pos_x += 2*velocity
                     else:
-                        x.pos_x -=4
+                        x.pos_x -=2*velocity
                     if (x.pos_y - player.pos_y ) < 0:
-                        x.pos_y += 2
+                        x.pos_y += velocity
                     else:
-                        x.pos_y -=2
+                        x.pos_y -=velocity
                     x.update_pos_collide()
                     x.update_collide_monster()
             else:
                 for x in self.group_monster:
                     if (x.pos_x - player.pos_x ) >0:
-                        x.pos_x -= 4
+                        x.pos_x -= 2*velocity
                     else:
-                        x.pos_x +=4
+                        x.pos_x +=velocity
                     if (x.pos_y - player.pos_y ) < 0:
-                        x.pos_y += 2
+                        x.pos_y += velocity
                     else:
-                        x.pos_y -=2
+                        x.pos_y -=velocity
                     x.update_pos_collide()
                     x.update_collide_monster()
         self.update_pos_collide()
