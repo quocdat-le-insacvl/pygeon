@@ -2,15 +2,17 @@ import pygame, sys,pickle,os
 import math
 import random
 from pygame import mixer
-from script import pack,player,Wikitem,playerbis,pack_bis
+from script import pack,player,Wikitem,playerbis,pack_bis,sorcerer_3,list_static_entity,player_for_save
 from pygame.locals import *
 from settings.screen import *
 from settings.police import Drifftype,ColderWeather,Rumbletumble,coeff,coeff1,coeff2,ColderWeather_small
 from settings.load_img import *
 from settings.color import *
 from fonction import *
-from trash import Game
+from trash import Game,list_map
+from sorcerer import Sorcerer
 from custum_map_ import Map_editor
+from map import Map
 key = list(Wikitem.keys())
 
 clock = pygame.time.Clock()
@@ -23,6 +25,7 @@ fullscreen = False
 ### Fixing path
 path_pygeon = path.dirname(__file__)
 path_addon = path.join(path_pygeon, 'Addon')
+path_campaign = path.join(path_addon,'Campaign')
 path_son = path.join(path_addon, 'Son')
 path_police = path.join(path_addon, 'Police')
 path_menu = path.join(path_addon, 'Menu')
@@ -74,9 +77,16 @@ class Menu():
             draw_text('Projet Pygeon', Drifftype, GREY, display, display.get_width()//2 - text_width // 2, display.get_height()//6)
 
             if create_text_click('Play',Drifftype,GREY,display,self.click,display.get_width()//2,display.get_height()//3):
-                self.map_creator()
+                self.play()
             if create_text_click('Charger',Drifftype,GREY,display,self.click,display.get_width()//2,display.get_height()//2.1):
-                self.perso = load_game(self.click,self.perso)
+                fog = pygame.Surface((1,1))
+                global player_for_save
+                player_for_save.load_player(self.perso)
+                player_for_save,fog= load_game(self.click, player_for_save,fog)
+                
+
+                self.perso.load_player(player_for_save)
+                print(self.perso.classe)
             if create_text_click('Option',Drifftype,GREY,display,self.click,display.get_width()//2,display.get_height()//1.6):
                 self.option()
             if create_text_click('Quit',Drifftype,GREY,display,self.click,display.get_width()//2,display.get_height()//1.3):
@@ -97,62 +107,23 @@ class Menu():
             text_width, text_height = Drifftype.size("Projet Pygeon")
             draw_text('Projet Pygeon', Drifftype, GREY, display, display.get_width()//2 - text_width // 2, display.get_height()//6)
             if create_text_click('Campaign',Drifftype,GREY,display,self.click,display.get_width()//2,display.get_height()//3):
-                self.play()
+                campaign = Map(path.join(path_campaign,'campaign_ground.txt'),path.join(path_campaign,'campaign_deco.txt'),path.join(path_campaign,'campaign_monstre.json'),list_static_entity,reverse=False)
+                campaign.init_map()
+                game = Game(self.perso,campaign)
+                game.main_game()
             if create_text_click('Create Campaign',Drifftype,GREY,display,self.click,display.get_width()//2,display.get_height()//2.1):
-                self.map_creator()
+                map_editor = Map_editor(20,20)
+                map_editor.print_menu_editor()
+                playable_map = Map(map_editor.path+"_level_1.txt",map_editor.path_deco+"_level_1.txt",map_editor.path_monstre+"_level_1.json",[])
+                playable_map.init_map()
+                game = Game(self.perso,playable_map)
+                game.main_game()
             if create_text_click('Quit',Drifftype,GREY,display,self.click,display.get_width()//2,display.get_height()//1.3):
                 sys.Quit()
             # REFRESH + END EVENT
             screen.blit(pygame.transform.scale(display,WINDOWS_SIZE),(0,0))
             running = self.checkevent()
             pygame.display.update()
-    def map_creator(self):
-        # Choisir Largueur
-        display = pygame.Surface((1980,1000))
-        running = True
-        self.click = False
-        longueur,largeur = 0,0
-        first_blit = True
-        while running:
-            printbackgrounds(display)
-            
-            text_width, text_height = ColderWeather.size("Choisir une longueur")
-            draw_text('Choisir une LONGUEUR', ColderWeather, GREY, display, display.get_width()//4 - text_width // 2.5, display.get_height()//6)
-            bouton_longueur = pygame.Rect(display.get_width()//4 - text_width // 2.5, display.get_height()//6+1.5*text_height,text_width, text_height)
-            pygame.draw.rect(display,(150,150,150),bouton_longueur,1)
-
-            if bouton_click(bouton_longueur,display,self.click):
-                longueur = self.checkclaviernum((display.get_width()//4 - text_width // 2.5),(display.get_height()//6+1.5*text_height),display,bouton_longueur)
-
-            draw_text(str(longueur),ColderWeather,WHITE,display,display.get_width()//4 - text_width // 2.5, display.get_height()//6+1.5*text_height)
-
-            text_width, text_height = ColderWeather.size("Choisir une Largeur")
-            draw_text('Choisir une largeur', ColderWeather, GREY, display, display.get_width()//4 - text_width // 2.5, display.get_height()//2)
-            bouton_longueur = pygame.Rect(display.get_width()//4 - text_width // 2.5, display.get_height()//2+1.5*text_height,text_width, text_height)
-            pygame.draw.rect(display,(150,150,150),bouton_longueur,1)
-
-            if bouton_click(bouton_longueur,display,self.click):
-                largeur = self.checkclaviernum((display.get_width()//4 - text_width // 2.5),(display.get_height()//2+1.5*text_height),display,bouton_longueur)
-
-            draw_text(str(largeur),ColderWeather,WHITE,display,display.get_width()//4 - text_width // 2.5, display.get_height()//2+1.5*text_height)
-
-            if longueur != 0 and largeur != 0:
-                if creation_img_text_click(img_next,"Suivant",ColderWeather,WHITE,display,self.click,right=1):
-                    map_editor = Map_editor(longueur,largeur)
-                    map_editor.print_menu_editor()
-                    self.play()
-            
-            screen.blit(pygame.transform.scale(display,WINDOWS_SIZE),(0,0))
-
-            if not first_blit:pygame.display.update()
-            first_blit = transition(1,screen.copy(),first_blit)
-            
-            running = self.checkevent()
-            
-        # Choisir Longueur
-
-
-
     def play(self) :
         running = True
         self.click = False
@@ -166,8 +137,7 @@ class Menu():
                 self.perso = player
             if self.perso.name != None and self.perso.classe != None:
                 if creation_img_text_click(img_next,"Suivant",ColderWeather,WHITE,display,self.click,right=1):
-                    game = Game(self.perso)
-                    game.main_game()
+                    self.intermediaire_play()
 
 
             #for x in Wikitem:
@@ -184,23 +154,23 @@ class Menu():
 
             # CHOISIR UNE CLASSE : CHANGEMENT DE COULEUR QUAND SELECTIONNER
 
-            if bouton_click(button_1,display,self.click) or self.perso.classe == 'Fighter':
+            if bouton_click(button_1,display,self.click) or self.perso.classe == 'fighter':
                 draw_text('Fighter', ColderWeather, RED, display, display.get_width()//4 - text_width // 2.5,display.get_height()//6 + 4*text_height)
-                self.perso.classe = 'Fighter'
+                self.perso.classe = 'fighter'
             else:
                 draw_text('Fighter', ColderWeather, WHITE, display, display.get_width()//4 - text_width // 2.5,display.get_height()//6 + 4*text_height)
 
 
-            if bouton_click(button_2,display,self.click) or self.perso.classe == 'Sorcerer':
+            if bouton_click(button_2,display,self.click) or self.perso.classe == 'sorcerer':
                 draw_text('Sorcerer',ColderWeather,RED,display,display.get_width()//4 - text_width // 2.5,display.get_height()//6 + 5*text_height)
-                self.perso.classe = 'Sorcerer'
+                self.perso.classe = 'sorcerer'
             else:
                 draw_text('Sorcerer',ColderWeather,WHITE,display,display.get_width()//4 - text_width // 2.5,display.get_height()//6 + 5*text_height)
 
 
-            if bouton_click(button_3,display,self.click) or self.perso.classe == 'Rogue':
+            if bouton_click(button_3,display,self.click) or self.perso.classe == 'rogue':
                 draw_text('Rogue',ColderWeather,RED,display,display.get_width()//4 - text_width // 2.5,display.get_height()//6 + 6*text_height)
-                self.perso.classe = 'Rogue'
+                self.perso.classe = 'rogue'
             else:
                 draw_text('Rogue',ColderWeather,WHITE,display,display.get_width()//4 - text_width // 2.5,display.get_height()//6 + 6*text_height)
 
@@ -416,5 +386,5 @@ class Menu():
 
             pygame.display.update()
 
-menu = Menu(player)
-menu.map_creator()
+menu = Menu(sorcerer_3)
+menu.game_loop()

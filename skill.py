@@ -5,6 +5,8 @@ from settings.screen import *
 from fonction import draw_text
 from settings.police import Drifftype, ColderWeather, Rumbletumble, coeff, coeff1, coeff2, ColderWeather_small
 from settings.load_img import light_mask
+from items import image
+
 class Stealth:
     def __init__(self, game, cooldown=5000):
         self.player = game.player
@@ -21,10 +23,10 @@ class Stealth:
         self.fog_steath = pygame.Surface(self.screen.get_size()).convert()
         self.fog_steath.set_colorkey(BLACK, pygame.RLEACCEL)
         self.fog_steath.fill((200, 200, 200))
-        
+        self.img = image["S_Buff11.png"]
     def update(self):
         now = pygame.time.get_ticks()
-        draw_text("Stealth available: %i " % ( self.available), ColderWeather, WHITE, screen, 100, 300)
+        #draw_text("Stealth available: %i " % ( self.available), ColderWeather, WHITE, screen, 100, 300)
         if not self.available and now - self.last_spawn_time > self.cooldown:
             self.available = True
         if self.casting:
@@ -36,8 +38,8 @@ class Stealth:
         
     def cast(self):
         if self.available:
-            print("Cast skill : STEALTH")
-                        
+            self.game.chat_box.write_log(("combat","Cast skill : STEALTH"))
+           
             self.available = False
             self.last_spawn_time = pygame.time.get_ticks()
             self.casting = True
@@ -47,13 +49,13 @@ class Stealth:
                 monster.is_aggresive = False'''
 
     def use(self):
-        self.player.img = self.perso_stealth
+        self.game.player.img = self.perso_stealth
 
         self.screen.blit(self.fog_steath, (0, 0),
                          special_flags=pygame.BLEND_MULT)
 
     def unuse(self):
-        self.player.img = self.player_image
+        self.game.player.img = self.player_image
         self.player.visible = True
         '''for monster in self.game.list_mooving_entity:
             monster.is_aggresive = True'''
@@ -74,7 +76,7 @@ class Perception:
         self.radius = self.game.fog.light_radius
         self.expand = 0
         self.light_mask = light_mask
-        
+        self.img = image["S_Buff10.png"]
         # Pour efficacité
         self.pause = 100 
         self.last_expand = pygame.time.get_ticks()
@@ -83,8 +85,8 @@ class Perception:
 
     def update(self):
         now = pygame.time.get_ticks()
-        draw_text("Perception available: %i " % (self.available),
-                  ColderWeather, WHITE, screen, 100, 400)
+        #draw_text("Perception available: %i " % (self.available),
+        #          ColderWeather, WHITE, screen, 100, 400)
         if not self.available and now - self.last_spawn_time > self.cooldown:
             self.available = True
         if self.casting:
@@ -96,8 +98,8 @@ class Perception:
 
     def cast(self):
         if self.available:
-            print("Cast skill : STEALTH")
-
+            self.game.chat_box.write_log(("combat","Cast skill : PERCEPTION"))
+           
             self.available = False
             self.last_spawn_time = pygame.time.get_ticks()
             self.casting = True

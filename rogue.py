@@ -15,6 +15,7 @@ class Rogue(Perso_game):
         Perso_game.__init__(self,STR,DEX,CON,INT,WIS,CHA,hp,hp_max,inventaire,walk_bottom['walk_bottom_' + str(1) +'.png'],100,100,decalage=decalage,size=size,player_animation=player_animation_sorcerer)
         self.hit_dice = 6
         self.classe = "rogue"
+        
     def saving_throw(self,cara,damage,dc):
         """competence d'amelioration du saving throw de l'assassin"""
         dmg=super().saving_throw(cara,damage,dc)

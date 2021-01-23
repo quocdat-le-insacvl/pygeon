@@ -2,12 +2,18 @@
 from pygame.locals import *
 from personnage import Perso,Perso_game,Perso_saveable
 from inventory import *
-from entity import Entity,Collide_box
+from entity import Entity,Collide_box,NPC
 from items import *
 from monster import Monster
 from sorcerer import Sorcerer
 from fighter import Fighter
 from rogue import Rogue
+from quete import Quest_find_items,Quest_kill_monster,ouvrir_porte
+from seller_scripts import seller_1_img
+
+NPC_quest = NPC("Help ! ",quest=ouvrir_porte,pos_x=8680,pos_y=800,img=seller_1_img)
+
+
 pack = Inventaire(7,5)
 pack_bis = Inventaire(5,5)
 
@@ -31,11 +37,11 @@ pack_bis.ajouteritems(Sword9)
 pack.ajouteritems(A_Shoes01)
 pack.ajouteritems(E_Metal02)
 pack.ajouteritems(C_Elm01)
-
+pack.ajouteritems(Key1)
 pack.ajouteritems(Sword1)
 pack.ajouteritems(Sword2)
 pack.ajouteritems(Sword3)
-
+pack.ajouteritems(P_Red1)
 pack.ajouteritems(Sword4)
 pack.ajouteritems(Sword5)
 pack.ajouteritems(Sword6)

@@ -14,6 +14,7 @@ from settings.load_img import *
 from script import list_mooving_entity, list_static_entity
 from sorcerer import *
 import math
+import random
 clock = pygame.time.Clock()
 # Message pour Christine: 
 #   Pour print sur le log: 
@@ -77,11 +78,14 @@ class Combat:
                 j += 1
             i += 1
 
-        i = 0
+        i = 5
         for x in self.liste_monstre:
+            i += randrange(0,4)
             self.list_tour.append(x)
+            while list_case[i].in_case != None:
+                i += randrange(-4,4)
             list_case[i].in_case = x
-            i += 1
+            
         if self.game.player.hp > 0:
             list_case[59].in_case = self.game.player
             self.list_tour.append(self.game.player)

@@ -119,7 +119,7 @@ class Perso(Entity,Stats):
         ### Stats ###
         self.level = level
         self.xp=0
-        
+        self.skill = []
         self.proficiency=2
         self.attack=0
         self.feet=30
@@ -620,6 +620,7 @@ class Perso_game(Perso):
         self.change_level = False   
         self.change_hupper_level = False  
         self.monstre_near = False
+        self.collision_donjon = False
         self.mouvement = [False,False,False,False]
         self.deplacement = [0,0]
         self.nbre_direct = 0
@@ -651,6 +652,7 @@ class Perso_game(Perso):
         self.swap_entity = False
         self.change_level = False
         self.change_hupper_level = False  
+        self.collision_donjon = False
         self.monstre_near = False
         entity = None
         possible = True
@@ -687,6 +689,10 @@ class Perso_game(Perso):
         for x in dict_collision['collision_hupper_level']:
             if pixel_mask.overlap(self.masks,((self.pos_x+self.deplacement[0]+10)-x[0],(self.pos_y+self.deplacement[1]+self.img.get_height()-15)-x[1])):
                 self.change_hupper_level = True  
+        for x in dict_collision['collision_donjon']:
+            if pixel_mask.overlap(self.masks,((self.pos_x+self.deplacement[0]+10)-x[0],(self.pos_y+self.deplacement[1]+self.img.get_height()-15)-x[1])):
+                self.collision_donjon = True  
+
         if possible:
             self.pos_x += self.deplacement[0]
             self.pos_y += self.deplacement[1]
@@ -779,6 +785,10 @@ class Perso_game(Perso):
                         self.inventaire.backpack[mouse_slot] = None
                         self.inventaire.last_moove = mouse_slot
                         self.inventaire.have_object = False
+                    if bouton_arm[i].collidepoint((mx_display,my_display)) and self.inventaire.backpack[mouse_slot]!= None and  key[self.inventaire.backpack[mouse_slot]].wpn_type == 9:
+                        self.hp += key[self.inventaire.backpack[mouse_slot]].heal
+                        self.inventaire.backpack[self.inventaire.last_items_select] = None
+                        self.inventaire.backpack[mouse_slot] = None
         else:
             self.inventaire.have_object = False
             self.inventaire.last_moove = -1
@@ -786,6 +796,7 @@ class Perso_game(Perso):
             self.inventaire.print_inventory_bis(pos_x_inventory_player,pos_y_inventory_player,main=False,mouse=mouse)
         if self.inventaire.backpack[mouse_slot] != None:
             screen.blit(key[self.inventaire.backpack[mouse_slot]].wpn_img,(mx,my))
+            
     def deplacerDroite(self):
         self.pos_x+=2    
     def deplacerGauche(self):
@@ -794,15 +805,18 @@ class Perso_game(Perso):
         self.pos_y -=2
     def deplacerBas(self):
         self.pos_y+=2
-    def spell_bar(self):
+    def spell_bar(self,click):
         screen.blit(pygame.transform.scale(img_inventaire,(500,100)),(screen.get_width()//2-250,screen.get_height()-95))
         i = 0
         mx,my = pygame.mouse.get_pos()
         for i in range(5):
             self.bouton_comp[i] = pygame.Rect(85*i+screen.get_width()//2-200, screen.get_height()-80, 75, 75)
             pygame.draw.rect(screen,(0,0,1),self.bouton_comp[i],1)
-            if self.bouton_comp[i].collidepoint(mx,my):
-                pygame.draw.rect(screen,(255,0,0),self.bouton_comp[i])
+            if i < len(self.skill):
+                screen.blit(pygame.transform.scale(self.skill[i].img,(75,75)),(85*i+screen.get_width()//2-200, screen.get_height()-80))
+            if self.bouton_comp[i].collidepoint(mx,my) and click:
+                if i < len(self.skill):
+                    self.skill[i].cast()
         i=0
         for i in range(len(self.competencesList)):
             screen.blit(pygame.transform.scale(self.competencesList[i].img,(75,75)),(85*i+screen.get_width()//2-200,screen.get_height()-80))
