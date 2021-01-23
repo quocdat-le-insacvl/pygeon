@@ -1,8 +1,8 @@
 from settings.color import *
 import pygame
-from fonction_load_image import image_loader,transform_image
+from fonction_load_image import image_loader,transform_image,createImages
 from settings.screen import WINDOWS_SIZE
-from os import path,getcwd
+from os import path,getcwd,listdir
 
 path_settings = path.dirname(__file__)
 path_pygeon = path.dirname(path_settings)
@@ -14,6 +14,7 @@ path_light = path.join(path_addon, 'Light')
 path_icon = path.join(path_addon, 'icons')
 path_fighter = path.join(path_addon, 'Fighter')
 path_rogue = path.join(path_addon, 'rogue')
+path_donjon = path.join(path_addon,'donjon')
 
 button=pygame.image.load(path.join(path_addon,'Menu\TextBTN_Medium.png'))
 buttonp=pygame.image.load(path.join(path_addon,'Menu\TextBTN_Medium_Pressed.png'))
@@ -286,3 +287,22 @@ fighter_img=pygame.image.load(path.join(path_fighter,'fighter.png'))
 
 "Rogue img"
 Rogue_img=pygame.image.load(path.join(path_rogue,'rogue.png'))
+
+"Donjon images"
+ #image du mur
+mur_donjon = createImages("66.png",path_donjon,forceScale=True)
+        #image du parquet
+parquet_donjon =createImages("1.png",path_donjon,forceScale=True)
+
+graphique_name_donjon = ["bed000","chair000","bs000","fireplace_000","table000","chest000",\
+            "escalier_000","bedb000","book000","shelf000","shelfA000","shelfB000","tableB000"]
+graphique_states_donjon = [[""+graphique_name_donjon[i]+"%d.png"%j for j in [0,2,4,6]] for i in range(len(graphique_name_donjon))]
+graphique_donjon = {i+2 : [createImages(graphique_states_donjon[i][j],path_donjon,autocolorkey=True,scaled=(70,70)) for j in range(len(graphique_states_donjon[i]))]  for i in range(len(graphique_states_donjon))  }
+print(len(graphique_donjon))
+graphique_donjon[len(graphique_name_donjon) +2] = [createImages("teleporter.png",path_donjon,scaled=(64,64))]
+
+graphique_donjon[len(graphique_name_donjon) +3] = [createImages("45.png",path_donjon,forceScale=True)]
+graphique_donjon[16] = graphique_donjon[8]
+graphique_donjon[17] = [createImages("teleporterEnd.png",path_donjon,scaled=(64,64))]
+nb_graphique_donjon = len(graphique_name_donjon) +5
+collide_donjon = createImages("Collide.png",path_donjon,forceScale=True,autocolorkey=True)

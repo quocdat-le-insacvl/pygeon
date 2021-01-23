@@ -4,6 +4,7 @@ import random
 import time
 import numpy
 import sys
+from settings.load_img import graphique_donjon,nb_graphique_donjon,collide_donjon,mur_donjon,parquet_donjon
 sys.setrecursionlimit(10000)
 class Piece():
 
@@ -13,9 +14,9 @@ class Piece():
         self.lengthPiece,self.heightPiece = self.tailleMax
 
         #image du mur
-        self.mur = self.createImages("66.png",forceScale=True)
+        self.mur = mur_donjon
         #image du parquet
-        self.parquet = self.createImages("1.png",forceScale=True)
+        self.parquet = parquet_donjon
         #taux d'irregularites des murs
         self.changementRate = 20
         #nombre d'irregularites dans les murs
@@ -32,27 +33,29 @@ class Piece():
         #nom des grapiques a afficher
         #convention de nommage : nom_element000 + 1 chiffre entre 0 et 4
         #chaque numero correspond a un point de vue de la piece
-        self.graphique_name = ["bed000","chair000","bs000","fireplace_000","table000","chest000",\
-            "escalier_000","bedb000","book000","shelf000","shelfA000","shelfB000","tableB000"]
-        self.graphique_states = [[""+self.graphique_name[i]+"%d.png"%j for j in [0,2,4,6]] for i in range(len(self.graphique_name))]
 
         #nombre d'elements graphiques ( le 2 correspond au mur + parquet)
-        self.nbre_graphique = 2 + len(self.graphique_name)
 
         #variable inutile mais permet de relier les id aux elements
         self.id_graphname = {2:"litA",3:"chaise",4:"commode",5:"cheminee",\
             6:"table",7:"coffre",8:"escalier",9:"litB",10:"livre",\
             11:"biblio",12:"biblioA",13:"biblioB",14:"tableA",\
-            15:"teleporteur",16:"porte"
+            15:"teleporteur",16:"escalier"
             }
         
         #dictionnaire reliant les id aux images
+        """
         self.graphique = {i+2 : [self.createImages(self.graphique_states[i][j],autocolorkey=True,scaled=(70,70)) for j in range(len(self.graphique_states[i]))]  for i in range(len(self.graphique_states))  }
         self.graphique[self.nbre_graphique] = [self.createImages("teleporter.png",scaled=(64,64))]
         self.nbre_graphique+=1
         self.graphique[self.nbre_graphique] = [self.createImages("45.png",forceScale=True)]
         self.graphique[16] = self.graphique[8]
         self.nbre_graphique+=1
+        """
+
+        self.graphique = graphique_donjon
+
+        self.nbre_graphique = nb_graphique_donjon
         #self.graphiique[self.nbre_graphique]
         #dictionnaire definissant le nombre maximum d'elements par piece selon les id
         self.max_graphique = {2:50,3:15,4:25,5:50,6:50,7:50,8:50,9:50,10:50,11:50,12:50,13:50,14:50,15:0}
@@ -60,8 +63,8 @@ class Piece():
 
         self.max_graphique[15] = 1
         self.max_graphique[16] = self.max_graphique[8] = 1
-    
-        self.collide = self.createImages("Collide.png",forceScale=True,autocolorkey=True)
+        self.max_graphique[17] = 0
+        self.collide = collide_donjon
         self.collide_mask = pygame.mask.from_surface(self.parquet)
         #liste a utiliser pour les collisions
         self.liste_collision = []
@@ -80,14 +83,16 @@ class Piece():
         #graphique (id) ne pouvant se trouver que sur des bords
         self.bord_graphique = [2,5,7,8]
         self.graphique_collision = []
+
         self.image_collision_graphique = []
         #graphique important : parquet et interaction possible
-        self.important_graph = [1,7,8,16]
-        self.vide = self.createImages("antho.png",forceScale=True,autocolorkey=True)
+        self.important_graph = [1,7,8,16,17]
+        #self.vide = self.createImages("antho.png",forceScale=True,autocolorkey=True)
 
         self.taille = None
         self.linked = None
         self.alreadySpawn = False
+
     #methode de test pour afficher une liste double
     def afficherListe(self):
         for y in range(len(self.piece)):
@@ -104,10 +109,14 @@ class Piece():
     #argument taille_Min : taille minimum de la piece (en nombre d'elements) de la forme tailleMin(longueur,largeur)
     #argument taille_Max : idem que taille_Min pour pour le maximum
     #la methode tire au sort un nombre entre taille_Min et taille_Max
-    def createRoom(self, taille_Min = (15,15), taille_Max = (18,18)):
+    def createRoom(self, taille_Min = (15,15), taille_Max = (18,18),graphique_count=None,start=False):
+        if start:
+            graphique_count = dict()
+            graphique_count[16]=0
+            graphique_count[8] = graphique_count[17] = 1
+        self.piece = self.__createPiece(taille_Min=taille_Min,taille_Max=taille_Max,graphique_count=graphique_count)
+    def __createPiece(self,taille_Min = (15,15), taille_Max = (18,18),graphique_count=None):
 
-        self.piece = self.__createPiece(taille_Min=taille_Min,taille_Max=taille_Max)
-    def __createPiece(self,taille_Min = (15,15), taille_Max = (18,18)):
         if self.taille == None:
                 self.taille = (random.randint(taille_Min[0],taille_Max[0]), random.randint(taille_Min[1],taille_Max[1]))
         while self.taille[0] +2 == self.taille[1]:
@@ -143,7 +152,8 @@ class Piece():
             piece[self.taille[1]-1][0] = 0
         if piece[self.taille[1]-1][self.taille[0]-2] == piece[self.taille[1] - 2][self.taille[0]-1]: #coin en bas a gauche
             piece[self.taille[1]-1][self.taille[0]-2] = 0
-        graphique_count = dict()
+        if graphique_count==None:
+            graphique_count = dict()
         #permettant de compter le nombre d'occurences de chaque element
         for y in range(0,len(piece)):
             for x in range(0,len(piece[0])):
@@ -170,7 +180,7 @@ class Piece():
                                     x-=1
                                 else:
                                     piece[y][x] = choosen
-                        elif testBord and self.max_graphique[choosen] !=0:
+                        elif testBord and self.max_graphique[choosen] >0:
                             graphique_count[choosen] = 1
                             if choosen==15 and not self.alreadySpawn:
                                 self.isSpawn=True
@@ -308,8 +318,12 @@ class Piece():
                         if(self.piece[y][x] == 15):
                             self.spawn=(currentX+20,currentY+5)
                         #self.display.blit(image,(currentX,currentY+self.tailleMax[1]-image.get_height()))
-                        self.display.blit(image,(currentX,currentY))
-                        if(self.piece[y][x] != 15):
+                        
+                        try :
+                            self.display.blit(image,(currentX,currentY))
+                        except:
+                            pass
+                        if(self.piece[y][x] != 15 and self.piece[y][x] != 17):
                             self.liste_collision.append((currentX,currentY))
                             self.graphique_collision.append(pygame.Rect((currentX,currentY),(image.get_width(),image.get_height())))
                             self.image_collision_graphique.append([image,(currentX,currentY)])
@@ -343,36 +357,13 @@ class Piece():
                 y+=1
             self.voisin_collision.append(sorted(liste))
 
-        print(f"SPAWN  : {self.spawn} \n")
+
 
     #methode permettant de load une image pygame
     #arguments : name -> nom du fichier a load /!\ obligatoirement dans le fichier imgs/
     #scale -> si l'image est plus grande que la definition de chaque element (stocke dans self.tailleMax)redimensionne l'image
     #colorkey -> definit la couleur de transparence de l'image en RGB, par defaut noir
     #forceScale -> equivalent a scale sauf que l'image est obligatoirement redimensionnee (quelle que soit sa taille)
-    def createImages(self,name,scale=True,colorkey=(0,0,0),forceScale=False,scaled=(0,0),autocolorkey=False):
-        relative_path = os.path.join(os.path.dirname(os.path.abspath(__file__)),"imgs/")
-        erreur = "erreur.jpg"
-        image = pygame.image.load(os.path.join(relative_path,erreur))
-        ratio = 1
-        if name not in os.listdir(relative_path):
-            print("Image %s not in imgs/ directory" %name)
-        elif name[-4:] != ".png" and name[-4:] != ".jpg":
-            print("Image not a .png or a .jpg")
-        else:
-            image = pygame.image.load(os.path.join(relative_path,name))
-            if scaled[0] != 0 and scaled[1] !=0 :
-                image = pygame.transform.scale(image,(round(scaled[0]), round(scaled[1])))
-            elif ((image.get_width() >= self.tailleMax[0] or image.get_height() >= self.tailleMax[1]) and scale )or forceScale:
-                if self.tailleMax[0]!=0 and self.tailleMax[1] !=0:
-                    ratio = image.get_width()/self.tailleMax[0]
-                    if image.get_height() > image.get_width():
-                        ratio = image.get_height()/self.tailleMax[1]
-                image = pygame.transform.scale(image,(round(image.get_width()/ratio), round(image.get_height()/ratio)))
-            if autocolorkey:
-                colorkey = image.get_at((0,0))
-            image.set_colorkey(colorkey)
-        return image
 
 
     #chaque image a 4 angles differents et cette methode permettant de selectionner un certain agnle
@@ -381,6 +372,11 @@ class Piece():
     #gauche : retourne le point de vue de gauche
     #haut/droite/bas idem que gauche mais pour les points de vue respectifs
     def __imageAngle(self,liste_etats, gauche=False, haut=False, droite=False,bas=False):
+        try:
+            len(liste_etats)
+        except:
+
+            return self.graphique[17]
 
         if len(liste_etats) !=4:
             if len(liste_etats) ==2:
@@ -399,12 +395,18 @@ class Piece():
 
 
     #gere les collisions entre le joueurs et les elements du decor (meubles/murs)
-    def check_collision(self,perso):
-        
+    def check_collision(self,perso,monstre=False):
+ 
+
+        if monstre: 
+            mask_d = perso.collide_box.mask
+        else:
+            mask_d = perso.donjon_mask
         for x in self.liste_collision:
-            if self.collide_mask.overlap(perso.donjon_mask,((round(perso.pos_x))-x[0]+10,(49+round(perso.pos_y)-x[1])-15)):
+            if self.collide_mask.overlap(mask_d,((round(perso.pos_x))-x[0]+10,(49+round(perso.pos_y)-x[1])-15)):
 
                 return True
+        return False
         
     #gere les interactions entre le perso et les graphs importants (escalier, coffre...)
     def check_interact(self,perso):
@@ -430,17 +432,38 @@ class Piece():
                 if direction==2 and nbreHaut <2:
                     nbreHaut+=1
                     self.linked.append('Haut')
+
     
     
     #rajoute une piece liee
     #la liste des pieces liees donne les positions : 'Droite' 'Gauche' 'Bas' 'Haut'
     def linkedPiece(self,position=None,tailleCouloir = 5,check_pieces=False):
+        #8 pour monter 16 pour descendre
         savedPosition = position
-        
+        i=0
+        random_escalier = 0
+        random_escalier = random.randint(0,len(self.linked) -1)
         if self.linked != None:
             
             for direction in self.linked:
+                graphique_count= dict()
                 position = savedPosition
+                #8 ESCALIER HAUT
+                #Premiere piece ->
+
+                #16 ESCALIER BAS
+                #premiere piece -> graphique_count[16] = 0
+
+                
+                graphique_count[8] = graphique_count[16] = graphique_count[15] = 1
+                if random_escalier == i:
+
+                    graphique_count[16] = 0
+                if i==0:
+
+                    graphique_count[8] = 0
+                if i == len(self.linked)-1:
+                    graphique_count[17] = 0
                 if direction == 'Droite':
                     
                     if position == None:
@@ -451,13 +474,13 @@ class Piece():
                     """self.piece[position][-1] = 1
                     self.piece[position][-2] = 1"""
                     nouvellePiece = self.piece
-                    self.createRoom()
+                    self.createRoom(graphique_count=graphique_count)
                     while not self.check_jouabilite() and check_pieces:
-                        self.createRoom()
+                        self.createRoom(graphique_count=graphique_count)
                     temp = nouvellePiece
                     nouvellePiece = self.piece
                     self.piece = temp
-                    nouvellePiece = self.__createPiece()
+                    nouvellePiece = self.__createPiece(graphique_count=graphique_count)
                     self.rognerPiece()
                     
 
@@ -476,9 +499,9 @@ class Piece():
                         #position = random.randint(0,len(self.taille))
                     nouvellePiece = self.piece
                     
-                    self.createRoom()
+                    self.createRoom(graphique_count=graphique_count)
                     while(not self.check_jouabilite() and check_pieces):
-                        self.createRoom()
+                        self.createRoom(graphique_count=graphique_count)
                     if position == None:
                         position = random.randint(0,min(len(self.piece),len(nouvellePiece)) -1)
                     for _ in range(0,tailleCouloir):
@@ -504,9 +527,9 @@ class Piece():
                     nouvellePiece = self.piece
                    
 
-                    self.createRoom()
+                    self.createRoom(graphique_count=graphique_count)
                     while not self.check_jouabilite() and check_pieces:
-                        self.createRoom()
+                        self.createRoom(graphique_count=graphique_count)
                     if position == None:
                         position = random.randint(0,min(len(self.piece),len(nouvellePiece)) -1)
                     nouvellePiece[position][0] =1
@@ -522,7 +545,7 @@ class Piece():
                    
                     numpyPiece = numpy.rot90(self.piece,1)
                     self.piece = numpyPiece.tolist()
-
+                i+=1
             self.alreadySpawn = True
         self.equilibrerTaillePiece()
                 
@@ -567,9 +590,24 @@ class Piece():
 
     #methode permettant de savoir si une piece est jouable ou non
     #une piece est consideree jouable si le joueur peut acceder a tous les elements du parquet, les escaliers et les coffres
-    def check_jouabilite(self):
+    def check_jouabilite(self,doEH=False,doEB=False,doTe=False):
+        testEH,testEB,testTe=False,False,False
+        for i in self.piece:
+            if 8 in i:
+                
+                testEH = True
 
+            if 16 in i:   
+                testEB=True
+            if 17 in i:
+                testTe =True
+        if doEH==True and testEH ==False:
+            return False
+        if doEB==True and testEB ==False:
+            return False
+        if doTe==True and testTe ==False:
 
+            return False
         self.pathMatrice = [[1 if self.piece[y][x] in self.important_graph else 0 if self.piece[y][x] == 0 else 100 for x in range(len(self.piece[y]))] for y in range(len(self.piece))]
         #assert len(self.pathMatrice) == len(self.pathMatrice[0])
         #permet de regarder si tous les endroits importants du donjon

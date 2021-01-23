@@ -79,7 +79,7 @@ class Map():
     def init_monster(self):
         self.list_monster = []
         for x in self.all_monstre:
-            self.list_monster.append(Monster(x[0],x[1],list_img_monstre[x[2]-1],"",str(x[2]),list_decalage_monstre[x[2]-1],size_collide_box=4,size=list_size_monstre[x[2]-1],animation_dict=list_animation_monstre[x[2]-1]))
+            self.list_monster.append(Monster(x[0],x[1],list_img_monstre[x[2]-1],"",str(x[2]),animation_dict=list_animation_monstre[x[2]-1],decalage=list_decalage_monstre[x[2]-1],size_collide_box=4,size=list_size_monstre[x[2]-1]))
         for x in self.list_monster:
             inter_x = x.pos_x
             inter_y = x.pos_y

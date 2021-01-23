@@ -42,14 +42,13 @@ class Piece():
             11:"biblio",12:"biblioA",13:"biblioB",14:"tableA",\
             15:"teleporteur",16:"porte"
             }
-        
+        self.graphique = graphique_donjon
         #dictionnaire reliant les id aux images
-        self.graphique = {i+2 : [self.createImages(self.graphique_states[i][j],autocolorkey=True,scaled=(70,70)) for j in range(len(self.graphique_states[i]))]  for i in range(len(self.graphique_states))  }
-        self.graphique[self.nbre_graphique] = [self.createImages("teleporter.png",scaled=(64,64))]
         self.nbre_graphique+=1
-        self.graphique[self.nbre_graphique] = [self.createImages("45.png",forceScale=True)]
         self.graphique[16] = self.graphique[8]
         self.nbre_graphique+=1
+        print(self.nbre_graphique)
+        print(self.graphique[17])
         #self.graphiique[self.nbre_graphique]
         #dictionnaire definissant le nombre maximum d'elements par piece selon les id
         self.max_graphique = {2:50,3:15,4:25,5:50,6:50,7:50,8:50,9:50,10:50,11:50,12:50,13:50,14:50,15:0}

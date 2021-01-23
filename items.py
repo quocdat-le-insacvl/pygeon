@@ -1,14 +1,14 @@
-
-
 import pygame,os
 from math import sqrt
 from random import randrange,randint
 
 
 
+
 i=0
 Wikitem = {}
 Droppable = {}
+key = list(Wikitem.keys())
 # https://stackoverflow.com/questions/54503270/how-to-load-a-large-number-of-images-in-pygame-by-a-simple-way
 class Items():
     def __init__(self,value,wheight,wpn_type,wpn_name,wpn_img,info=""):
@@ -38,24 +38,30 @@ class Weapon(Items):
     def __init__(self,prix,wheight,dmg,wpn_name,wpn_type,wpn_img,info=""):
         Items.__init__(self,prix,wheight,wpn_type,wpn_name,wpn_img,info)
         self.aleas=[0.01,0.03,0.1,0.4,1]
+        self.alea=0
         if 15<=prix<=20:
             self.alea=1
             self.dmg = dmg
+            self.basic_dmg = dmg
             self.rarete="commun"
-        elif 35<=prix<45:
+        elif 35<=prix<=45:
             self.dmg = dmg
+            self.basic_dmg = dmg
             self.alea=0.4
             self.rarete="rare"
         elif 75<=prix<=110:
             self.dmg = dmg
+            self.basic_dmg = dmg
             self.alea=0.1
             self.rarete="legendaire"
         elif 120==prix:
             self.dmg = dmg
+            self.basic_dmg = dmg
             self.alea=0.03
-            self.rarete="jul"
+            self.rarete="ovni"
         elif prix==1:
             self.dmg = 1
+            self.basic_dmg = 1
             self.alea=0.01
             self.rarete="jouet"
         
@@ -70,11 +76,28 @@ class Weapon(Items):
         4446"""
 
 class Armor(Items):
-    def __init__(self,value,defense,wheight,armor_name,wpn_type,armor_img,info="",dex_bonus = 0,speed=0):
+    def __init__(self,value,defense,wheight,armor_name,wpn_type,armor_img,info="",dex_bonus = -1,speed=0):
         Items.__init__(self,value,wheight,wpn_type,armor_name,armor_img,info)
+        self.aleas=[0.03,0.1,0.4,1]
         self.armor_bonus = defense
         self.dex_bonus = dex_bonus
         self.speed = speed
+        if 5<=value<=15:
+            self.alea=1
+            self.armor_bonus = defense
+            self.rarete="commun"
+        elif value==50:
+            self.armor_bonus = defense
+            self.alea=0.4
+            self.rarete="rare"
+        elif 70<=value<=100:
+            self.armor_bonus = defense
+            self.alea=0.1
+            self.rarete="epique"
+        elif 150==value:
+            self.armor_bonus = defense
+            self.alea=0.03
+            self.rarete="legendaire"
 
 #  REFERENCE : https://www.d20pfsrd.com/equipmenT/weapons/#weapons-simple
 #  REFERENCE : WEAPON(PRIX,POID,DOMMAGE,TYPE,NOM)
@@ -105,7 +128,6 @@ item_index = 4
 
 
     # SWORD SECTION
-
 Sword1 = Weapon(15,8,6,"One Handed",item_index ,image['W_Sword001.png'],info="Ceci est un test de taille je sais que je depasse de l'ecran mais c'est pour essayer parce que mdr c'est drole")
 Sword2 = Weapon(15,8,6,"One Handed",item_index ,image['W_Sword002.png'] )
 Sword3  = Weapon(15,8,6,"One Handed",item_index ,image['W_Sword003.png'])
@@ -156,10 +178,10 @@ Mace7 = Weapon(35,6,10,"One Handed",item_index,image['W_Mace007.png'])
 Mace8 = Weapon(35,6,10,"One Handed",item_index,image['W_Mace008.png'])
 Mace9 = Weapon(35,6,10,"One Handed",item_index,image['W_Mace009.png'])
 Mace10 = Weapon(35,6,10,"One Handed",item_index,image['W_Mace010.png'])
-Mace11 = Weapon(75,6,14,"One Handed",item_index,image['W_Mace011.png'])
-Mace12 = Weapon(75,6,14,"One Handed",item_index,image['W_Mace012.png'])
-Mace13 = Weapon(75,6,14,"One Handed",item_index,image['W_Mace013.png'])
-Mace14 = Weapon(75,6,14,"One Handed",item_index,image['W_Mace014.png'])
+Mace11 = Weapon(75,6,13,"One Handed",item_index,image['W_Mace011.png'])
+Mace12 = Weapon(75,6,13,"One Handed",item_index,image['W_Mace012.png'])
+Mace13 = Weapon(75,6,13,"One Handed",item_index,image['W_Mace013.png'])
+Mace13 = Weapon(75,6,13,"One Handed",item_index,image['W_Mace014.png'])
 
 
     # FIST
@@ -566,17 +588,6 @@ A_Shoes05  = Armor(1,1,1,"Chestplate",item_index,image['A_Shoes05.png'] )
 A_Shoes06  = Armor(1,1,1,"Chestplate",item_index,image['A_Shoes06.png'] )
 A_Shoes07  = Armor(1,1,1,"Chestplate",item_index,image['A_Shoes07.png'] )
 
-# A_Armor : TORSE -> INDEX 1
-item_index = 1
-
-A_Armor04  = Armor(1,1,1,"Heavy armor",item_index,image['A_Armor04.png'] )
-A_Armor05  = Armor(1,1,1,"Heavy armor",item_index,image['A_Armor05.png'] )
-A_Armour01  = Armor(1,1,1,"Medium armor",item_index,image['A_Armour01.png'] )
-A_Armour02  = Armor(1,1,1,"Medium armor",item_index,image['A_Armour02.png'] )
-A_Armour03  = Armor(1,1,1,"Medium armor",item_index,image['A_Armour03.png'] )
-A_Clothing01  = Armor(1,1,1,"Light armor",item_index,image['A_Clothing01.png'] )
-A_Clothing02  = Armor(1,1,1,"Light armor",item_index,image['A_Clothing02.png'] )
-
 #THROW SECTION
 
 W_Throw001 = Items(1,1,item_index,"Drop",image['W_Throw001.png'])
@@ -585,29 +596,62 @@ W_Throw003 = Items(1,1,item_index,"Drop",image['W_Throw003.png'])
 W_Throw004 = Items(1,1,item_index,"Drop",image['W_Throw004.png'])
 W_Throw05 = Items(1,1,item_index,"Drop",image['W_Throw05.png'])
 
+# A_Armor : TORSE -> INDEX 1
+item_index = 1
 
-def choisir_alea(self,): 
-    l=randint(0,100)/100
-    for i in Wikitem:
-        if isinstance(Wikitem[i]):
-            for x in Wikitem[i].alea:
-                if l<self.aleas[0]:
-                    if self.aleas[0]==self.alea:
-                        self.dmg = randrange(1,self.dmg)
-                        return i,True
-                elif self.aleas[0]<l<self.aleas[1]:
-                    if self.aleas[1]==self.alea:
-                        self.dmg = randrange(7,self.dmg)
-                        return i,True
-                elif self.aleas[1]<l<self.aleas[2]:
-                    if self.aleas[2]==self.alea:
-                        self.dmg = randrange(8,self.dmg)
-                        return i,True
-                elif self.aleas[2]<l<self.aleas[3]:
-                    if self.aleas[3]==self.alea:
-                        self.dmg = randrange(14,self.dmg)
-                        return i,True
-                elif self.aleas[3]<l<self.aleas[4]:
-                    if self.aleas[4]==self.alea:
-                        self.dmg = 1
-                        return i,True
+A_Armor04  = Armor(15,3,1,"Heavy armor",item_index,image['A_Armor04.png'],dex_bonus = 4 )
+A_Armor05  = Armor(50,4,1,"Heavy armor",item_index,image['A_Armor05.png'],dex_bonus = 2 )
+A_Armour01  = Armor(70,5,1,"Medium armor",item_index,image['A_Armour01.png'],dex_bonus = 0 )
+A_Armour02  = Armor(100,6,1,"Medium armor",item_index,image['A_Armour02.png'],dex_bonus = 0 )
+A_Armour03  = Armor(150,8,1,"Medium armor",item_index,image['A_Armour03.png'],dex_bonus = 0 )
+A_Clothing01  = Armor(5,1,1,"Light armor",item_index,image['A_Clothing01.png'],dex_bonus = 8 )
+A_Clothing02  = Armor(10,2,1,"Light armor",item_index,image['A_Clothing02.png'],dex_bonus = 6 )
+
+#THROW SECTION
+
+
+key = list(Wikitem.keys())
+def choisir_alea(): 
+    running=True
+    l=randrange(0,100)/100
+    while running:
+        i=randrange(0,102)
+        key[i].dmg=key[i].basic_dmg
+        if l<=key[i].aleas[0]:
+            if key[i].aleas[0]==key[i].alea:
+                key[i].dmg = 1
+                return i,True
+        elif key[i].aleas[0]<l<=key[i].aleas[1]:
+            if key[i].aleas[1]==key[i].alea:
+                key[i].dmg = 15
+                return i,True
+        elif key[i].aleas[1]<l<=key[i].aleas[2]:
+            if key[i].aleas[2]==key[i].alea:
+                key[i].dmg = randrange(9,key[i].dmg)
+                return i,True
+        elif key[i].aleas[2]<l<=key[i].aleas[3]:
+            if key[i].aleas[3]==key[i].alea:
+                key[i].dmg = randrange(6,key[i].dmg)
+                return i,True
+        elif key[i].aleas[3]<l<key[i].aleas[4]:
+            if key[i].aleas[4]==key[i].alea:
+                key[i].dmg = randrange(2,key[i].dmg)
+                return i,True
+
+def choisir_alea_armor(): 
+    running=True
+    l=randrange(0,100)/100
+    while running:
+        i=randrange(len(Wikitem)-7,len(Wikitem))
+        if l<=key[i].aleas[0]:
+            if key[i].aleas[0]==key[i].alea:
+                return i,True
+        elif key[i].aleas[0]<l<=key[i].aleas[1]:
+            if key[i].aleas[1]==key[i].alea:
+                return i,True
+        elif key[i].aleas[1]<l<=key[i].aleas[2]:
+            if key[i].aleas[2]==key[i].alea:
+                return i,True
+        elif key[i].aleas[2]<l<=key[i].aleas[3]:
+            if key[i].aleas[3]==key[i].alea:
+                return i,True

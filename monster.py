@@ -5,9 +5,11 @@ import pygame
 from settings.load_img import *
 from settings.screen import *
 from settings.color import *
+from settings.police import ColderWeather
 from settings.load_img import ava_perso
-from items import Wikitem
+from items import Wikitem, choisir_alea, choisir_alea_armor
 from basic_actions import *
+from fonctions import wblack
 import random
 key = list(Wikitem.keys())
 liste_type_monste = [demon_1_animation,demon_animation,squelton_animation,wizard_animation,dark_wizard_animation]
@@ -54,8 +56,8 @@ class Monster(Entity,Stats):
         self.change_direction = 0
         self.mouvement = [0,0]
         self.is_player = False
-        self.xp = 201
-
+        self.level=int(which_type)
+        self.xp = (50*self.level)**self.level
         self.stats=list_stats[int(which_type)-1]
         self.skills=[0,0,0,0,0,0]
         self.action = Actions()
@@ -66,6 +68,24 @@ class Monster(Entity,Stats):
         
         for i in range(0,6):     # 0 : HEAD 1 : TORSE 2 : COUE  3 BOTTE 4 : MAIN GAUCHE : 5 MAIN DROITE
             self.armor[i] = None
+            
+        self.armor[1],t=choisir_alea_armor()
+        self.armor[4],t=choisir_alea()
+        if int(which_type)<=2:
+            while (key[self.armor[1]].rarete!="commun"):
+                self.armor[1],t=choisir_alea_armor()
+            while (key[self.armor[4]].rarete!="commun"):
+                self.armor[4],t=choisir_alea()
+        elif 2<int(which_type)<=4:
+            while (key[self.armor[1]].rarete!="rare"):
+                self.armor[1],t=choisir_alea_armor()
+            while (key[self.armor[4]].rarete!="rare"):
+                self.armor[4],t=choisir_alea()
+        elif int(which_type)==5:
+            while (key[self.armor[1]].rarete!="epique"):
+                self.armor[1],t=choisir_alea_armor()
+            while (key[self.armor[4]].rarete!="legendaire"):
+                self.armor[4],t=choisir_alea()
         self.armor_class=self.calcul_armor()
     def check_alive(self):
         if self.hp <= 0:
@@ -73,6 +93,10 @@ class Monster(Entity,Stats):
     def init_collide_patrouille(self):
         self.collide_patrouille.pos_x = int ( self.pos_x - self.collide_patrouille.img_collide.get_width()//2 + self.img.get_width()//2)
         self.collide_patrouille.pos_y = int ( self.pos_y + self.img.get_height() - self.collide_patrouille.img_collide.get_height()//2)
+    def unmove_patrouille(self):
+        self.pos_x -= self.mouvement[0]
+        self.pos_y -= self.mouvement[1]
+
     def moove_patrouille(self,player,list_monster,donjon=False,velocity=2):
         if self.change_direction ==0:
             self.update_collide_monster()
@@ -96,7 +120,7 @@ class Monster(Entity,Stats):
             test_mask =mask_to_get.overlap(self.collide_box.mask,((self.collide_box.pos_x )-player.pos_x,(self.collide_box.pos_y)-(player.pos_y+130)))
         else:
             mask_to_get = player.donjon_mask
-            test_mask = mask_to_get.overlap(self.collide_box.mask,((self.collide_box.pos_x )-player.pos_x,(self.collide_box.pos_y)-(player.pos_y+50)))
+            test_mask = mask_to_get.overlap(self.collide_box.mask,((self.collide_box.pos_x )-player.pos_x,(self.collide_box.pos_y)-(player.pos_y+90)))
         
         if not test_mask:
             if self.collide_patrouille.mask.overlap(self.collide_box_interact.mask,((self.collide_box_interact.pos_x + self.mouvement[0])-self.collide_patrouille.pos_x,(self.collide_box_interact.pos_y+ self.mouvement[1])-self.collide_patrouille.pos_y)):
@@ -245,15 +269,15 @@ class Monster(Entity,Stats):
             self.crit=False
         if self.armor[4]!=None:
             bonus_deg=self.action.dice(key[self.armor[4]].dmg)
-            if key[self.armor[4]].wpn_type=="RANGED" or key[self.armor[5]].wpn_type=="RANGED":
+            if key[self.armor[4]].wpn_type=="RANGED":
                 return (bonus_deg+dex)*crit
-        elif self.armor[5]!=None and self.armor[4]==None:
+        elif self.armor[5]!=None:
             bonus_deg=self.action.dice(key[self.armor[5]].dmg)
-            if key[self.armor[4]].wpn_type=="RANGED" or key[self.armor[5]].wpn_type=="RANGED":
+            if key[self.armor[4]].wpn_type=="RANGED":
                 return (bonus_deg+dex)*crit
-        if self.armor[4]!=None and self.armor[5]!=None:
-            if all([key[self.armor[4]].wpn_type!="Two Handed",key[self.armor[4]].wpn_type!="RANGED",key[self.armor[5]].wpn_type!="RANGED"]):
-                bonus_deg+=self.action.dice(key[self.armor[5]].dmg)
+        if self.armor[4]!=None:
+            if all([key[self.armor[4]].wpn_type!="Two Handed"]):
+                bonus_deg+=self.action.dice(key[self.armor[4]].dmg)
             elif key[self.armor[4]].wpn_type=="Two Handed":
                 bonus_deg+=(strong//2)*crit  
         return (bonus_deg+strong)*crit
@@ -262,4 +286,9 @@ class Monster(Entity,Stats):
         STR=0, DEX=1, CON=2, INT=3, WIS=4, CHA=5"""
 
         return (self.handicap(caracteristique)-10)//2
-    
+    def display_lvl(self,surface,x,y):
+        name = wblack(ColderWeather,str(self.level))
+        name = pygame.transform.scale(name,(name.get_width() // 2,name.get_height()//2))
+        screen.blit(name,(x,y + name.get_height()))
+
+

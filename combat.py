@@ -129,7 +129,13 @@ class Combat:
                     x.in_case.animate()
 
             for x in self.list_tour:
-                x.update_hp_bar(screen,x.trouver_case(list_case).cordo()[0]+x.img.get_width()//2,x.trouver_case(list_case).cordo()[1]-x.img.get_height()//2)
+                trouver_case = x.trouver_case(list_case).cordo()
+                coordX = trouver_case[0]+x.img.get_width()//2
+                coordY= trouver_case[1] -x.img.get_height()//2
+                if(isinstance(x,Perso)):
+                    x.display_classe(screen,coordX,coordY)
+                #x.display_lvl(screen,x.trouver_case(list_case).cordo()[0]+x.img.get_width()//2,x.trouver_case(list_case).cordo()[1]-x.img.get_height()//2)
+                x.update_hp_bar(screen,coordX,coordY)
             if self.mouvement:
                 i, j = 0, 0
                 for h in l:
@@ -164,6 +170,10 @@ class Combat:
             for x in self.list_tour:
                 if x.hp <=0:
                     self.list_tour.remove(x)
+                    try :
+                        self.list_case.remove(x)
+                    except:
+                        pass
                 else:
                     if x.is_player:
                         player_alive = True
@@ -276,7 +286,7 @@ class Combat:
                     running,self.game.click=  basic_checkevent(self.game.click)  
     def menu_action(self):
         display_erreur = pygame.Surface((screen.get_width(),screen.get_height()))
-        print(self.list_tour[0].is_player)
+
         if self.list_tour[0].is_player:
             if self.list_tour[0].actionP ==0:
                 self.reset_select(list_case)
@@ -444,7 +454,7 @@ class Combat:
                     if x.hp > 0:
                        if self.find_distance(x.trouver_case(list_case),case_monstre) <= distance :
                            distance = self.find_distance(x.trouver_case(list_case),case_monstre)
-                           print(1)
+                           
                            nearest  =x 
                 nearest.trouver_case(list_case).select(True)
                 #Se deplacer vers lui
@@ -478,19 +488,20 @@ class Combat:
                 #Passer le tour  
     def lunch_attack(self,defenseur):
         attack = self.show_which_one_play().in_case.calcul_attack_score()
-        defense =  defenseur.in_case.calcul_armor()
-        self.chat_box.write_log(("combat", self.show_which_one_play().in_case.name + " tente d'attaquer " + defenseur.in_case.name))
-        self.chat_box.write_log(("combat", "Score d'attack : " + str(attack) + "Score de defense : " + str(defense)))
-        if attack > defense:
-            self.chat_box.write_log(("combat",self.show_which_one_play().in_case.name+" attack " + self.game.player.name ))
-            self.print_anim(self.show_which_one_play(),self.game.player.trouver_case(list_case),list_case,anim_type="attack",mouvement=False)
-            damages = self.show_which_one_play().in_case.damage()
-            self.chat_box.write_log(("combat", "Dammage : " + str(damages))) 
-            self.print_explosion(defenseur)
-            defenseur.in_case.hp -= damages
-            if defenseur.in_case.hp <= 0:
-                self.list_tour.remove(defenseur.in_case)
-                defenseur.in_case = None
+        if defenseur != None:
+            defense =  defenseur.in_case.calcul_armor()
+            self.chat_box.write_log(("combat", self.show_which_one_play().in_case.name + " tente d'attaquer " + defenseur.in_case.name))
+            self.chat_box.write_log(("combat", "Score d'attack : " + str(attack) + "Score de defense : " + str(defense)))
+            if attack > defense:
+                self.chat_box.write_log(("combat",self.show_which_one_play().in_case.name+" attack " + self.game.player.name ))
+                self.print_anim(self.show_which_one_play(),self.game.player.trouver_case(list_case),list_case,anim_type="attack",mouvement=False)
+                damages = self.show_which_one_play().in_case.damage()
+                self.chat_box.write_log(("combat", "Dammage : " + str(damages))) 
+                self.print_explosion(defenseur)
+                defenseur.in_case.hp -= damages
+                if defenseur.in_case.hp <= 0:
+                    self.list_tour.remove(defenseur.in_case)
+                    defenseur.in_case = None
         self.reset_select(list_case)
         self.next_round()
     def lunch_spell(self):
@@ -572,7 +583,7 @@ class Combat:
                         i += 1
                     
                     pygame.display.update()
-                print("Coucouc je suis sortis de la boucle")
+
                 
     def find_distance(self,case_1,case_2):
         return math.dist(case_1.cordo(),case_2.cordo())                       

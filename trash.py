@@ -86,7 +86,8 @@ class Game():
                     for j in range(len(self.map.map_decoration[i])):
                             
                             if self.map.map_decoration[i][j]=='8' or self.map.map_decoration[i][j]=='9':
-                                donj = Donjon(2,self.screen,self.player,game=self)
+                                
+                                donj = Donjon(random.randint(1,3),self.screen,self.player,game=self)
                                 donj.creationDonjon()
                                 self.list_dungeon[(i,j)] = donj
 
@@ -222,8 +223,14 @@ class Game():
                     if coordDonjon !=-1:
                         
                         self.list_dungeon[coordDonjon].affichageDonjon()
-                        self.list_dungeon[coordDonjon].runningDonjon()
-                        
+                        a=self.list_dungeon[coordDonjon].runningDonjon()
+                        if a==-1:
+                            self.game_over()
+                        if a==1:
+                            difficulte = self.list_dungeon[coordDonjon].difficulty
+                            self.list_dungeon[coordDonjon] =  Donjon(difficulte+1,self.screen,self.player,game=self)
+                            self.list_dungeon[coordDonjon].creationDonjon()
+
                     else: #ne devrait jamais arriver
                         print("WOLA G CHAUD\n")
                     
@@ -407,11 +414,16 @@ class Game():
     def game_over(self):
         running = True
         while running:
-            screen.fill(BLACK)
-            text_width, text_height = ColderWeather.size("GAME OVER")
-            draw_text("GAME OVER",ColderWeather,WHITE,screen,screen.get_width()//2-text_width//2,screen.get_height()//2-text_height//2)
-            running,self.click = basic_checkevent(self.click)
-            pygame.display.update()
+            for event in pygame.event.get():
+                if event.type == pygame.KEYDOWN:
+                    if event.key==pygame.K_ESCAPE:
+                        running=False
+                screen.fill(BLACK)
+                text_width, text_height = ColderWeather.size("GAME OVER")
+                draw_text("GAME OVER",ColderWeather,WHITE,screen,screen.get_width()//2-text_width//2,screen.get_height()//2-text_height//2)
+                running,self.click = basic_checkevent(self.click)
+                pygame.display.update()
+        
     def print_pause_menu(self):
         display = pygame.Surface((1980, 1000))
         display.set_colorkey(LIGHT_GREY)
@@ -527,15 +539,14 @@ class Game():
         for coord in listposdungeon_keys:
             x = (coord[1]-coord[0])*self.map.cubesize//2+9000
             y = (coord[1]+coord[0])*self.map.cubesize//4
-            print(coord)
+
             dist = math.sqrt((x - perso.pos_x)**2 + (y - perso.pos_y)**2)
             if min == -1 or dist < min:
                 min = dist
                 coordRetour = coord
-                print(coord)
 
-        print(f"MIN : {min}\n")
-        print("long")
+
+
         return coordRetour
         
 

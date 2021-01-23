@@ -1,4 +1,4 @@
-from entity import Collide_box
+from entity import Collide_box, Chest
 from monster import Monster
 from Donjon.piece import Piece
 import pygame
@@ -14,12 +14,14 @@ import random
 from fog import Fog
 from minimap import Minimap
 from combat import Combat
-
+from inventory import Inventaire
+from items import Wikitem
+from math import sqrt
 list_img_monstre = [list_entity_animation[0],list_entity_animation[1],list_entity_animation[2],list_entity_animation[3],list_entity_animation[4]]
 list_animation_monstre = [demon_1_animation,demon_animation,squelton_animation,wizard_animation,dark_wizard_animation]
-list_decalage_monstre = [[-80,30],[-90,40],[-30,-10],[-20,0],[-110,+50]]
+list_decalage_monstre= [[-80,30],[-90,40],[-30,-10],[-20,0],[-110,+50]]
 list_size_monstre = [(500,400),(500,400),(300,300),(300,300),(700,700)]
-
+key = list(Wikitem.keys())
 
 clock = pygame.time.Clock()
 #classe permettant de créer un donjon
@@ -44,7 +46,8 @@ class Donjon():
         self.perso = perso
         self.interaction = 0
         self.fogs=[]
-        self.liste_monstre = []
+        self.liste_monstre = [[]]
+        self.liste_coffre = []
         for i in range(self.nbEtage):
             self.pieces.append(Piece(screen))
             self.liste_monstre.append([])
@@ -54,11 +57,17 @@ class Donjon():
         #i=0 -> etage 0 ; i=2 -> etage 1 ...
 
         #les etages 0 et 3 n'ont qu'un escalier
-        self.pieces[0].max_graphique[8] = self.pieces[self.nbEtage-1].max_graphique[8] = 1
+        
+        self.pieces[0].max_graphique[8] = self.pieces[self.nbEtage-1].max_graphique[16] = 1
         self.pieces[self.nbEtage-1].max_graphique[8] = self.pieces[0].max_graphique[16] = 0
+        self.pieces[0].max_graphique[15] = 1
+        self.pieces[-1].max_graphique[17] = 1
         for i in range(1,nbreEtage-1):
             self.pieces[i].max_graphique[8]=self.pieces[i].max_graphique[16]=1
-        self.listekey = {pygame.K_UP : False, pygame.K_DOWN : False, pygame.K_RIGHT:False,pygame.K_LEFT:False,pygame.K_SPACE:False}
+            self.pieces[i].max_graphique[15] = 0
+        
+        
+        self.listekey = {pygame.K_UP : False, pygame.K_DOWN : False, pygame.K_RIGHT:False,pygame.K_LEFT:False,pygame.K_SPACE:False,pygame.K_ESCAPE:False}
 
 
     def creationDonjon(self):
@@ -75,29 +84,57 @@ class Donjon():
                 if direction==2 and nbreHaut <2:
                     nbreHaut+=1
                     salle.linked.append('Haut')
-            print(salle.linked)
+
             salle.linked=['Gauche','Haut','Droite','Haut']
+            salle.create_linked()
             salle.createRoom()
             salle.linkedPiece()
             i=0
+            doEB,doEH,doTe=False,False,False
+            if j>0:
+                doEB = True
+            if j < len(self.pieces)-1:
+                doEH=True
+            if j== len(self.pieces)-1:
+                doTe=True
             
-
-            
-            while salle.check_jouabilite()!= True:
-                print("Probleme generation piece %i etage %i"%(i,j))
-
+            while salle.check_jouabilite(doEH=doEH,doEB=doEB,doTe=doTe)!= True:
                 
-                salle.createRoom()
+                
+                salle.createRoom(start=True)
                 salle.linkedPiece(check_pieces=True)
                 #salle = Piece(self.screen)
                 #salle.linked = ['Haut','Haut','Gauche','Gauche','Droite','Gauche'] 
+
                 i+=1
-            
-            salle.afficherListe()
+                if i>100:
+                    i=0
+                    print("Plus de 100 essais")
+                    salle.create_linked()
+                    salle.createRoom(start=True)
+
             salle.afficherPiece()
             self.fogs.append(Fog(self.perso,salle.afficher()))
             self.fogs[j].init_fog_for_dungeon()
+            
+            self.liste_coffre.append([])
+            currentX = salle.startX
+            currentY = salle.startY
+            y=0
+            for lignes in salle.piece:
+                for id_piece in lignes:
+                    if id_piece == 7:
+                        inv_chest = Inventaire(7,7)
+                        inv_chest.add_random_drop(random.randint(1,5))
+                        self.liste_coffre[j].append(Chest(currentX,currentY,pygame.transform.scale(monstre_loot,(32,32)),"Coffre","Coffre",inv_chest))
+                        currentX+=salle.lengthPiece//2
+                        currentY+= salle.heightPiece//4
+                
+                    currentY= salle.startY + (salle.heightPiece//4)*(y+1)
+                    currentX = salle.startX - (salle.lengthPiece//2)*(y+1)
+                    y+=1
             j+=1
+            print(salle.nbre_graphique)
         #implementation des monstres
         self.perso.pos_x,self.perso.pos_y = (self.pieces[self.actuel].spawn)
 
@@ -111,7 +148,7 @@ class Donjon():
 
         self.cam.actualiser(self.perso)
         self.cam.display_piece = self.pieces[self.actuel].afficher()
-        self.cam.afficher()
+        #self.cam.afficher()
     #affichage d'un donjon : refresh est pour clean le screen (l'ecran devient noir)
     #permet d'afficher la piece actuelle, mais aussi de definir le spawn du joueur
     def affichageDonjon(self,refresh=False):
@@ -129,6 +166,7 @@ class Donjon():
         self.cam.piece = self.pieces[self.actuel]
         self.cam.display_piece = self.pieces[self.actuel].afficher()
         self.cam.list_monster = self.liste_monstre[self.actuel]
+        self.cam.liste_coffre = self.liste_coffre[self.actuel]
         self.cam.afficher()
 
     #fonction de deplacement, très nulle mais ce ne sera pas la version finale
@@ -168,26 +206,71 @@ class Donjon():
                 self.perso.pos_x +=4
             else:
                 self.update_affichage()
-        if self.listekey.get(pygame.K_i):
-            if self.interaction == 7:
-                print("COFFRE")
-                self.interaction=0
+        if self.listekey.get(pygame.K_e):
+            chest = self.collide_coffre()
+            if chest != None:
+                self.listekey[pygame.K_ESCAPE] = False
+                while self.waitfor():
+                    self.listekey[pygame.K_ESCAPE] = True 
+                    self.cam.afficher(donotupdate = True)
+                    chest.inventaire.loot_inventory(100,400,700,400,self.perso.inventaire)
+                    pygame.display.update()
+                    
+
+
+                self.listekey[pygame.K_ESCAPE] = False 
+                try:
+                    self.liste_coffre[self.actuel].remove(chest)
+                except:
+                    pass
             if self.interaction == 8:
-                print("ESCALIER HAUT", self.actuel)
+                
                 self.monter_etage()
+                self.listekey[pygame.K_e]=False
+                print("ESCALIER HAUT", self.actuel)
                 self.interaction=0
             if self.interaction==16:
-                print("ESCALIER BAS", self.actuel)
+                
                 self.descendre_etage()
+                self.listekey[pygame.K_e]=False
+                print("ESCALIER BAS", self.actuel)
                 self.interaction=0
-        
+            if self.interaction == 17:
+                print("FINISHED")
+                self.interaction =0
+                return 1
+        if self.listekey.get(pygame.K_u):
+            self.monter_etage()
+            self.listekey[pygame.K_u] = False
+        if self.listekey.get(pygame.K_o):
+            self.descendre_etage()
+    
+        if self.listekey.get(pygame.K_i):
+            while self.waitfor():
+                self.cam.afficher(donotupdate = True)
+                self.perso.print_equipement(100,100,500,500)
+                pygame.display.update()
+            self.listekey[pygame.K_i] = False
+            
+        if self.listekey.get(pygame.K_c):
+            self.perso.caracter_sheet()
+            self.listekey[pygame.K_c] = False
     #classe permettant de jouer (running classique)
     #il faut prealablement avoir créé le donjon (et l'avoir affiché, c'est mieux quand même)
+
+    def waitfor(self):
+        for event in pygame.event.get():
+            if event.type == pygame.KEYDOWN:
+                if event.key==pygame.K_ESCAPE:
+                    self.listekey[pygame.K_ESCAPE] = False 
+                    return False
+        return True
     def runningDonjon(self):
         
         while self.listekey[pygame.K_SPACE]==False:
             self.__checkEvent()
-            self.deplacement()
+            if(self.deplacement()==1):
+                return 1
             #print '{}: tick={}, fps={}'.format(i+1, clock.tick(fps), clock.get_fps())
             clock.tick(32)
             monstre = None
@@ -203,12 +286,36 @@ class Donjon():
                 for i in monstre.group_monster:
                     i.img = list_img_monstre[i.type-1]
                 f = Combat(self.game,monstre.group_monster)
+                print()
                 f.affichage()
-                
                 if f.player.crew_mate[0].hp > 0 or f.player.crew_mate[1].hp > 0  or f.player.hp > 0:
+                    inv_chest = Inventaire(7,7)
+                    nbre_max_loot_possibles = 3 * len(monstre.group_monster)
+                    items_dropable = []
                     for x in monstre.group_monster:
+                        
+                        items_dropable.append(key[x.armor[1]])
+                        items_dropable.append(key[x.armor[4]])
                         self.liste_monstre[self.actuel].remove(x)
+                    nbre_loot = random.randint(0,nbre_max_loot_possibles)
+
+                    for i in range(nbre_loot):
+                        chance_drop = random.randint(1,20)
+                        if chance_drop == 1:  
+                            num_item_drop = random.randint(0,len(items_dropable)-1)
+                            inv_chest.ajouteritems(items_dropable[num_item_drop])
+                            try :
+                                items_dropable.remove(items_dropable[num_item_drop])
+                            except:
+                                pass
+                    self.cam.liste_coffre.append(Chest(self.perso.pos_x,self.perso.pos_y,pygame.transform.scale(monstre_loot,(32,32)),"Coffre","Coffre",inv_chest))
+                    self.cam.liste_coffre[-1].update_pos_collide()
+
+                    
+                else:
+                    return -1
                 monstre = None
+            
             self.cam.afficher()
             
         self.listekey[pygame.K_SPACE] = False
@@ -265,7 +372,7 @@ class Donjon():
         chaine =""
         index=0
         for things in fichier:
-            print(things)
+            #print(things)
             if things[0]=='e':
                 for y in range(len(self.pieces[index].piece)):
                     for x in range(len(self.pieces[index].piece[y]),max):
@@ -304,9 +411,12 @@ class Donjon():
         pos_y=0
         for salle in self.pieces:
             
-            self.liste_monstre[indexPiece] =[]
+            self.liste_monstre[indexPiece] = []
             for i in range(3*self.difficulty+5):
-                which_monster = random.randint(1,len(list_img_monstre))
+                difficulte_monstre = self.difficulty
+                if(self.difficulty>4):
+                    difficulte_monstre = 4
+                which_monster = random.randint(difficulte_monstre,len(list_img_monstre)-1)
                 while position != True:
                     y= random.randint(0,len(salle.piece)-1)
 
@@ -325,3 +435,11 @@ class Donjon():
                 self.liste_monstre[indexPiece].append(Monster(pos_x,pos_y,pygame.transform.scale(list_img_monstre[which_monster-1],(50,80)),"",which_monster-1,\
                 size=list_size_monstre[which_monster-1],animation_dict=list_animation_monstre[which_monster-1],\
                     decalage=list_decalage_monstre[which_monster-1],donjon=True))
+            indexPiece+=1
+    
+    def collide_coffre(self):
+        for chest in self.liste_coffre[self.actuel]:
+            center = (chest.pos_x + chest.img.get_width()//2, chest.pos_y+chest.img.get_height() // 2)
+            dist = sqrt((center[0] - self.perso.pos_x)**2 + (center[1] - self.perso.pos_y)**2)
+            if dist < 80:
+                return chest

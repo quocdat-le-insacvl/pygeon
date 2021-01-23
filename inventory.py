@@ -202,6 +202,8 @@ class Inventaire():
         for i in range(number):
             j = random.randint(0,len(Droppable)-10)
             self.ajouteritems(Droppable[j])
+
+
 class Shop(Entity):
     def __init__(self,inventory,pos_x,pos_y,img,name,which_type,animation_dict=None,talking=None,size=(0,0),size_collide_box=1):
         Entity.__init__(self,pos_x,pos_y,img,name,which_type,animation_dict,talking,size,size_collide_box=1)
