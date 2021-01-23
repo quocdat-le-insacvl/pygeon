@@ -271,3 +271,10 @@ class InputBox:
     def draw(self, screen):
         screen.blit(self.txt_surface, (self.rect.x+5, self.rect.y+10))
         pygame.draw.rect(screen, self.color, self.rect, 2)
+
+class NPC(Entity):
+    def __init__(self,message,quest=None,pos_x=0,pos_y=0,img=None,name=""):
+        Entity.__init__(self, pos_x, pos_y, img, name, "NPC")
+        self.message = message
+        self.quest = quest
+        self.update_pos_collide()

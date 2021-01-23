@@ -1,6 +1,6 @@
 from skill import Stealth
 from personnage import Perso
-from entity import ChatBox,Chest
+from entity import ChatBox,Chest,NPC
 from fog import Fog
 from minimap import Minimap
 import pygame
@@ -13,7 +13,7 @@ import math
 import random
 from pygame import mixer
 from pygame.time import Clock
-from script import pack, player, Wikitem, playerbis, pack_bis
+from script import pack, player, Wikitem, playerbis, pack_bis,NPC_quest
 from pygame.locals import *
 from settings.screen import *
 from settings.police import Drifftype, ColderWeather, Rumbletumble, coeff, coeff1, coeff2, ColderWeather_small
@@ -35,6 +35,7 @@ from combat import *
 # from monster import Monster
 # from custum_map_ import list_entity_animation
 from skill import *
+from quete import *
 load_inv()
 grass
 pygame.init()
@@ -141,8 +142,13 @@ class Game():
         self.player.levelupchange()
         self.player.levelupchange()
         self.player.levelupchange()
-        while running:
 
+        self.map.list_shop.append(NPC_quest)
+
+
+        while running:
+            for x in self.map.list_shop:
+                self.map.display.blit(x.img,(x.pos_x,x.pos_y))
             
 
 
@@ -349,6 +355,9 @@ class Game():
                 if interact:
                     draw_interact = False
                     is_talking = self.interact(monstre,is_talking)
+                    if not is_talking:
+                        interact = False
+
                     self.player.mouvement = [False,False,False,False]
             else:
                 draw_interact = True
@@ -535,7 +544,27 @@ class Game():
                 entity.img = monstre_loot_open
             else:
                 entity.img = monstre_loot_light
-        return is_talking
+        elif isinstance(entity,NPC):
+            if entity.quest != None:
+                if not entity.quest.is_accomplish:
+                    if entity.quest.print_text(self.click):
+                        return 0
+                    entity.quest.print_reward()
+                    if isinstance(entity.quest,Quest_find_items):
+                        entity.quest.print_items()
+                        if entity.quest.is_accept:
+                            if entity.quest.got_items(self.player):
+                                entity.quest.quest_accomplish(self.player)
+                            else:
+                                return False
+                    elif isinstance(entity.quest,Quest_kill_monster):
+                        entity.quest.print_monster()
+                        if entity.quest.is_accept:
+                            if entity.quest.is_alive():
+                                entity.quest.quest_accomplish(self.player)
+                            else:
+                                return False
+        return 1
 
     #retourne le donjon le plus proche du joueur
     #retrouve les donjons les plus chauds de chez toi
