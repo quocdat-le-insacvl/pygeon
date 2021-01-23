@@ -8,7 +8,7 @@ from inventory import Inventaire,Shop,key
 from settings.color import BURGUNDY,BLACK
 from monster import Monster
 from custum_map_ import list_entity_animation,list_npc
-from settings.load_img import grass,demon_1_animation,demon_animation,squelton_animation,wizard_animation,dark_wizard_animation,pixel_red,etagere,end_game,road,wall,void,tree,fence_1,fence_2,chair,etagere_2,chair_2,chair_3,chest,table,rune_1,rune
+from settings.load_img import rune_2,grass,demon_1_animation,demon_animation,squelton_animation,wizard_animation,dark_wizard_animation,pixel_red,etagere,end_game,road,wall,void,tree,fence_1,fence_2,chair,etagere_2,chair_2,chair_3,chest,table,rune_1,rune
 
 import json
 dict_img_npc = dict()
@@ -28,11 +28,11 @@ dict_img_npc['5']= list_npc[4]
 donjon =  [json.loads(line) for line in open('donjon.json', 'r')]
 
 class Map():
-    def __init__(self,path,path_deco,path_monstre,list_static_entity,cubesize=190):
+    def __init__(self,path,path_deco,path_monstre,list_static_entity,cubesize=190,reverse=True):
         self.path = path
         self.path_deco = path_deco
         self.path_monster = path_monstre
-        self.map_decoration = load_map(path_deco,reverse=False)
+        self.map_decoration = load_map(path_deco,reverse=reverse)
         self.all_monstre = [json.loads(line) for line in open(path_monstre, 'r')]
         self.all_shop = load_inv()
         self.collision = []
@@ -41,7 +41,7 @@ class Map():
         self.tree_position = []
         self.collision_under_level = []
         self.change_camera_entity = []
-        self.map = load_map(path,reverse=False)
+        self.map = load_map(path,reverse=reverse)
         self.display = pygame.Surface((18000,10000))
         self.display_tree = pygame.Surface((18000,10000))
         self.cubesize = cubesize
@@ -49,7 +49,9 @@ class Map():
         self.collision_hupper_level = []
         self.list_monster = []
         self.list_shop = []
+        self.collision_donjon = []
         self.dict_collision = dict()
+        self.all_collision = dict()
         self.spawn_point = (0,0)
     def load_map(self):
         self.map = load_map(self.path,reverse=True)
@@ -74,7 +76,9 @@ class Map():
         self.dict_collision["collision_change_camera"] = self.collision_change_camera
         self.dict_collision["collision_under_level"] = self.collision_under_level
         self.dict_collision["collision_hupper_level"] = self.collision_hupper_level
-
+        self.dict_collision["collision_donjon"] = self.collision_donjon
+    def load_dict(self):
+        pass
         #self.display.blit(self.display_tree,(0,0))
     def init_monster(self):
         self.list_monster = []
@@ -195,10 +199,13 @@ class Map():
                     if self.map_decoration[i][j] == 'k':
                         self.collision.append((x,y))
                         self.display.blit(table,(x,y)) 
-                    if self.map_decoration[i][j] == '8':
+                    if self.map_decoration[i][j] == 'z':
                         self.collision_under_level.append((x,y))
                         self.display.blit(pygame.transform.scale(rune_1,(190,95)),(x,y))
-                    if self.map_decoration[i][j] == '9':
+                    if self.map_decoration[i][j] == '8':
+                        self.collision_donjon.append((x,y))
+                        self.display.blit(pygame.transform.scale(rune_2,(190,95)),(x,y))
+                    if self.map_decoration[i][j] == 'y':
                         self.collision_hupper_level.append((x,y))
                         self.spawn_point = (x,y)
                         self.display.blit(pygame.transform.scale(rune,(190,95)),(x,y))

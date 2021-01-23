@@ -4,7 +4,7 @@ from settings.screen import screen
 from settings.load_img import *
 from settings.police import *
 from items import GoldCoin,A_Armor04,A_Armor05,Key1,Wikitem
-from script import wizard
+
 from script import player
 key = list(Wikitem.keys())
 
@@ -83,15 +83,16 @@ class Quest_kill_monster(Quest):
         draw_text("Monstre : ",ColderWeather_small,WHITE,screen,self.pos_x+100,self.pos_y+400)
         screen.blit(self.monster.avata,(225,400))
 ouvrir_porte = Quest_find_items("Bonjour Aventurier ! J'ai perdu mes clee dans un coffre proche d ici pouvez vous m aidez a les retrouver ?",50,[A_Armor04,A_Armor05],Key1)
-kill_monster = Quest_kill_monster("Bonjour Aventurier ! Un monstre m'empeche de recolter mes champs pouvez vous m'aider a le tuer ?",50,[A_Armor04,A_Armor05],wizard)
+kill_monster = Quest_kill_monster("Bonjour Aventurier ! Un monstre m'empeche de recolter mes champs pouvez vous m'aider ?",50,[A_Armor04,A_Armor05],player)
 while running:
+    """
     ouvrir_porte.print_text()
     ouvrir_porte.print_reward()
     ouvrir_porte.print_items()
     if click:
-        ouvrir_porte.got_items(player)
-    '''kill_monster.print_text(click)
+        ouvrir_porte.got_items(player)"""
+    kill_monster.print_text(click)
     kill_monster.print_reward()
-    kill_monster.print_monster()'''
+    kill_monster.print_monster()
     running,click = basic_checkevent(click)
     pygame.display.update()

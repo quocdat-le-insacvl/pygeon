@@ -89,11 +89,10 @@ class Game():
                                 donj = Donjon(2,self.screen,self.player,game=self)
                                 donj.creationDonjon()
                                 self.list_dungeon[(i,j)] = donj
-
+    
     def main_game(self):
         global time_line
-        self.player.name = 'gh'
-        
+        self.init_skill()
         center_x,center_y=0,0
         '''Set de toute les variables d'actions'''
         transition = pygame.Surface((screen.get_width(),screen.get_height()))
@@ -143,6 +142,10 @@ class Game():
         self.player.levelupchange()
         self.player.levelupchange()
         while running:
+
+            
+
+
             if pygame.time.get_ticks() > time_line:
                 time_line += 160
                 frame = (frame)%6 +1 
@@ -212,9 +215,8 @@ class Game():
             #screen.blit(player.mask_surface,(center_x+self.player.pos_x+20,center_y+self.player.pos_y+self.player.img.get_height()-15))
 
             '''Action si contact avec entité'''
-            
-            if self.player.change_level:
-                if draw_interact: draw_text("Press I for go under",ColderWeather,WHITE,screen,500,500)
+            if self.player.collision_donjon:
+                if draw_interact: draw_text("Press Interact",ColderWeather,WHITE,screen,500,500)
                 if interact:
                     pygame.image.save(self.fog.surface,'fog_'+str(self.current_level)+ '.png')
                     pos_joueur = (self.player.pos_x,self.player.pos_y)
@@ -225,11 +227,16 @@ class Game():
                         self.list_dungeon[coordDonjon].runningDonjon()
                         
                     else: #ne devrait jamais arriver
-                        print("WOLA G CHAUD\n")
-                    
+                        pass
                     self.player.pos_x = pos_joueur[0]
                     self.player.pos_y = pos_joueur[1]
-                    """print(donjon)
+                    interact = False
+            if self.player.change_level:
+                if draw_interact: draw_text("Press I for go under",ColderWeather,WHITE,screen,500,500)
+                if interact:
+                   
+                    
+                    
                     for x in donjon:
                         x_ = x[0]-self.player.pos_x
                         y = x[1] - self.player.pos_y
@@ -237,16 +244,18 @@ class Game():
                         if abs(x[0]-self.player.pos_x) < 200 and abs(x[1]-self.player.pos_y) < 200 :
                             self.map = list_map[x[3]-1]
                             self.current_level = x[3]
-                            self.fog = Fog(self)
+                            self.fog = Fog(self.player,self.map.display)
+                            self.minimap.display_with_nature = self.map.display
+                            self.minimap.fog = self.fog
                             if not self.player.know_map.__contains__(self.current_level):
                                 self.player.know_map.append(self.current_level)
                             else:
-                                self.fog.surface = pygame.image.load('fog_' + str(self.current_level)+ '.png')
+                                self.fog.surface = pygame.image.load('fog_' + str(self.current_level)+ '.png').convert()
 
 
                         if self.map.spawn_point != (0,0):
                             self.player.pos_x = self.map.spawn_point[0]
-                            self.player.pos_y = self.map.spawn_point[1]"""
+                            self.player.pos_y = self.map.spawn_point[1]
                     
                     interact = False
 
@@ -267,11 +276,13 @@ class Game():
                     if nb == 1:
                         self.map = list_map[x[2]-1]
                         self.current_level = x[2]
-                        self.fog = Fog(self)
+                        self.fog = Fog(self.player,self.map.display)
+                        self.minimap.display_with_nature = self.map.display
+                        self.minimap.fog = self.fog
                         if not self.player.know_map.__contains__(self.current_level):
                             self.player.know_map.append(self.current_level)
                         else:
-                            self.fog.surface = pygame.image.load('fog_' + str(self.current_level)+ '.png')
+                            self.fog.surface = pygame.image.load('fog_' + str(self.current_level)+ '.png').convert()
                     interact = False
             '''Set caméra / player pos pour sauvegarde'''
 
@@ -288,6 +299,8 @@ class Game():
 
             """Check event classique"""
             for event in pygame.event.get():
+                self.click = False
+
                 # handle chatbox
                 chatting = self.chat_box.handle_event(event)
                 if not chatting:
@@ -309,6 +322,7 @@ class Game():
                             
                             self.player = self.player.crew_mate[0]
                             self.fog.player = self.player
+                            self.minimap.player = self.player
                             nb_crew+=1
                             if nb_crew ==2:
                                 nb_crew = 0
@@ -325,7 +339,9 @@ class Game():
                     if event.type == KEYUP:
                         if event.key == self.key["map"]:
                             self.zoom_map = False
-
+                    if event.type == MOUSEBUTTONDOWN:
+                        if event.button == 1:
+                            self.click = True
             monstre = self.player.move_player(self.map.dict_collision,self.map.list_shop,self.map.list_monster,self.list_coffre)
             self.player.animate_map()
             if self.player.entity_near:
@@ -361,6 +377,7 @@ class Game():
             elif self.player.hp <=0:
                 self.player = self.player.crew_mate[0]
                 self.fog.player = self.player
+                
                 nb_crew+=1
                 if nb_crew ==2:
                     nb_crew = 0
@@ -385,8 +402,9 @@ class Game():
                 draw_text("Coffre: %i Pos_x : %i Pos_y : %i" % (mp,self.list_coffre[0].pos_x,self.list_coffre[0].pos_y), ColderWeather, WHITE, screen, 100, 100)
             
             
-            self.player.spell_bar()
-            
+            self.player.spell_bar(self.click)
+            for skill in self.player.skill:
+                skill.update()
             # update skill
             """
             for skill in self.player.skills:
@@ -425,7 +443,9 @@ class Game():
             if create_text_click('Sauvegarder', Drifftype, GREY, display, self.click, display.get_width()//2, display.get_height()-600):
                 global player_for_save
                 player_for_save.load_player(self.player)
-                player_for_save,self.fog.surface = load_game(self.click, player_for_save,self.fog.surface)
+                player_for_save,self.fog.surface = load_game(self.click, player_for_save,self.fog.surface,list_map=list_map)
+                self.map = list_map[0]
+                self.minimap = Minimap(self.map.map,self.fog,self.map.display,[],self.player)
                 print(player_for_save.name)
                 self.player.load_player(player_for_save)
             if create_text_click('Options', Drifftype, GREY, display, self.click, display.get_width()//2, display.get_height()-400):
@@ -537,7 +557,23 @@ class Game():
         print(f"MIN : {min}\n")
         print("long")
         return coordRetour
-        
+    def init_skill(self):
+        if self.player.classe == 'rogue':
+            self.player.skill.append(Stealth(self))
+            self.player.skill.append(Perception(self))
+        else:
+            self.player.skill.append(Perception(self))
+        if self.player.crew_mate[0].classe == 'rogue':
+            self.player.crew_mate[0].skill.append(Stealth(self))
+            self.player.crew_mate[0].skill.append(Perception(self))
+        else:
+            self.player.crew_mate[0].skills.append(Perception(self))
+        if self.player.crew_mate[1].classe == 'rogue':
+            self.player.crew_mate[1].skill.append(Stealth(self))
+            self.player.crew_mate[1].skill.append(Perception(self))
+        else:
+            self.player.crew_mate[1].skill.append(Perception(self))
+
 
 
     
@@ -546,7 +582,7 @@ class Game():
 num = 1
 list_map = []
 while os.path.exists(os.path.join(path.dirname(__file__), 'map_level_'+str(num)+'.txt')):
-    level = Map("map_level_"+str(num)+".txt","map_decoration_level_"+str(num)+".txt","map_monstre_level_"+str(num)+".json",list_static_entity)
+    level = Map("map_level_"+str(num)+".txt","map_decoration_level_"+str(num)+".txt","map_monstre_level_"+str(num)+".json",[])
     level.init_map()
     list_map.append(level)
     num +=1
@@ -567,8 +603,7 @@ sorcerer_3.crew_mate.append(sorcerer_2)
 game = Game(sorcerer,list_map[0])
 #c = Combat(game,[])
 #c.affichage()
-player.skills.append(Stealth(game))
-player.skills.append(Perception(game))
+
 game.main_game()
 #running = True
 #click = False

@@ -93,7 +93,6 @@ class Donjon():
                 #salle.linked = ['Haut','Haut','Gauche','Gauche','Droite','Gauche'] 
                 i+=1
             
-            salle.afficherListe()
             salle.afficherPiece()
             self.fogs.append(Fog(self.perso,salle.afficher()))
             self.fogs[j].init_fog_for_dungeon()

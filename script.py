@@ -35,7 +35,7 @@ pack.ajouteritems(C_Elm01)
 pack.ajouteritems(Sword1)
 pack.ajouteritems(Sword2)
 pack.ajouteritems(Sword3)
-
+pack.ajouteritems(P_Red1)
 pack.ajouteritems(Sword4)
 pack.ajouteritems(Sword5)
 pack.ajouteritems(Sword6)

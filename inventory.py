@@ -50,7 +50,7 @@ class Inventaire():
             if self.backpack[i] != None:
                 return False
         return True
-    def print_inventory_bis(self,pos_x,pos_y,main=True,mouse=False,print_poids=True,print_info_on_mouse = False):
+    def print_inventory_bis(self,pos_x,pos_y,main=True,mouse=False,print_poids=True,print_info_on_mouse = False,click=False):
         display = pygame.Surface((60*(self.nb_x+2),60*(self.nb_y+2)))
         x=display.get_width()//2
         y_=display.get_height()//2
@@ -101,6 +101,8 @@ class Inventaire():
                 draw_text("Attack : %i"%key[self.last_items_select].dmg,ColderWeather_small,WHITE,display_info_items,95,100)
             elif key[self.last_items_select].wpn_type == 6:
                 pass
+            elif key[self.last_items_select].wpn_type == 9:
+                draw_text("Heal : %i"%key[self.last_items_select].heal,ColderWeather_small,WHITE,display_info_items,95,100)
             else:
                 draw_text("Armor : %i"%key[self.last_items_select].armor_bonus,ColderWeather_small,WHITE,display_info_items,95,100)
                 draw_text("Dex Bonus : %i"%key[self.last_items_select].dex_bonus,ColderWeather_small,WHITE,display_info_items,95,130)

@@ -15,6 +15,9 @@ import sys
 path_pygeon = os.path.dirname(__file__)
 path_save = os.path.join(path_pygeon, 'Save')
 path_addon = os.path.join(path_pygeon, 'Addon')
+path_map = os.path.join(path_save, 'map_')
+
+
 # path_son = os.path.join(path_addon, 'Son')
 path_police = os.path.join(path_addon, 'Police')
 # path_menu = os.path.join(path_addon, 'Menu')
@@ -138,7 +141,7 @@ def basic_checkevent(click):
 """def load_game
     Affiche le menu de Sauvegarde et permet de sauvegarder "perso" dans un fichier choisit par l'utilisateur ou à l'inverse de charger un perso provenant de sauvegarde
     return perso Donné charger de sauvegarde 1 / Ou perso d'entré si juste sauvegarder"""
-def load_game(click,perso,display_fog):
+def load_game(click,perso,display_fog,list_map=None):
         running = True
         Choose = False
         click=False
@@ -224,7 +227,17 @@ def load_game(click,perso,display_fog):
                             with open(choose_path,'wb') as fichier:
                                 mon_pickler = pickle.Pickler(fichier)
                                 mon_pickler.dump(perso)
-                            pygame.image.save(display_fog,path+'fog_'+str(num)+'.png')
+                            if list_map != None:
+                                i=0
+                                for x in list_map:
+                                    pygame.image.save(x.display,path_map+str(num)+"/"+str(i)+'.png')
+                                    pygame.image.save(x.display_tree,path_map+str(num)+"/"+"deco"+str(i)+'.png')
+                                    fichier = open(path_map+str(num)+"/dict"+str(i)+".json","w")
+                                    json.dump(x.dict_collision,fichier)
+                                    fichier.close     
+                                    i+=1;      
+                            return perso, pygame.image.load(os.path.join(path_save,'fog_'+str(num) + '.png'))                    
+                            #pygame.image.save(display_fog,path+'fog_'+str(num)+'.png')
 
                 if creation_img_text_click(img_next,"Charger",ColderWeather,WHITE,display,click,0,0,left=1):
                     click = False
@@ -232,6 +245,16 @@ def load_game(click,perso,display_fog):
                         with open(choose_path,'rb') as fichier:
                             mon_depickler = pickle.Unpickler(fichier)
                             perso = mon_depickler.load()
+                        if list_map != None:
+                            i=0
+                            list_map[0].display = pygame.image.load(path_map+str(num)+"/"+str(i)+'.png').convert()
+                            list_map[0].display_tree = pygame.image.load(path_map+str(num)+"/"+"deco"+str(i)+'.png').convert()
+                            list_map[0].display_tree.set_colorkey(BLACK)
+                            list_map[0].display.set_colorkey(BLACK)
+                            with open(path_map+str(num)+"/dict"+str(i)+".json","r") as fichier:
+                                list_map[0].dict_collision = json.load(fichier)
+                                fichier.close
+                                i+=1
                         return perso, pygame.image.load(os.path.join(path_save,'fog_'+str(num) + '.png'))
 
             screen.blit(pygame.transform.scale(display,WINDOWS_SIZE),(0,0))

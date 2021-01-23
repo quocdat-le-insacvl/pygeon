@@ -78,8 +78,8 @@ dict_case['4'] = grass_2
 dict_case['5'] = grass_3
 dict_case['6'] = grass_4
 dict_case['7'] = grass_5
-dict_case['8'] = pygame.transform.scale(rune_1,(TILESIZE*2,TILESIZE))
-dict_case['9'] = pygame.transform.scale(rune,(TILESIZE*2,TILESIZE))
+dict_case['z'] = pygame.transform.scale(rune_1,(TILESIZE*2,TILESIZE))
+dict_case['y'] = pygame.transform.scale(rune,(TILESIZE*2,TILESIZE))
 
 dict_case['a'] = copy_tree["tree_1.png"]
 dict_case['b'] = pygame.transform.scale(fence_1,(TILESIZE*2,TILESIZE*2))
@@ -186,19 +186,19 @@ class Map_editor:
 
                         elif self.house_select:
                             self.house_select = False 
-                            self.map_decoration[self.case_collide[i][0]][self.case_collide[i][1]] = '8'
+                            self.map_decoration[self.case_collide[i][0]][self.case_collide[i][1]] = 'z'
                             self.save_map(self.path+ '_level_'+str(self.num_level)+'.txt',self.path_deco+ '_level_'+str(self.num_level)+ '.txt',self.path_monstre+ '_level_'+str(self.num_level))
                             self.list_donjon.append([self.taille_x-1-self.case_collide[i][0],self.case_collide[i][1],self.num_level,self.number_create_level])
                             self.init_custom_map()
                             self.num_level = self.number_create_level
-                            self.map_decoration[self.case_collide[i][0]][self.case_collide[i][1]] = '9'
+                            self.map_decoration[self.case_collide[i][0]][self.case_collide[i][1]] = 'y'
                             self.refresh()
                             self.save_map(self.path+ '_level_'+str(self.num_level)+'.txt',self.path_deco+ '_level_'+str(self.num_level)+ '.txt',self.path_monstre+ '_level_'+str(self.num_level))
                             '''self.path = self.path + 'level_' + str(self.num_level)
                             self.path_deco = self.path_deco +  'level_' + str(self.num_level)
                             self.path_monstre = self.path_monstre + 'level_' + str(self.num_level)'''
 
-                        elif self.map_ground[self.case_collide[i][0]][self.case_collide[i][1]] != '8' and self.map_ground[self.case_collide[i][0]][self.case_collide[i][1]] != '9':
+                        elif self.map_ground[self.case_collide[i][0]][self.case_collide[i][1]] != 'z' and self.map_ground[self.case_collide[i][0]][self.case_collide[i][1]] != 'y':
                             if self.current_entity != None:
                                 self.list_monstre.append([self.taille_x-1-self.case_collide[i][0],self.case_collide[i][1],self.type_monstre])
                                 #self.list_monstre.append(Monster(self.taille_x-1-self.case_collide[i][0],self.case_collide[i][1],pygame.transform.scale(self.current_entity,(200,200)),"Define",self.type_monstre,size_collide_box=4))
@@ -348,13 +348,13 @@ class Map_editor:
         fichier = open(path, "w")
         for x in self.map_decoration:
             for f in x:
-                if f == '9':
+                if f == 'y':
                     have_portal = True
         if have_portal:
             pass
         else:
             if is_under:
-                self.map_decoration[int(len(self.map_decoration[0])//2)][int(len(self.map_decoration[0])//2)] = '9'
+                self.map_decoration[int(len(self.map_decoration[0])//2)][int(len(self.map_decoration[0])//2)] = 'y'
         
         for x in self.map_ground:
                 for f in x:
@@ -409,13 +409,6 @@ class Map_editor:
         choose=False
         choose_quest = False
         color_1,color_2,color_3 = WHITE
-
-        self.map_ground = load_map(self.path+ '_level_'+str(1) + '.txt',reverse=True)
-        self.map_decoration = load_map(self.path_deco+ '_level_'+str(1)+'.txt',reverse=True)
-        self.list_monstre = [json.loads(line) for line in open(self.path_monstre+ '_level_'+str(1)+'.json', 'r')]
-        
-        self.taille_x,self.taille_y = len(self.map_ground),len(self.map_ground)
-        self.init_custom_map(True)
         #self.init_monster()
         self.refresh()
 
@@ -489,7 +482,7 @@ class Map_editor:
                     i+=1
                 if creation_img_text_click(pygame.transform.scale(rune_1,(2*TILESIZE,TILESIZE)),"",ColderWeather,WHITE,screen,self.other_click,x+100,y+300):
                     self.donjon_select = True
-                    self.case_select = '8'
+                    self.case_select = 'z'
                     #self.donjon_creator()
                     choose_quest = False
 
@@ -681,5 +674,5 @@ def iso_vec_into_standard(x,y):
     y_stand = 0.5*x + y
     return (x_stand,y_stand)
 """
-mapp = Map_editor(200,200)
+mapp = Map_editor(20,20)
 mapp.print_menu_editor()"""

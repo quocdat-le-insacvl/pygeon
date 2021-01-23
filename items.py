@@ -69,6 +69,11 @@ class Weapon(Items):
         1*1
         4446"""
 
+class Potion_soin(Items):
+    def __init__(self,value,wheight,wpn_type,wpn_name,wpn_img,heal=0,dmg=0,element=0):
+        Items.__init__(self,value,wheight,wpn_type,wpn_name,wpn_img)
+        self.heal=heal
+
 class Armor(Items):
     def __init__(self,value,defense,wheight,armor_name,wpn_type,armor_img,info="",dex_bonus = 0,speed=0):
         Items.__init__(self,value,wheight,wpn_type,armor_name,armor_img,info)
@@ -380,10 +385,11 @@ P_White2 = Consomable(1,1,item_index,"Potion",image['P_White02.png'])
 P_White3 = Consomable(1,1,item_index,"Potion",image['P_White03.png'])
 P_White4 = Consomable(1,1,item_index,"Potion",image['P_White04.png'])
     # RED
-P_Red1 = Consomable(1,1,item_index,"Potion",image['P_Red01.png'])
-P_Red2 = Consomable(1,1,item_index,"Potion",image['P_Red02.png'])
-P_Red3 = Consomable(1,1,item_index,"Potion",image['P_Red03.png'])
-P_Red4 = Consomable(1,1,item_index,"Potion",image['P_Red04.png'])
+item_index = 9
+P_Red1 = Potion_soin(1,1,item_index,"Potion",image['P_Red01.png'], heal=16)
+P_Red2 = Potion_soin(1,1,item_index,"Potion",image['P_Red02.png'], heal=4)
+P_Red3 = Potion_soin(1,1,item_index,"Potion",image['P_Red03.png'], heal=8)
+P_Red4 = Potion_soin(1,1,item_index,"Potion",image['P_Red04.png'], heal=2)
     # PINK
 P_Pink1 = Consomable(1,1,item_index,"Potion",image['P_Pink01.png'])
 P_Pink2 = Consomable(1,1,item_index,"Potion",image['P_Pink02.png'])

@@ -190,6 +190,7 @@ case_select.set_colorkey((255,255,255))
 
 rune = pygame.image.load(path.join(path_addon, "rune_1.png")).convert_alpha()
 rune_1 = pygame.image.load(path.join(path_addon, "rune_2.png")).convert_alpha()
+rune_2 = pygame.image.load(path.join(path_addon, "rune_4.png")).convert_alpha()
 
 #combat
 print(getcwd())
