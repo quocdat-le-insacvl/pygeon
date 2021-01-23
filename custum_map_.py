@@ -78,6 +78,7 @@ dict_case['4'] = grass_2
 dict_case['5'] = grass_3
 dict_case['6'] = grass_4
 dict_case['7'] = grass_5
+dict_case['8'] = pygame.transform.scale(rune_2,(TILESIZE*2,TILESIZE))
 dict_case['z'] = pygame.transform.scale(rune_1,(TILESIZE*2,TILESIZE))
 dict_case['y'] = pygame.transform.scale(rune,(TILESIZE*2,TILESIZE))
 
@@ -480,9 +481,9 @@ class Map_editor:
                         #self.monstre_creator()
                         choose_quest = False
                     i+=1
-                if creation_img_text_click(pygame.transform.scale(rune_1,(2*TILESIZE,TILESIZE)),"",ColderWeather,WHITE,screen,self.other_click,x+100,y+300):
+                if creation_img_text_click(pygame.transform.scale(rune_2,(2*TILESIZE,TILESIZE)),"",ColderWeather,WHITE,screen,self.other_click,x+100,y+300):
                     self.donjon_select = True
-                    self.case_select = 'z'
+                    self.case_select = '8'
                     #self.donjon_creator()
                     choose_quest = False
 
