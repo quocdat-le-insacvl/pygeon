@@ -116,23 +116,8 @@ class Donjon():
             salle.afficherPiece()
             self.fogs.append(Fog(self.perso,salle.afficher()))
             self.fogs[j].init_fog_for_dungeon()
-            
-            self.liste_coffre.append([])
-            currentX = salle.startX
-            currentY = salle.startY
-            y=0
-            for lignes in salle.piece:
-                for id_piece in lignes:
-                    if id_piece == 7:
-                        inv_chest = Inventaire(7,7)
-                        inv_chest.add_random_drop(random.randint(1,5))
-                        self.liste_coffre[j].append(Chest(currentX,currentY,pygame.transform.scale(monstre_loot,(32,32)),"Coffre","Coffre",inv_chest))
-                        currentX+=salle.lengthPiece//2
-                        currentY+= salle.heightPiece//4
-                
-                    currentY= salle.startY + (salle.heightPiece//4)*(y+1)
-                    currentX = salle.startX - (salle.lengthPiece//2)*(y+1)
-                    y+=1
+            self.liste_coffre.append(salle.list_coffre)
+        
             j+=1
             print(salle.nbre_graphique)
         #implementation des monstres
@@ -226,7 +211,7 @@ class Donjon():
             if self.interaction == 8:
                 
                 self.monter_etage()
-                self.listekey[pygame.K_e]=False
+                
                 print("ESCALIER HAUT", self.actuel)
                 self.interaction=0
             if self.interaction==16:
@@ -239,6 +224,7 @@ class Donjon():
                 print("FINISHED")
                 self.interaction =0
                 return 1
+            self.listekey[pygame.K_e]=False
         if self.listekey.get(pygame.K_u):
             self.monter_etage()
             self.listekey[pygame.K_u] = False
@@ -353,6 +339,7 @@ class Donjon():
                 if event.key == pygame.K_LEFT and self.listekey[pygame.K_RIGHT]:self.listekey[pygame.K_RIGHT]=False
                 if event.key == pygame.K_UP and self.listekey[pygame.K_DOWN]:self.listekey[pygame.K_DOWN]=False
                 if event.key == pygame.K_DOWN and self.listekey[pygame.K_UP]:self.listekey[pygame.K_UP]=False
+                if event.key == pygame.K_ESCAPE : self.listekey[event.key] = False
                 return True
             if event.type == pygame.KEYUP:
                 self.listekey[event.key] = False

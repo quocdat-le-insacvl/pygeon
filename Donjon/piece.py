@@ -4,6 +4,8 @@ import random
 import time
 import numpy
 import sys
+from inventory import Inventaire
+from entity import Chest
 from settings.load_img import graphique_donjon,nb_graphique_donjon,collide_donjon,mur_donjon,parquet_donjon
 sys.setrecursionlimit(10000)
 class Piece():
@@ -92,6 +94,7 @@ class Piece():
         self.taille = None
         self.linked = None
         self.alreadySpawn = False
+        self.list_coffre = []
 
     #methode de test pour afficher une liste double
     def afficherListe(self):
@@ -318,18 +321,24 @@ class Piece():
                         if(self.piece[y][x] == 15):
                             self.spawn=(currentX+20,currentY+5)
                         #self.display.blit(image,(currentX,currentY+self.tailleMax[1]-image.get_height()))
-                        
-                        try :
-                            self.display.blit(image,(currentX,currentY))
-                        except:
-                            pass
+                        if self.piece[y][x] != 7:
+                            try :
+                                self.display.blit(image,(currentX,currentY))
+                            except:
+                                pass
                         if(self.piece[y][x] != 15 and self.piece[y][x] != 17):
                             self.liste_collision.append((currentX,currentY))
-                            self.graphique_collision.append(pygame.Rect((currentX,currentY),(image.get_width(),image.get_height())))
-                            self.image_collision_graphique.append([image,(currentX,currentY)])
+                            if self.piece[y][x] != 7:
+                                self.graphique_collision.append(pygame.Rect((currentX,currentY),(image.get_width(),image.get_height())))
+                                self.image_collision_graphique.append([image,(currentX,currentY)])
                         if self.piece[y][x] in self.important_graph:
                             self.interact_collision.append((currentX,currentY))
                             self.index_interact_collsion.append(self.piece[y][x])
+                            if self.piece[y][x] == 7:
+                                inv_chest = Inventaire(7,7)
+                                inv_chest.add_random_drop(random.randint(1,5))
+                                self.list_coffre.append(Chest(currentX+15,currentY+20,pygame.transform.scale(self.graphique[7][0],(32,32)),"Coffre","Coffre",inv_chest))
+ 
                     if x==len(self.piece[y])-1:
                         self.display.blit(self.mur,(currentX+self.lengthPiece//2,currentY+self.heightPiece//4))
                         self.liste_collision.append((currentX+self.lengthPiece//2,currentY+self.heightPiece//4-8))

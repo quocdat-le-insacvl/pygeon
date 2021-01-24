@@ -436,7 +436,7 @@ class Combat:
             current_not_playable = self.list_tour[0]
             case_monstre = current_not_playable.trouver_case(list_case)
             case_monstre.select_neighbour(list_case)
-            print(self.player.name)
+            #print(self.player.name)
             if self.game.player.trouver_case(list_case).is_select:
                 if self.player.hp > 0:
                     self.lunch_attack(self.player.trouver_case(list_case))
@@ -492,7 +492,11 @@ class Combat:
                 #Passer le tour  
     def lunch_attack(self,defenseur):
         attack = self.show_which_one_play().in_case.calcul_attack_score()
-        if defenseur != None:
+
+        if defenseur != None and defenseur.in_case != None:
+            if isinstance(defenseur,Monster) and isinstance(self.show_which_one_play().in_case,Monster):
+                
+                return 0
             defense =  defenseur.in_case.calcul_armor()
             self.chat_box.write_log(("combat", self.show_which_one_play().in_case.name + " tente d'attaquer " + defenseur.in_case.name))
             self.chat_box.write_log(("combat", "Score d'attack : " + str(attack) + "Score de defense : " + str(defense)))
@@ -512,7 +516,7 @@ class Combat:
         running= True
         
         spell = self.show_which_one_play().in_case.select_spell(self.select_spell)
-        if spell != None:
+        if spell != None and not isinstance(spell,bool):
             for x in spell:
                 running = True
                 dmg = x[0]

@@ -106,7 +106,7 @@ class Case():
             x.select(False)
             if x.j-1-k == self.j and x.i+1+k == self.i:
                 x.effect_neighbour(list_case,m,liste_hit)
-        print("liste hit ", liste_hit)
+        
         return liste_hit
 
     
