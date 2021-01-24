@@ -435,7 +435,7 @@ class Piece():
             nbreHaut = 0
             self.linked = []
             for i in range(nombre_max):
-                direction = random.randint(0,3)
+                direction = random.randint(0,2)
                 if direction==0:self.linked.append('Gauche')
                 if direction ==1:self.linked.append('Droite')
                 if direction==2 and nbreHaut <2:

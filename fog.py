@@ -25,8 +25,10 @@ class Fog:
        
         self.surface.blit(self.light_image, self.light_rect)
     def init_fog_for_dungeon(self):
+        #self.light_image = pygame.transform.scale(
+        #self.light_image, (400, 400))
         self.light_image = pygame.transform.scale(
-        self.light_image, (400, 400))
+        self.light_image, (4000, 4000))
         self.light_rect = self.light_image.get_rect()
     def draw_fog_dungeon(self):
         self.light_rect.center = (self.player.pos_x+32 //
