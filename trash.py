@@ -101,11 +101,12 @@ class Game():
         interact = False
         pause_menu = False
         running = True
-        """
+        
         for x in list_seller:
             x.update_pos_collide()
             self.map.display.blit(x.img,(x.pos_x,x.pos_y))
-            """
+            self.map.list_shop.append(x)
+            
         n= 1
         f=0
         g=0
@@ -410,14 +411,11 @@ class Game():
             if len(self.list_coffre) > 0:
                 draw_text("Coffre: %i Pos_x : %i Pos_y : %i" % (mp,self.list_coffre[0].pos_x,self.list_coffre[0].pos_y), ColderWeather, WHITE, screen, 100, 100)
             
-            
+            # update skill
             self.player.spell_bar(self.click)
             for skill in self.player.skill:
                 skill.update()
-            # update skill
-            """
-            for skill in self.player.skills:
-                skill.update()"""
+    
             if look_level:
                 mp +=1
             if mp >= 50 and mp <= 200:
@@ -602,7 +600,8 @@ class Game():
             self.player.crew_mate[1].skill.append(Perception(self))
         else:
             self.player.crew_mate[1].skill.append(Perception(self))
-
+    def init_crewmate(self):
+        pass
 
 
     

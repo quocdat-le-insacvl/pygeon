@@ -424,13 +424,13 @@ class Map_editor:
             x= screen.get_width()//2-img_inventaire.get_width()//2
             y =screen.get_height()//2-img_inventaire.get_height()//2
             # SAUVEGARDER
-            draw_text("x : %i, y : %i"%(self.taille_x,self.taille_y),ColderWeather,WHITE,screen,500,500)
+            #draw_text("x : %i, y : %i"%(self.taille_x,self.taille_y),ColderWeather,WHITE,screen,500,500)
             if creation_img_text_click(img_next,"Sauvegarder",ColderWeather,WHITE,screen,self.other_click,right=1):
                 self.save_map(self.path+ '_level_'+str(self.num_level)+'.txt',self.path_deco+ '_level_'+str(self.num_level)+ '.txt',self.path_monstre+ '_level_'+str(self.num_level))
 
             # CHOIX BLOCKS
             if not choose:
-                if creation_img_text_click(img_next,"Choisr un bloc",ColderWeather,WHITE,screen,self.other_click,img_next.get_width()-80,img_next.get_height()//2):
+                if creation_img_text_click(img_next,"Choisir un bloc",ColderWeather,WHITE,screen,self.other_click,img_next.get_width()-80,img_next.get_height()//2):
                     choose = True
             else:  
                 screen.blit(pygame.transform.scale(img_inventaire,(screen.get_width()//2,screen.get_height()//2)),(screen.get_width()//2-img_inventaire.get_width()//2,screen.get_height()//2-img_inventaire.get_height()//2))
@@ -466,7 +466,7 @@ class Map_editor:
             # CHOIX MONSTRE / CREATION QUETES
 
             if not choose_quest:
-                if creation_img_text_click(img_next,"Donjon / Monstres",ColderWeather,WHITE,screen, self.other_click,screen.get_width()-img_next.get_width()//2,img_next.get_height()//2):
+                if creation_img_text_click(img_next,"Donjon / Monstres",ColderWeather,WHITE,screen, self.other_click,screen.get_width()-img_next.get_width(),img_next.get_height()//2):
                     self.enable_to_print = False
                     pygame.time.wait(1)
                     choose_quest = True
@@ -483,7 +483,7 @@ class Map_editor:
                     i+=1
                 if creation_img_text_click(pygame.transform.scale(rune_2,(2*TILESIZE,TILESIZE)),"",ColderWeather,WHITE,screen,self.other_click,x+100,y+300):
                     self.donjon_select = True
-                    self.case_select = '8'
+                    self.current_tree = '8'
                     #self.donjon_creator()
                     choose_quest = False
 
@@ -674,6 +674,6 @@ def iso_vec_into_standard(x,y):
     x_stand = 0.5*x - y
     y_stand = 0.5*x + y
     return (x_stand,y_stand)
-"""
+
 mapp = Map_editor(20,20)
-mapp.print_menu_editor()"""
+mapp.print_menu_editor()
