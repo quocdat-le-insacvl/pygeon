@@ -1,10 +1,11 @@
+
 import pygame
 from entity import Entity
 from settings.load_img import pixel_red, ava_perso
 from pygame.locals import *
 from items import Sword1,Sword10,Wikitem
 from inventory import Inventaire
-from settings.screen import screen
+from settings.screen import screen,LARGEUR as HEIGHT
 from fonction import *
 from fonctions import *
 from settings.police import *
@@ -48,8 +49,12 @@ class Stats():
         barmax_position=(pos_x,pos_y,hp_max_pourcent/2,10)
         pygame.draw.rect(surface, barmax_color, barmax_position)
         pygame.draw.rect(surface, bar_color, bar_position)
-        
-        
+        #
+        s=wblack(ColderWeather,"Level  "+str(self.level))
+        s=pygame.transform.scale(s,(s.get_width()//4, s.get_height()//4))
+        surface.blit(s,(pos_x,pos_y-20))
+
+
 
 class Perso_saveable(): # INTERDICTION DE METTRE DES PYGAMES SURFACE SEULEMENT DES VARIABLES 
     def __init__(self):
@@ -300,6 +305,9 @@ class Perso(Entity,Stats):
         barmax_position=(x,y,hp_max_pourcent/2,10)
         pygame.draw.rect(surface, barmax_color, barmax_position)
         pygame.draw.rect(surface, bar_color, bar_position)
+        s=wblack(ColderWeather,"Level  "+str(self.level))
+        s=pygame.transform.scale(s,(s.get_width()//4, s.get_height()//4))
+        surface.blit(s,(x,y-20))
 
     
 
@@ -569,6 +577,7 @@ class Perso(Entity,Stats):
             return damage//2
         return damage
     
+
     
     def createImages(self,name,scale=True,colorkey=(0,0,0),forceScale=False):
         relative_path = os.path.join(os.path.dirname(os.path.abspath(__file__)),"Donjon/imgs/")
@@ -582,6 +591,14 @@ class Perso(Entity,Stats):
                 image = pygame.transform.scale(image,(32, 32))
             image.set_colorkey(colorkey)
             return image
+    def display_classe(self,surface,x,y):
+        name = wblack(ColderWeather,self.classe)
+        name = pygame.transform.scale(name,(name.get_width() // 4,name.get_height()//4))
+        screen.blit(name,(x,y))
+    def display_lvl(self,surface,x,y):
+        name = wblack(ColderWeather,str(self.level))
+        name = pygame.transform.scale(name,(name.get_width() // 2,name.get_height()//2))
+        screen.blit(name,(x,y + name.get_height()))
     def afficher(self):
         #self.perso_screen.blit(self.perso,(self.pos_x,self.pos_y))
         self.rect_perso = pygame.Rect((self.pos_x,self.pos_y),(self.img.get_width(),self.img.get_height()))

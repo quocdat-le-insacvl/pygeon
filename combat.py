@@ -134,7 +134,13 @@ class Combat:
                     x.in_case.animate()
 
             for x in self.list_tour:
-                x.update_hp_bar(screen,x.trouver_case(list_case).cordo()[0]+x.img.get_width()//2,x.trouver_case(list_case).cordo()[1]-x.img.get_height()//2)
+                trouver_case = x.trouver_case(list_case).cordo()
+                coordX = trouver_case[0]+x.img.get_width()//2
+                coordY= trouver_case[1] -x.img.get_height()//2
+                if(isinstance(x,Perso)):
+                    x.display_classe(screen,coordX,coordY)
+                #x.display_lvl(screen,x.trouver_case(list_case).cordo()[0]+x.img.get_width()//2,x.trouver_case(list_case).cordo()[1]-x.img.get_height()//2)
+                x.update_hp_bar(screen,coordX,coordY)
             if self.mouvement:
                 i, j = 0, 0
                 for h in l:
@@ -169,6 +175,10 @@ class Combat:
             for x in self.list_tour:
                 if x.hp <=0:
                     self.list_tour.remove(x)
+                    try :
+                        self.list_case.remove(x)
+                    except:
+                        pass
                 else:
                     if x.is_player:
                         player_alive = True
@@ -281,7 +291,7 @@ class Combat:
                     running,self.game.click=  basic_checkevent(self.game.click)  
     def menu_action(self):
         display_erreur = pygame.Surface((screen.get_width(),screen.get_height()))
-        print(self.list_tour[0].is_player)
+
         if self.list_tour[0].is_player:
             if self.list_tour[0].actionP ==0:
                 self.reset_select(list_case)
@@ -427,7 +437,7 @@ class Combat:
             current_not_playable = self.list_tour[0]
             case_monstre = current_not_playable.trouver_case(list_case)
             case_monstre.select_neighbour(list_case)
-            print(self.player.name)
+            #print(self.player.name)
             if self.game.player.trouver_case(list_case).is_select:
                 if self.player.hp > 0:
                     self.lunch_attack(self.player.trouver_case(list_case))
@@ -449,7 +459,7 @@ class Combat:
                     if x.hp > 0:
                        if self.find_distance(x.trouver_case(list_case),case_monstre) <= distance :
                            distance = self.find_distance(x.trouver_case(list_case),case_monstre)
-                           print(1)
+                           
                            nearest  =x 
                 nearest.trouver_case(list_case).select(True)
                 #Se deplacer vers lui
@@ -507,7 +517,7 @@ class Combat:
         running= True
         
         spell = self.show_which_one_play().in_case.select_spell(self.select_spell)
-        if spell != None:
+        if spell != None and not isinstance(spell,bool):
             for x in spell:
                 running = True
                 dmg = x[0]
@@ -582,7 +592,7 @@ class Combat:
                         i += 1
                     
                     pygame.display.update()
-                print("Coucouc je suis sortis de la boucle")
+
                 
     def find_distance(self,case_1,case_2):
         return math.dist(case_1.cordo(),case_2.cordo())                       

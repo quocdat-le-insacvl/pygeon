@@ -86,7 +86,7 @@ class Menu():
                 
 
                 self.perso.load_player(player_for_save)
-                print(self.perso.classe)
+                #print(self.perso.classe)
             if create_text_click('Option',Drifftype,GREY,display,self.click,display.get_width()//2,display.get_height()//1.6):
                 self.option()
             if create_text_click('Quit',Drifftype,GREY,display,self.click,display.get_width()//2,display.get_height()//1.3):

@@ -247,7 +247,7 @@ class Sorcerer(Perso_game):
                 running=board_error("cannot lunch spell and wear armor")
                 return False
             if self.masterAction>0 and self.bonusAction>0:
-                self.Action=2
+                self.actionP=2
                 self.masterAction-=1
                 self.bonusAction-=1
             else:

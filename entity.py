@@ -35,9 +35,14 @@ class Entity():
         self.seen = False
         self.last_know_pos = (0, 0)
         self.shadow = img
-        self.collide_box = Collide_box(size_collide_box,donjon=donjon)
+        self.collide_box = Collide_box(size_collide_box)
 
-    
+
+    """heritage : surchage
+    permet d'afficher le niveau du monstre/joueur en combat
+    """
+    def display_lvl(self):
+        pass
     def update_center(self):
         self.center = [self.pos_x + self.img.get_width()//2,
                        self.pos_y + self.img.get_height()//2]
@@ -56,7 +61,12 @@ class Entity():
                 self.frame = 1
                 one_complete=True
             self.refresh_display()
-            self.display.blit(animation[self.type_animation + "_" + str(int(self.frame)) + ".png"], (self.img.get_width()//2-animation[self.type_animation + "_" + str(int(self.frame)) + ".png"].get_width()//2+150-int(
+            try:
+                self.display.blit(animation[self.type_animation + "_" + str(int(self.frame)) + ".png"], (self.img.get_width()//2-animation[self.type_animation + "_" + str(int(self.frame)) + ".png"].get_width()//2+150-int(
+                self.img.get_width()//2)+self.decalage[0], self.img.get_height()-animation[self.type_animation + "_" + str(int(self.frame)) + ".png"].get_height()+300-self.img.get_height()+self.decalage[1]))
+            except :
+                self.frame= 1
+                self.display.blit(animation[self.type_animation + "_" + str(int(self.frame)) + ".png"], (self.img.get_width()//2-animation[self.type_animation + "_" + str(int(self.frame)) + ".png"].get_width()//2+150-int(
                 self.img.get_width()//2)+self.decalage[0], self.img.get_height()-animation[self.type_animation + "_" + str(int(self.frame)) + ".png"].get_height()+300-self.img.get_height()+self.decalage[1]))
         else:
             self.display.blit(self.img, (0, 0))
@@ -67,14 +77,14 @@ class Entity():
         if self.type_animation != "" and self.animation_dict != None:
             animation = self.animation_dict[self.type_animation]
             self.frame += 0.08
-            if self.frame > len(animation)+1:
+            if self.frame > len(animation):
                 self.frame = 1
                 one_complete=True
             self.refresh_display()
             self.display.blit(animation[self.type_animation + "_" + str(int(self.frame)) + ".png"], (self.img.get_width()//2-animation[self.type_animation + "_" + str(int(self.frame)) + ".png"].get_width()//2+150-int(
                 self.img.get_width()//2)+self.decalage[0], self.img.get_height()-animation[self.type_animation + "_" + str(int(self.frame)) + ".png"].get_height()+300-self.img.get_height()+self.decalage[1]))
             #print(f'Taille de l image ({self.img.get_width()},{self.img.get_height()})\n')    
-        
+
         else:
              
             self.display.blit(self.img, (0, 0))
@@ -138,7 +148,7 @@ class Chest(Entity):
         self.inventaire = inventaire
         
     def loot_chest(self):
-        self.inventaire.loot_chest()
+        self.inventaire.zgeg.zgeg.zgeg.zgeg.zgeg.zgeg.loot_chest()
 
 
 

@@ -4,6 +4,8 @@ from fog import Fog
 from minimap import Minimap
 from fonction import print_mooving_entity
 from settings.screen import screen
+from entity import Entity, Chest
+from math import sqrt
 class Camera():
 
     def __init__(self,perso,piece,list_monster):
@@ -17,7 +19,7 @@ class Camera():
         self.fog.init_fog_for_dungeon()
         self.list_monster = list_monster
         self.minimap = Minimap(self.piece.piece,self.fog,self.piece.display,list_monster,self.perso)
-    
+        self.liste_coffre = []
 
     def actualiser(self,perso):
         self.perso = perso
@@ -31,7 +33,7 @@ class Camera():
         self.minimap.fog=self.fog
         self.minimap.draw_minimap()
 
-    def afficher(self):
+    def afficher(self, donotupdate=False):
         self.screen.fill((0,0,0))
         self.screen.blit(self.display_piece,(self.center_x,self.center_y))
         self.screen.blit(pygame.transform.scale(self.perso.img,(32,49)),(self.perso.pos_x+self.center_x,self.perso.pos_y+self.center_y))
@@ -46,6 +48,8 @@ class Camera():
                 else:
                     x.animate_map(scale=(50,80))
                 x.moove_patrouille(self.perso,self.list_monster,donjon=True,velocity=1)
+                if self.piece.check_collision(x,True):
+                    x.unmove_patrouille()
                 #self.screen.blit(x.collide_box_interact.mask.to_surface(),(x.pos_x + self.center_x,x.pos_y+ self.center_y))
 
         a =self.piece.update_graph(self.perso)
@@ -56,7 +60,9 @@ class Camera():
                             special_flags=pygame.BLEND_MULT)
         
         self.minimap.draw_minimap()
-        pygame.display.update()
+        for chest in self.liste_coffre:
+            self.screen.blit(chest.img,(chest.pos_x+self.center_x,chest.pos_y+self.center_y))
+        if not donotupdate : pygame.display.update()
 
     def init(self,perso):
         self.center_x = -perso.pos_x+900
