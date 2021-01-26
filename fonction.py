@@ -261,7 +261,7 @@ def load_game(click,perso,display_fog,list_map=None):
             running,click = basic_checkevent(click)
             if not first_blit:pygame.display.update()
             first_blit = transition(5,screen.copy(),first_blit)
-
+        return perso,display_fog
 def transition(ms,capture_screen,first_blit):
     if first_blit:
         transition = pygame.Surface((screen.get_width(),screen.get_height()))

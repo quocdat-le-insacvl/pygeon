@@ -114,10 +114,13 @@ class Game():
         is_talking = False
         self.player.pos_x = 8680
         self.player.pos_y = 800
-        self.player.crew_mate[0].pos_x = 8680
-        self.player.crew_mate[0].pos_y = 1000
-        self.player.crew_mate[1].pos_x = 8680
-        self.player.crew_mate[1].pos_y = 1100
+        self.player.xp = 2500
+        self.player.crew_mate[0].pos_x = 0
+        self.player.crew_mate[0].xp = 2500
+        self.player.crew_mate[0].pos_y = 0
+        self.player.crew_mate[1].pos_x = 0
+        self.player.crew_mate[1].xp = 2500
+        self.player.crew_mate[1].pos_y = 0
         ### Minimap
         self.minimap = Minimap(self.map.map,self.fog,self.map.display,self.list_mooving_entity,self.player)
     
@@ -136,17 +139,16 @@ class Game():
         self.player.know_map.append(self.current_level)
         self.player.xp += 12000
         self.player.levelupchange()
+        self.player.crew_mate[0].levelupchange()
+        self.player.crew_mate[1].levelupchange()
         self.player.levelupchange()
+        self.player.crew_mate[0].levelupchange()
+        self.player.crew_mate[1].levelupchange()
         self.player.levelupchange()
-        self.player.levelupchange()
-        self.player.levelupchange()
-        self.player.levelupchange()
-        self.player.levelupchange()
-        self.player.levelupchange()
-        self.player.levelupchange()
-
-        self.map.list_shop.append(NPC_quest)
-
+        self.player.crew_mate[0].levelupchange()
+        self.player.crew_mate[1].levelupchange()
+        #self.map.list_shop.append(NPC_quest)
+        
 
         while running:
             for x in self.map.list_shop:
@@ -432,8 +434,8 @@ class Game():
                 mp =0
 
             # update + draw chatbox
-            self.chat_box.update()
-            self.chat_box.draw()
+            #self.chat_box.update()
+            #self.chat_box.draw()
             pygame.display.update()
             clock.tick(64)
     def game_over(self):
@@ -639,11 +641,11 @@ sorcerer_3.crew_mate.append(sorcerer_2)
 
 
 #map_1.init_map()
-game = Game(sorcerer,list_map[0])
+#game = Game(sorcerer,list_map[0])
 #c = Combat(game,[])
 #c.affichage()
 
-game.main_game()
+#game.main_game()
 #running = True
 #click = False
 #while running:

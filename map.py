@@ -69,7 +69,7 @@ class Map():
         self.print_building()
         self.print_tree()
         self.init_monster()
-        self.init_shop()
+        #self.init_shop()
         self.dict_collision["change_camera_entity"] = self.change_camera_entity
         self.dict_collision["collision_entity"] = self.collision_entity
         self.dict_collision["collision"] = self.collision

@@ -502,6 +502,7 @@ class Combat:
             damages = self.show_which_one_play().in_case.damage()
             if isinstance(defenseur,Rogue):
                 self.chat_box.write_log(("info","Uncanny dodge"))
+                self.print_explosion(defenseur,"heal")
                 damages = defenseur.uncanny_dodge(damages)
             
             self.chat_box.write_log(("combat", "Dammage : " + str(damages))) 
