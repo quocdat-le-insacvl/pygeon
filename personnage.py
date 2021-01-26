@@ -172,7 +172,7 @@ class Perso(Entity,Stats):
         self.resultat = 0
         self.n_de = 6
         self.is_alive = True
-        
+
     
     def check_alive(self):
         if self.hp <= 0:
@@ -401,7 +401,7 @@ class Perso(Entity,Stats):
             screen.blit(board1,(screen.get_width()//2-board.get_width()//2,20))
             screen.blit(board_icon2,(rectboard.x-board_icon.get_width()//1.5,rectboard.y+board_icon.get_height()*0.2))
             pygame.display.flip()
-            running,click=basic_checkevent(click)
+            running,click=basic_checkevent(click,None)
         self.stats_eph=[0,0,0,0,0,0]
         self.points_eph=[0,0,0,0,0,0]
         screen.blit(screenS,(0,0))
@@ -557,15 +557,14 @@ class Perso(Entity,Stats):
             self.crit=False
         if self.armor[4]!=None:
             bonus_deg=self.action.dice(key[self.armor[4]].dmg)
-            if key[self.armor[4]].wpn_type=="RANGED" or key[self.armor[5]].wpn_type=="RANGED":
+            if key[self.armor[4]].wpn_type=="RANGED":
                 return (bonus_deg+dex)*crit
         elif self.armor[5]!=None and self.armor[4]==None:
-            bonus_deg=self.action.dice(key[self.armor[5]].dmg)
-            if key[self.armor[4]].wpn_type=="RANGED" or key[self.armor[5]].wpn_type=="RANGED":
+            if key[self.armor[4]].wpn_type=="RANGED" :
                 return (bonus_deg+dex)*crit
         if self.armor[4]!=None and self.armor[5]!=None:
-            if all([key[self.armor[4]].wpn_type!="Two Handed",key[self.armor[4]].wpn_type!="RANGED",key[self.armor[5]].wpn_type!="RANGED"]):
-                bonus_deg+=self.action.dice(key[self.armor[5]].dmg)
+            if all([key[self.armor[4]].wpn_type!="Two Handed",key[self.armor[4]].wpn_type!="RANGED"]):
+                bonus_deg+=self.action.dice(key[self.armor[4]].dmg)
             elif key[self.armor[4]].wpn_type=="Two Handed":
                 bonus_deg+=(strong//2)*crit  
         return (bonus_deg+strong)*crit
@@ -621,6 +620,7 @@ class Perso_game(Perso):
         self.change_hupper_level = False  
         self.monstre_near = False
         self.collision_donjon = False
+        self.collision_rest = False
         self.mouvement = [False,False,False,False]
         self.deplacement = [0,0]
         self.nbre_direct = 0
@@ -654,6 +654,7 @@ class Perso_game(Perso):
         self.change_hupper_level = False  
         self.collision_donjon = False
         self.monstre_near = False
+        self.collision_rest = False
         entity = None
         possible = True
         for x in dict_collision['change_camera_entity']:
@@ -692,6 +693,9 @@ class Perso_game(Perso):
         for x in dict_collision['collision_donjon']:
             if pixel_mask.overlap(self.masks,((self.pos_x+self.deplacement[0]+10)-x[0],(self.pos_y+self.deplacement[1]+self.img.get_height()-15)-x[1])):
                 self.collision_donjon = True  
+        for x in dict_collision['rest_collision']:
+            if pixel_mask.overlap(self.masks,((self.pos_x+self.deplacement[0]+10)-x[0],(self.pos_y+self.deplacement[1]+self.img.get_height()-15)-x[1])):
+                self.collision_rest = True
 
         if possible:
             self.pos_x += self.deplacement[0]

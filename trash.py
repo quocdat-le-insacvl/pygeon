@@ -81,15 +81,16 @@ class Game():
         self.key["swap"] = K_s
         self.key["map"] = K_m
         self.list_dungeon = dict()
-        bequille = True
+        z=False
         if not reload:
             for i in range(len(self.map.map_decoration)):
                 if self.map.map_decoration[i] != None:
                     for j in range(len(self.map.map_decoration[i])):
                             
-                            if (self.map.map_decoration[i][j]=='8' or self.map.map_decoration[i][j]=='9') and bequille:
-                                bequille= False
-                                donj = Donjon(0,self.screen,self.player,game=self)
+                            if (self.map.map_decoration[i][j]=='8' or self.map.map_decoration[i][j]=='9') and not z:
+                                
+                                donj = Donjon(random.randint(0,1),self.screen,self.player,game=self)
+                                z=True
                                 donj.creationDonjon()
                                 self.list_dungeon[(i,j)] = donj
     
@@ -115,19 +116,18 @@ class Game():
         is_talking = False
         self.player.pos_x = 8680
         self.player.pos_y = 800
-        self.player.xp = 2500
-        self.player.crew_mate[0].pos_x = 0
-        self.player.crew_mate[0].xp = 2500
-        self.player.crew_mate[0].pos_y = 0
-        self.player.crew_mate[1].pos_x = 0
-        self.player.crew_mate[1].xp = 2500
-        self.player.crew_mate[1].pos_y = 0
+        self.player.crew_mate[0].pos_x = 8680
+        self.player.crew_mate[0].pos_y = 1000
+        self.player.crew_mate[1].pos_x = 8680
+        self.player.crew_mate[1].pos_y = 1100
         ### Minimap
         self.minimap = Minimap(self.map.map,self.fog,self.map.display,self.list_mooving_entity,self.player)
     
         for x in donjon:
             x[0],x[1] = (x[1]-x[0])*190//2+9000,(x[1]+x[0])*190//4
         look_level = False
+        look_level2 = False
+        look_level3 = False
         mp = 0 
         ###
         show_inventory = False
@@ -138,18 +138,12 @@ class Game():
         frame = 1
         nb_crew = 0
         self.player.know_map.append(self.current_level)
-        self.player.xp += 12000
         self.player.levelupchange()
         self.player.crew_mate[0].levelupchange()
         self.player.crew_mate[1].levelupchange()
-        self.player.levelupchange()
-        self.player.crew_mate[0].levelupchange()
-        self.player.crew_mate[1].levelupchange()
-        self.player.levelupchange()
-        self.player.crew_mate[0].levelupchange()
-        self.player.crew_mate[1].levelupchange()
-        #self.map.list_shop.append(NPC_quest)
-        
+
+        self.map.list_shop.append(NPC_quest)
+
 
         while running:
             for x in self.map.list_shop:
@@ -212,6 +206,8 @@ class Game():
             
             
             print_mooving_entity(self.fog, screen,self.map.list_monster,center_x,center_y)
+            for x in self.player.crew_mate:
+                x.animate_map()
             for x in self.map.list_monster:
                 x.type_animation = "walk"
                 if x.mouvement[0] < 0 :
@@ -224,7 +220,16 @@ class Game():
             #self.print_frog(player_rect,screen,case_connue,center_x,center_y)
 
             #screen.blit(player.mask_surface,(center_x+self.player.pos_x+20,center_y+self.player.pos_y+self.player.img.get_height()-15))
-
+            if self.player.collision_rest:
+                if draw_interact: draw_text("Press Interact REST",ColderWeather,WHITE,screen,500,500)
+                if interact:
+                    self.chat_box.write_log(("info","YOU SAVE YOUR LIFE"))
+                    self.player.rest()
+                    self.player.hp = self.player.hp_max
+                    self.player.crew_mate[0].rest()
+                    self.player.crew_mate[0].hp = self.player.crew_mate[0].hp_max
+                    self.player.crew_mate[1].rest()
+                    self.player.crew_mate[1].hp = self.player.crew_mate[1].hp_max
             '''Action si contact avec entité'''
             if self.player.collision_donjon:
                 if draw_interact: draw_text("Press Interact",ColderWeather,WHITE,screen,500,500)
@@ -249,7 +254,7 @@ class Game():
                     self.player.pos_y = pos_joueur[1]
                     interact = False
             if self.player.change_level:
-                if draw_interact: draw_text("Press I for go under",ColderWeather,WHITE,screen,500,500)
+                if draw_interact: draw_text("Press I to go under",ColderWeather,WHITE,screen,500,500)
                 if interact:
                    
                     
@@ -281,7 +286,7 @@ class Game():
 
 
             if self.player.change_hupper_level:
-                if draw_interact: draw_text("Press I for go hupper",ColderWeather,WHITE,screen,500,500)
+                if draw_interact: draw_text("Press I to go upper",ColderWeather,WHITE,screen,500,500)
 
                 if interact:
                     nb=0
@@ -382,9 +387,15 @@ class Game():
                 
                 if f.player.crew_mate[0].hp > 0 or f.player.crew_mate[1].hp > 0  or f.player.hp > 0:
                     for x in monstre.group_monster:
+                        self.player.xp += x.xp
+                        self.player.crew_mate[0].xp += x.xp
+                        self.player.crew_mate[1].xp += x.xp
                         if self.player.levelupchange():
                             look_level = True
-                        self.player.xp += x.xp
+                        if self.player.crew_mate[0].levelupchange():
+                            look_level2 = True
+                        if self.player.crew_mate[1].levelupchange():
+                            look_level3 = True
                         inv_chest = Inventaire(7,7)
                         inv_chest.add_random_drop(3)
                         self.list_coffre.append(Chest(self.player.pos_x+dec,self.player.pos_y+dec,monstre_loot,"Coffre","Coffre",inv_chest))
@@ -433,10 +444,24 @@ class Game():
             elif mp>200:
                 look_level = False
                 mp =0
+            if look_level2:
+                mp +=1
+            if mp >= 50 and mp <= 200:
+                screen.blit(pygame.transform.scale(pygame.image.load(path.join(path_addon,'Image/lvl_up.png')),(WINDOWS_SIZE[0]//20,WINDOWS_SIZE[1]//20)),(self.player.crew_mate[0].pos_x+100+center_x,self.player.crew_mate[0].pos_y+center_y))
+            elif mp>200:
+                look_level2 = False
+                mp =0
+            if look_level3:
+                mp +=1
+            if mp >= 50 and mp <= 200:
+                screen.blit(pygame.transform.scale(pygame.image.load(path.join(path_addon,'Image/lvl_up.png')),(WINDOWS_SIZE[0]//20,WINDOWS_SIZE[1]//20)),(self.player.crew_mate[1].pos_x+100+center_x,self.player.crew_mate[1].pos_y+center_y))
+            elif mp>200:
+                look_level3 = False
+                mp =0
 
             # update + draw chatbox
-            #self.chat_box.update()
-            #self.chat_box.draw()
+            self.chat_box.update()
+            self.chat_box.draw()
             pygame.display.update()
             clock.tick(64)
     def game_over(self):
@@ -545,38 +570,44 @@ class Game():
     def interact(self,entity,is_talking):
         display_talk = pygame.Surface((1800,1080))
         display_talk.set_colorkey((0,0,0))
-        if entity.type == "Seller":
-            if entity.talking != None:
-                if is_talking == True or Validation_screen(entity.talking,display_talk,self.click):
-                    is_talking = True
-                    entity.print_shop(self.player,self.click)
-                screen.blit(display_talk,(0,0))
-        elif entity.type == "Coffre":
-            entity.inventaire.loot_inventory(100,100,700,100,self.player.inventaire)
-            if entity.inventaire.is_empty():
-                entity.img = monstre_loot_open
-            else:
-                entity.img = monstre_loot_light
-        elif isinstance(entity,NPC):
-            if entity.quest != None:
-                if not entity.quest.is_accomplish:
-                    if entity.quest.print_text(self.click):
-                        return 0
-                    entity.quest.print_reward()
-                    if isinstance(entity.quest,Quest_find_items):
-                        entity.quest.print_items()
-                        if entity.quest.is_accept:
-                            if entity.quest.got_items(self.player):
-                                entity.quest.quest_accomplish(self.player)
-                            else:
-                                return False
-                    elif isinstance(entity.quest,Quest_kill_monster):
-                        entity.quest.print_monster()
-                        if entity.quest.is_accept:
-                            if entity.quest.is_alive():
-                                entity.quest.quest_accomplish(self.player)
-                            else:
-                                return False
+        try:
+                
+            if entity.type == "Seller":
+                if entity.talking != None:
+                    if is_talking == True or Validation_screen(entity.talking,display_talk,self.click):
+                        is_talking = True
+                        entity.print_shop(self.player,self.click)
+                    screen.blit(display_talk,(0,0))
+            elif entity.type == "Coffre":
+                entity.inventaire.loot_inventory(100,400,700,400,self.player.inventaire)
+                if entity.inventaire.is_empty():
+                    entity.img = monstre_loot_open
+                else:
+                    entity.img = monstre_loot_light
+
+            elif isinstance(entity,NPC):
+                if entity.quest != None:
+                    if not entity.quest.is_accomplish:
+                        if entity.quest.print_text(self.click):
+                            return 0
+                        entity.quest.print_reward()
+                        if isinstance(entity.quest,Quest_find_items):
+                            entity.quest.print_items()
+                            if entity.quest.is_accept:
+                                if entity.quest.got_items(self.player):
+                                    entity.quest.quest_accomplish(self.player)
+                                else:
+                                    return False
+                        elif isinstance(entity.quest,Quest_kill_monster):
+                            entity.quest.print_monster()
+                            if entity.quest.is_accept:
+                                if entity.quest.is_alive():
+                                    entity.quest.quest_accomplish(self.player)
+                                else:
+                                    return False
+
+        except:
+            return 1
         return 1
 
     #retourne le donjon le plus proche du joueur
@@ -642,11 +673,11 @@ sorcerer_3.crew_mate.append(sorcerer_2)
 
 
 #map_1.init_map()
-#game = Game(sorcerer,list_map[0])
+game = Game(sorcerer,list_map[0])
 #c = Combat(game,[])
 #c.affichage()
 
-#game.main_game()
+game.main_game()
 #running = True
 #click = False
 #while running:

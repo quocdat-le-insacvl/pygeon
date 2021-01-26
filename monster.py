@@ -14,9 +14,9 @@ import random
 key = list(Wikitem.keys())
 liste_type_monste = [demon_1_animation,demon_animation,squelton_animation,wizard_animation,dark_wizard_animation]
 
-stats_nv1 = [8,8,8,8,8,8,10]
+stats_nv1 = [9,9,9,12,12,12,10]
 
-stats_nv2 = [10,10,10,10,10,10,15]
+stats_nv2 = [12,12,12,12,12,12,15]
 
 stats_nv3 = [12,12,12,12,12,12,20]
 
@@ -36,8 +36,8 @@ list_stats.append(stats_nv5)
 class Monster(Entity,Stats):
     def __init__(self, pos_x, pos_y, img, name, which_type, decalage,animation_dict=None, talking='', size=(0,0), size_monster='Small', walking_speed=30,size_collide_box = 1,donjon=False):
         super().__init__(pos_x, pos_y, img, name, which_type, animation_dict=animation_dict, talking=talking, size=size, decalage=decalage,size_collide_box=size_collide_box,donjon=donjon)
-        if int(which_type) == 4:
-            which_type = randrange(4,5)
+        if int(which_type) == 3:
+            which_type = randrange(3,4)
         Stats.__init__(self,list_stats[int(which_type)-1][0],list_stats[int(which_type)-1][1],list_stats[int(which_type)-1][2],list_stats[int(which_type)-1][3],list_stats[int(which_type)-1][4],list_stats[int(which_type)-1][5],list_stats[int(which_type)-1][6])
         # Rule : https://www.dndbeyond.com/sources/basic-rules/monsters#Challenge
         self.challenge = 0
@@ -58,8 +58,8 @@ class Monster(Entity,Stats):
         self.change_direction = 0
         self.mouvement = [0,0]
         self.is_player = False
-        self.level=int(which_type)
-        self.xp = (50*self.level)**self.level
+        self.level=int(which_type)+1
+        self.xp = (50*self.level)*self.level
         self.stats=list_stats[int(which_type)-1]
         self.skills=[0,0,0,0,0,0]
         self.action = Actions()
@@ -78,12 +78,12 @@ class Monster(Entity,Stats):
                 self.armor[1],t=choisir_alea_armor()
             while (key[self.armor[4]].rarete!="commun"):
                 self.armor[4],t=choisir_alea()
-        elif 2<int(which_type)<=4:
+        elif 2<int(which_type)<=3:
             while (key[self.armor[1]].rarete!="rare"):
                 self.armor[1],t=choisir_alea_armor()
             while (key[self.armor[4]].rarete!="rare"):
                 self.armor[4],t=choisir_alea()
-        elif int(which_type)==5:
+        elif int(which_type)==4:
             while (key[self.armor[1]].rarete!="epique"):
                 self.armor[1],t=choisir_alea_armor()
             while (key[self.armor[4]].rarete!="legendaire"):
