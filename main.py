@@ -2,7 +2,7 @@ import pygame, sys,pickle,os
 import math
 import random
 from pygame import mixer
-from script import pack,player,Wikitem,playerbis,pack_bis,sorcerer_3,list_static_entity,player_for_save
+from script import pack,player,Wikitem,playerbis,pack_bis,sorcerer_2,sorcerer,sorcerer_3,list_static_entity,player_for_save
 from pygame.locals import *
 from settings.screen import *
 from settings.police import Drifftype,ColderWeather,Rumbletumble,coeff,coeff1,coeff2,ColderWeather_small
@@ -156,24 +156,21 @@ class Menu():
 
             if bouton_click(button_1,display,self.click) or self.perso.classe == 'fighter':
                 draw_text('Fighter', ColderWeather, RED, display, display.get_width()//4 - text_width // 2.5,display.get_height()//6 + 4*text_height)
-                self.perso.classe = 'fighter'
+                self.perso = sorcerer_2
             else:
                 draw_text('Fighter', ColderWeather, WHITE, display, display.get_width()//4 - text_width // 2.5,display.get_height()//6 + 4*text_height)
 
-
             if bouton_click(button_2,display,self.click) or self.perso.classe == 'sorcerer':
                 draw_text('Sorcerer',ColderWeather,RED,display,display.get_width()//4 - text_width // 2.5,display.get_height()//6 + 5*text_height)
-                self.perso.classe = 'sorcerer'
+                self.perso = sorcerer
             else:
                 draw_text('Sorcerer',ColderWeather,WHITE,display,display.get_width()//4 - text_width // 2.5,display.get_height()//6 + 5*text_height)
 
-
             if bouton_click(button_3,display,self.click) or self.perso.classe == 'rogue':
                 draw_text('Rogue',ColderWeather,RED,display,display.get_width()//4 - text_width // 2.5,display.get_height()//6 + 6*text_height)
-                self.perso.classe = 'rogue'
+                self.perso = sorcerer_3
             else:
                 draw_text('Rogue',ColderWeather,WHITE,display,display.get_width()//4 - text_width // 2.5,display.get_height()//6 + 6*text_height)
-
             # CHANGEMENTS CAPACITES JOUEURS : AFFICHAGE
             """
             text_width, text_height = ColderWeather.size("Points Disponible")
@@ -385,6 +382,7 @@ class Menu():
             screen.blit(pygame.transform.scale(display,WINDOWS_SIZE),(0,0))
 
             pygame.display.update()
+
 
 menu = Menu(sorcerer_3)
 menu.game_loop()
