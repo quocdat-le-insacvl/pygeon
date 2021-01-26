@@ -495,7 +495,7 @@ class Perso(Entity,Stats):
         click=False
         while running:
             indice=collides(pygame.mouse.get_pos(), list_choice)
-            running,click=basic_checkevent(click)
+            running,click=basic_checkevent(click, None)
             if click==True:
                 if board_rect.collidepoint(pygame.mouse.get_pos())!=True:
                     running=False

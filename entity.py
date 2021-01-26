@@ -1,5 +1,5 @@
 import pygame
-from settings.load_img import pixel_red, light_mask, collide_map, collide_monster
+from settings.load_img import pixel_red, light_mask, collide_map, collide_monster, shadow_monster
 from settings.screen import *
 from settings.color import *
 from settings.load_img import ava_perso
@@ -34,7 +34,7 @@ class Entity():
         self.is_hidden = True
         self.seen = False
         self.last_know_pos = (0, 0)
-        self.shadow = img
+        self.shadow = shadow_monster
         self.collide_box = Collide_box(size_collide_box)
 
 
@@ -220,7 +220,15 @@ class ChatBox:
                 break
 
     def write_log(self, text):
-        self.log.insert(0, text)
+        texts = []
+        while len(text) > 41:
+            head = text[:41] + '-'
+            text = text[41:]
+            texts.append(head)
+        texts.append(text)
+        # print(texts)
+        for t in texts:
+            self.log.insert(0, t)
         self.input_box.camera = 0
 
 
@@ -253,7 +261,7 @@ class InputBox:
         if event.type == KEYDOWN:
             if self.active:
                 if event.key == K_RETURN:
-                    self.chat_box.log.insert(0, self.text)
+                    self.chat_box.write_log(self.text)
                     self.text = ''
                     self.camera = 0
                 elif event.key == K_BACKSPACE:

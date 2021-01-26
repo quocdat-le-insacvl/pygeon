@@ -126,17 +126,23 @@ def bouton_click(bouton,display,click,constant_click = 0):
     Check les evenements utilisateur
     return Faux si press ESCAPE vrai sinon
     return Click Vrai si utlisateur click faux sinon"""
-def basic_checkevent(click):
+def basic_checkevent(click, game):
     click = False
     for event in pygame.event.get():
-        if event.type == QUIT:
-            sys.exit()
-        if event.type == KEYDOWN:
-            if event.key == K_ESCAPE:
-                return False,click
-        if event.type == MOUSEBUTTONDOWN:
-            if event.button == 1:
-                click = True
+        # handle chatbox
+        if game is not None:
+            chatting = game.chat_box.handle_event(event)
+        else:
+            chatting = False
+            if not chatting:
+                if event.type == QUIT:
+                    sys.exit()
+                if event.type == KEYDOWN:
+                    if event.key == K_ESCAPE:
+                        return False,click
+                if event.type == MOUSEBUTTONDOWN:
+                    if event.button == 1:
+                        click = True
     return True,click
 """def load_game
     Affiche le menu de Sauvegarde et permet de sauvegarder "perso" dans un fichier choisit par l'utilisateur ou à l'inverse de charger un perso provenant de sauvegarde
