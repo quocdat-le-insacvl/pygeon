@@ -239,11 +239,11 @@ parchment=pygame.image.load(path.join(path_menu,"UI board Large  parchment.png")
 img_description = pygame.image.load(path.join(path_menu,"UI board Large stone.png"))
 
 monstre_loot = pygame.image.load(path.join(path_addon,"coffre.png"))
-monstre_loot = pygame.transform.scale(monstre_loot,(monstre_loot.get_width()//2,monstre_loot.get_height()//2))
+monstre_loot = pygame.transform.scale(monstre_loot,(monstre_loot.get_width()//3,monstre_loot.get_height()//3))
 monstre_loot_open = pygame.image.load(path.join(path_addon,"coffre_1.png"))
-monstre_loot_open = pygame.transform.scale(monstre_loot_open,(monstre_loot_open.get_width()//2,monstre_loot_open.get_height()//2))
+monstre_loot_open = pygame.transform.scale(monstre_loot_open,(monstre_loot_open.get_width()//3,monstre_loot_open.get_height()//3))
 monstre_loot_light = pygame.image.load(path.join(path_addon,"coffre_2.png"))
-monstre_loot_light = pygame.transform.scale(monstre_loot_light,(monstre_loot_light.get_width()//2,monstre_loot_light.get_height()//2))
+monstre_loot_light = pygame.transform.scale(monstre_loot_light,(monstre_loot_light.get_width()//3,monstre_loot_light.get_height()//3))
 
 test = pygame.image.load(path.join(path_addon,"anim.png"))
 test = pygame.transform.scale(test,(test.get_width()*3,test.get_height()*3))
@@ -307,3 +307,5 @@ graphique_donjon[16] = graphique_donjon[8]
 graphique_donjon[17] = [createImages("teleporterEnd.png",path_donjon,scaled=(64,64))]
 nb_graphique_donjon = len(graphique_name_donjon) +5
 collide_donjon = createImages("Collide.png",path_donjon,forceScale=True,autocolorkey=True)
+rest_table = pygame.image.load(path.join(path_addon,"table_rest.png"))
+rest_table = pygame.transform.scale(rest_table,(150,150))

@@ -12,7 +12,7 @@ from settings.screen import screen
 class Rogue(Perso_game):
 
     def __init__(self,STR=8,DEX=8,CON=8,INT=8,WIS=8,CHA=8,hp=10,hp_max=10,inventaire=10,name=None,classe=None,level=0,xp=0,decalage=[0,0],size=(0,0),n_case = 0):
-        Perso_game.__init__(self,STR,DEX,CON,INT,WIS,CHA,hp,hp_max,inventaire,walk_bottom['walk_bottom_' + str(1) +'.png'],100,100,decalage=decalage,size=size,player_animation=player_animation_sorcerer)
+        Perso_game.__init__(self,STR,DEX,CON,INT,WIS,CHA,hp,hp_max,inventaire,walk_bottom['walk_bottom_' + str(1) +'.png'],100,100,decalage=decalage,size=size,player_animation=player_animation_sorcerer,name=name)
         self.hit_dice = 6
         self.classe = "rogue"
         

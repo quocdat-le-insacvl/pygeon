@@ -8,7 +8,7 @@ from inventory import Inventaire,Shop,key
 from settings.color import BURGUNDY,BLACK
 from monster import Monster
 from custum_map_ import list_entity_animation,list_npc
-from settings.load_img import rune_2,grass,demon_1_animation,demon_animation,squelton_animation,wizard_animation,dark_wizard_animation,pixel_red,etagere,end_game,road,wall,void,tree,fence_1,fence_2,chair,etagere_2,chair_2,chair_3,chest,table,rune_1,rune
+from settings.load_img import rest_table,rune_2,grass,demon_1_animation,demon_animation,squelton_animation,wizard_animation,dark_wizard_animation,pixel_red,etagere,end_game,road,wall,void,tree,fence_1,fence_2,chair,etagere_2,chair_2,chair_3,chest,table,rune_1,rune
 
 import json
 dict_img_npc = dict()
@@ -49,9 +49,11 @@ class Map():
         self.collision_hupper_level = []
         self.list_monster = []
         self.list_shop = []
+        self.rest_collision = []
         self.collision_donjon = []
         self.dict_collision = dict()
         self.all_collision = dict()
+        
         self.spawn_point = (0,0)
     def load_map(self):
         self.map = load_map(self.path,reverse=True)
@@ -77,6 +79,7 @@ class Map():
         self.dict_collision["collision_under_level"] = self.collision_under_level
         self.dict_collision["collision_hupper_level"] = self.collision_hupper_level
         self.dict_collision["collision_donjon"] = self.collision_donjon
+        self.dict_collision["rest_collision"] = self.rest_collision
     def load_dict(self):
         pass
         #self.display.blit(self.display_tree,(0,0))
@@ -209,6 +212,9 @@ class Map():
                         self.collision_hupper_level.append((x,y))
                         self.spawn_point = (x,y)
                         self.display.blit(pygame.transform.scale(rune,(190,95)),(x,y))
+                    if self.map_decoration[i][j] == 'r':
+                        self.rest_collision.append((x,y))
+                        self.display.blit(pygame.transform.scale(rest_table,(150,150)),(x,y-70))
                 j+=1
             i+=1
         i=0

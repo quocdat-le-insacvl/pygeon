@@ -223,7 +223,16 @@ class Game():
             #self.print_frog(player_rect,screen,case_connue,center_x,center_y)
 
             #screen.blit(player.mask_surface,(center_x+self.player.pos_x+20,center_y+self.player.pos_y+self.player.img.get_height()-15))
-
+            if self.player.collision_rest:
+                if draw_interact: draw_text("Press Interact REST",ColderWeather,WHITE,screen,500,500)
+                if interact:
+                    self.chat_box.write_log(("info","YOU SAVE YOUR LIFE"))
+                    self.player.rest()
+                    self.player.hp = self.player.hp_max
+                    self.player.crew_mate[0].rest()
+                    self.player.crew_mate[0].hp = self.player.crew_mate[0].hp_max
+                    self.player.crew_mate[1].rest()
+                    self.player.crew_mate[1].hp = self.player.crew_mate[1].hp_max
             '''Action si contact avec entité'''
             if self.player.collision_donjon:
                 if draw_interact: draw_text("Press Interact",ColderWeather,WHITE,screen,500,500)
@@ -641,11 +650,11 @@ sorcerer_3.crew_mate.append(sorcerer_2)
 
 
 #map_1.init_map()
-#game = Game(sorcerer,list_map[0])
+game = Game(sorcerer,list_map[0])
 #c = Combat(game,[])
 #c.affichage()
 
-#game.main_game()
+game.main_game()
 #running = True
 #click = False
 #while running:

@@ -621,6 +621,7 @@ class Perso_game(Perso):
         self.change_hupper_level = False  
         self.monstre_near = False
         self.collision_donjon = False
+        self.collision_rest = False
         self.mouvement = [False,False,False,False]
         self.deplacement = [0,0]
         self.nbre_direct = 0
@@ -654,6 +655,7 @@ class Perso_game(Perso):
         self.change_hupper_level = False  
         self.collision_donjon = False
         self.monstre_near = False
+        self.collision_rest = False
         entity = None
         possible = True
         for x in dict_collision['change_camera_entity']:
@@ -692,6 +694,9 @@ class Perso_game(Perso):
         for x in dict_collision['collision_donjon']:
             if pixel_mask.overlap(self.masks,((self.pos_x+self.deplacement[0]+10)-x[0],(self.pos_y+self.deplacement[1]+self.img.get_height()-15)-x[1])):
                 self.collision_donjon = True  
+        for x in dict_collision['rest_collision']:
+            if pixel_mask.overlap(self.masks,((self.pos_x+self.deplacement[0]+10)-x[0],(self.pos_y+self.deplacement[1]+self.img.get_height()-15)-x[1])):
+                self.collision_rest = True
 
         if possible:
             self.pos_x += self.deplacement[0]
