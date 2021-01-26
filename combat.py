@@ -15,6 +15,7 @@ from script import list_mooving_entity, list_static_entity
 from sorcerer import *
 import math
 import random
+from rogue import Rogue
 clock = pygame.time.Clock()
 # Message pour Christine: 
 #   Pour print sur le log: 
@@ -117,7 +118,7 @@ class Combat:
         self.map = l
         self.mask = souris_mask
         while running:
-            
+            print(self.show_which_one_play().in_case.level)
             mx, my = pygame.mouse.get_pos()
             self.print_battleground()
             # Gestion Tours
@@ -492,24 +493,24 @@ class Combat:
                 #Passer le tour  
     def lunch_attack(self,defenseur):
         attack = self.show_which_one_play().in_case.calcul_attack_score()
+        defense =  defenseur.in_case.calcul_armor()
+        self.chat_box.write_log(("combat", self.show_which_one_play().in_case.name + " tente d'attaquer " + defenseur.in_case.name))
+        self.chat_box.write_log(("combat", "Score d'attack : " + str(attack) + "Score de defense : " + str(defense)))
+        if attack > defense:
+            self.chat_box.write_log(("combat",self.show_which_one_play().in_case.name+" attack " + self.game.player.name ))
+            self.print_anim(self.show_which_one_play(),self.game.player.trouver_case(list_case),list_case,anim_type="attack",mouvement=False)
+            damages = self.show_which_one_play().in_case.damage()
+            if isinstance(defenseur,Rogue):
+                self.chat_box.write_log(("info","Uncanny dodge"))
+                damages = defenseur.uncanny_dodge(damages)
+            
+            self.chat_box.write_log(("combat", "Dammage : " + str(damages))) 
+            self.print_explosion(defenseur)
 
-        if defenseur != None and defenseur.in_case != None:
-            if isinstance(defenseur,Monster) and isinstance(self.show_which_one_play().in_case,Monster):
-                
-                return 0
-            defense =  defenseur.in_case.calcul_armor()
-            self.chat_box.write_log(("combat", self.show_which_one_play().in_case.name + " tente d'attaquer " + defenseur.in_case.name))
-            self.chat_box.write_log(("combat", "Score d'attack : " + str(attack) + "Score de defense : " + str(defense)))
-            if attack > defense:
-                self.chat_box.write_log(("combat",self.show_which_one_play().in_case.name+" attack " + self.game.player.name ))
-                self.print_anim(self.show_which_one_play(),self.game.player.trouver_case(list_case),list_case,anim_type="attack",mouvement=False)
-                damages = self.show_which_one_play().in_case.damage()
-                self.chat_box.write_log(("combat", "Dammage : " + str(damages))) 
-                self.print_explosion(defenseur)
-                defenseur.in_case.hp -= damages
-                if defenseur.in_case.hp <= 0:
-                    self.list_tour.remove(defenseur.in_case)
-                    defenseur.in_case = None
+            defenseur.in_case.hp -= damages
+            if defenseur.in_case.hp <= 0:
+                self.list_tour.remove(defenseur.in_case)
+                defenseur.in_case = None
         self.reset_select(list_case)
         self.next_round()
     def lunch_spell(self):

@@ -175,7 +175,7 @@ class Menu():
                 draw_text('Rogue',ColderWeather,WHITE,display,display.get_width()//4 - text_width // 2.5,display.get_height()//6 + 6*text_height)
 
             # CHANGEMENTS CAPACITES JOUEURS : AFFICHAGE
-
+            """
             text_width, text_height = ColderWeather.size("Points Disponible")
             draw_text('Points Disponible : %d'%(self.perso.difficulty), ColderWeather, GREY, display, display.get_width() - display.get_width()//4 - text_width // 1.5,display.get_height()//6 )
             text_width, text_height = ColderWeather.size("STR")
@@ -194,7 +194,7 @@ class Menu():
             self.perso.INT = self.affichage_set_point(display.get_width() - display.get_width()//4 + 0.5*text_width,display.get_height()//6 + 4*text_height,self.perso.INT,display)
             self.perso.WIS = self.affichage_set_point(display.get_width() - display.get_width()//4 + 0.5*text_width,display.get_height()//6 + 5*text_height,self.perso.WIS,display)
             self.perso.CHA = self.affichage_set_point(display.get_width() - display.get_width()//4 + 0.5*text_width,display.get_height()//6 + 6*text_height,self.perso.CHA,display)
-
+            """
             # CHANGEMENTS NOM
 
             text_width, text_height = ColderWeather.size("Choisir un Nom")

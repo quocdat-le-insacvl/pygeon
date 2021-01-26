@@ -36,6 +36,8 @@ list_stats.append(stats_nv5)
 class Monster(Entity,Stats):
     def __init__(self, pos_x, pos_y, img, name, which_type, decalage,animation_dict=None, talking='', size=(0,0), size_monster='Small', walking_speed=30,size_collide_box = 1,donjon=False):
         super().__init__(pos_x, pos_y, img, name, which_type, animation_dict=animation_dict, talking=talking, size=size, decalage=decalage,size_collide_box=size_collide_box,donjon=donjon)
+        if int(which_type) == 4:
+            which_type = randrange(4,5)
         Stats.__init__(self,list_stats[int(which_type)-1][0],list_stats[int(which_type)-1][1],list_stats[int(which_type)-1][2],list_stats[int(which_type)-1][3],list_stats[int(which_type)-1][4],list_stats[int(which_type)-1][5],list_stats[int(which_type)-1][6])
         # Rule : https://www.dndbeyond.com/sources/basic-rules/monsters#Challenge
         self.challenge = 0

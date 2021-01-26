@@ -90,7 +90,7 @@ class Quest_kill_monster(Quest):
     def print_monster(self):
         draw_text("Monstre : ",ColderWeather_small,WHITE,screen,self.pos_x+100,self.pos_y+400)
         screen.blit(self.monster.avata,(225,400))
-ouvrir_porte = Quest_find_items("Bonjour Aventurier ! J'ai perdu mes clee dans un coffre proche d ici pouvez vous m aidez a les retrouver ?",50,[A_Armor04],Key1)
+ouvrir_porte = Quest_find_items("Bonjour Aventurier ! J'ai perdu mes clés dans un coffre proche d ici pouvez vous m aider a les retrouver",50,[A_Armor04],Key1)
 #kill_monster = Quest_kill_monster("Bonjour Aventurier ! Un monstre m'empeche de recolter mes champs pouvez vous m'aider ?",50,[A_Armor04,A_Armor05],player)
 """
 while running:
