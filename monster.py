@@ -14,9 +14,9 @@ import random
 key = list(Wikitem.keys())
 liste_type_monste = [demon_1_animation,demon_animation,squelton_animation,wizard_animation,dark_wizard_animation]
 
-stats_nv1 = [12,12,12,12,12,12,15]
+stats_nv1 = [9,9,9,12,12,12,10]
 
-stats_nv2 = [12,12,12,12,12,12,20]
+stats_nv2 = [12,12,12,12,12,12,15]
 
 stats_nv3 = [12,12,12,12,12,12,20]
 
@@ -78,12 +78,12 @@ class Monster(Entity,Stats):
                 self.armor[1],t=choisir_alea_armor()
             while (key[self.armor[4]].rarete!="commun"):
                 self.armor[4],t=choisir_alea()
-        elif 2<int(which_type)<=4:
+        elif 2<int(which_type)<=3:
             while (key[self.armor[1]].rarete!="rare"):
                 self.armor[1],t=choisir_alea_armor()
             while (key[self.armor[4]].rarete!="rare"):
                 self.armor[4],t=choisir_alea()
-        elif int(which_type)==5:
+        elif int(which_type)==4:
             while (key[self.armor[1]].rarete!="epique"):
                 self.armor[1],t=choisir_alea_armor()
             while (key[self.armor[4]].rarete!="legendaire"):

@@ -81,14 +81,16 @@ class Game():
         self.key["swap"] = K_s
         self.key["map"] = K_m
         self.list_dungeon = dict()
+        z=False
         if not reload:
             for i in range(len(self.map.map_decoration)):
                 if self.map.map_decoration[i] != None:
                     for j in range(len(self.map.map_decoration[i])):
                             
-                            if self.map.map_decoration[i][j]=='8' or self.map.map_decoration[i][j]=='9':
+                            if (self.map.map_decoration[i][j]=='8' or self.map.map_decoration[i][j]=='9') and not z:
                                 
-                                donj = Donjon(0,self.screen,self.player,game=self)
+                                donj = Donjon(random.randint(0,1),self.screen,self.player,game=self)
+                                z=True
                                 donj.creationDonjon()
                                 self.list_dungeon[(i,j)] = donj
     
@@ -114,19 +116,18 @@ class Game():
         is_talking = False
         self.player.pos_x = 8680
         self.player.pos_y = 800
-        self.player.xp = 2500
-        self.player.crew_mate[0].pos_x = 0
-        self.player.crew_mate[0].xp = 2500
-        self.player.crew_mate[0].pos_y = 0
-        self.player.crew_mate[1].pos_x = 0
-        self.player.crew_mate[1].xp = 2500
-        self.player.crew_mate[1].pos_y = 0
+        self.player.crew_mate[0].pos_x = 8680
+        self.player.crew_mate[0].pos_y = 1000
+        self.player.crew_mate[1].pos_x = 8680
+        self.player.crew_mate[1].pos_y = 1100
         ### Minimap
         self.minimap = Minimap(self.map.map,self.fog,self.map.display,self.list_mooving_entity,self.player)
     
         for x in donjon:
             x[0],x[1] = (x[1]-x[0])*190//2+9000,(x[1]+x[0])*190//4
         look_level = False
+        look_level2 = False
+        look_level3 = False
         mp = 0 
         ###
         show_inventory = False
@@ -137,18 +138,12 @@ class Game():
         frame = 1
         nb_crew = 0
         self.player.know_map.append(self.current_level)
-        self.player.xp += 12000
         self.player.levelupchange()
         self.player.crew_mate[0].levelupchange()
         self.player.crew_mate[1].levelupchange()
-        self.player.levelupchange()
-        self.player.crew_mate[0].levelupchange()
-        self.player.crew_mate[1].levelupchange()
-        self.player.levelupchange()
-        self.player.crew_mate[0].levelupchange()
-        self.player.crew_mate[1].levelupchange()
-        #self.map.list_shop.append(NPC_quest)
-        
+
+        self.map.list_shop.append(NPC_quest)
+
 
         while running:
             for x in self.map.list_shop:
@@ -211,6 +206,8 @@ class Game():
             
             
             print_mooving_entity(self.fog, screen,self.map.list_monster,center_x,center_y)
+            for x in self.player.crew_mate:
+                x.animate_map()
             for x in self.map.list_monster:
                 x.type_animation = "walk"
                 if x.mouvement[0] < 0 :
@@ -390,9 +387,15 @@ class Game():
                 
                 if f.player.crew_mate[0].hp > 0 or f.player.crew_mate[1].hp > 0  or f.player.hp > 0:
                     for x in monstre.group_monster:
+                        self.player.xp += x.xp
+                        self.player.crew_mate[0].xp += x.xp
+                        self.player.crew_mate[1].xp += x.xp
                         if self.player.levelupchange():
                             look_level = True
-                        self.player.xp += x.xp
+                        if self.player.crew_mate[0].levelupchange():
+                            look_level2 = True
+                        if self.player.crew_mate[1].levelupchange():
+                            look_level3 = True
                         inv_chest = Inventaire(7,7)
                         inv_chest.add_random_drop(3)
                         self.list_coffre.append(Chest(self.player.pos_x+dec,self.player.pos_y+dec,monstre_loot,"Coffre","Coffre",inv_chest))
@@ -441,10 +444,24 @@ class Game():
             elif mp>200:
                 look_level = False
                 mp =0
+            if look_level2:
+                mp +=1
+            if mp >= 50 and mp <= 200:
+                screen.blit(pygame.transform.scale(pygame.image.load(path.join(path_addon,'Image/lvl_up.png')),(WINDOWS_SIZE[0]//20,WINDOWS_SIZE[1]//20)),(self.player.crew_mate[0].pos_x+100+center_x,self.player.crew_mate[0].pos_y+center_y))
+            elif mp>200:
+                look_level2 = False
+                mp =0
+            if look_level3:
+                mp +=1
+            if mp >= 50 and mp <= 200:
+                screen.blit(pygame.transform.scale(pygame.image.load(path.join(path_addon,'Image/lvl_up.png')),(WINDOWS_SIZE[0]//20,WINDOWS_SIZE[1]//20)),(self.player.crew_mate[1].pos_x+100+center_x,self.player.crew_mate[1].pos_y+center_y))
+            elif mp>200:
+                look_level3 = False
+                mp =0
 
             # update + draw chatbox
-            #self.chat_box.update()
-            #self.chat_box.draw()
+            self.chat_box.update()
+            self.chat_box.draw()
             pygame.display.update()
             clock.tick(64)
     def game_over(self):
@@ -485,7 +502,7 @@ class Game():
                     sys.exit()
             screen.blit(pygame.transform.scale(display, WINDOWS_SIZE), (0, 0))
             pygame.display.update()
-            running, self.click = basic_checkevent(self.click)
+            running, self.click = basic_checkevent(self.click,self)
         self.click = False
         """Affiche un menu pause classique"""
     def key_menu(self):

@@ -283,7 +283,7 @@ class Combat:
                 if abs(i) >= abs(dist) and abs(j) >= abs(dist_2):
                     running = False
                 else:
-                    running,self.game.click=  basic_checkevent(self.game.click)  
+                    running,self.game.click=  basic_checkevent(self.game.click, None)  
             else:
                 if complete:
                     running = False
