@@ -232,7 +232,7 @@ class Shop(Entity):
                                 perso.argent -= key[self.inventory.backpack[mouse_slot]].value
                                 perso.inventaire.poid_actuel += key[self.inventory.backpack[mouse_slot]].wheight
                                 perso.inventaire.backpack[i] = self.inventory.backpack[mouse_slot]
-                                self.inventory.backpack[mouse_slot] = None
+                                # self.inventory.backpack[mouse_slot] = None
                                 self.inventory.have_object = False
                         else:
                             Validation_screen("Vous n'avez pas assez d'argent !",display_talk,click)
