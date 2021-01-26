@@ -88,7 +88,7 @@ class Game():
                             
                             if self.map.map_decoration[i][j]=='8' or self.map.map_decoration[i][j]=='9':
                                 
-                                donj = Donjon(random.randint(50,50),self.screen,self.player,game=self)
+                                donj = Donjon(0,self.screen,self.player,game=self)
                                 donj.creationDonjon()
                                 self.list_dungeon[(i,j)] = donj
     

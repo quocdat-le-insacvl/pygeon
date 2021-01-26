@@ -299,7 +299,7 @@ graphique_name_donjon = ["bed000","chair000","bs000","fireplace_000","table000",
             "escalier_000","bedb000","book000","shelf000","shelfA000","shelfB000","tableB000"]
 graphique_states_donjon = [[""+graphique_name_donjon[i]+"%d.png"%j for j in [0,2,4,6]] for i in range(len(graphique_name_donjon))]
 graphique_donjon = {i+2 : [createImages(graphique_states_donjon[i][j],path_donjon,autocolorkey=True,scaled=(70,70)) for j in range(len(graphique_states_donjon[i]))]  for i in range(len(graphique_states_donjon))  }
-print(len(graphique_donjon))
+#print(len(graphique_donjon))
 graphique_donjon[len(graphique_name_donjon) +2] = [createImages("teleporter.png",path_donjon,scaled=(64,64))]
 
 graphique_donjon[len(graphique_name_donjon) +3] = [createImages("45.png",path_donjon,forceScale=True)]
