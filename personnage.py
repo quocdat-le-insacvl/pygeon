@@ -172,7 +172,7 @@ class Perso(Entity,Stats):
         self.resultat = 0
         self.n_de = 6
         self.is_alive = True
-
+        
     
     def check_alive(self):
         if self.hp <= 0:

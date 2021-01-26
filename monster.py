@@ -14,9 +14,9 @@ import random
 key = list(Wikitem.keys())
 liste_type_monste = [demon_1_animation,demon_animation,squelton_animation,wizard_animation,dark_wizard_animation]
 
-stats_nv1 = [12,12,12,12,12,12,15]
+stats_nv1 = [8,8,8,8,8,8,10]
 
-stats_nv2 = [12,12,12,12,12,12,20]
+stats_nv2 = [10,10,10,10,10,10,15]
 
 stats_nv3 = [12,12,12,12,12,12,20]
 

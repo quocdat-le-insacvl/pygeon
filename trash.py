@@ -81,13 +81,14 @@ class Game():
         self.key["swap"] = K_s
         self.key["map"] = K_m
         self.list_dungeon = dict()
+        bequille = True
         if not reload:
             for i in range(len(self.map.map_decoration)):
                 if self.map.map_decoration[i] != None:
                     for j in range(len(self.map.map_decoration[i])):
                             
-                            if self.map.map_decoration[i][j]=='8' or self.map.map_decoration[i][j]=='9':
-                                
+                            if (self.map.map_decoration[i][j]=='8' or self.map.map_decoration[i][j]=='9') and bequille:
+                                bequille= False
                                 donj = Donjon(0,self.screen,self.player,game=self)
                                 donj.creationDonjon()
                                 self.list_dungeon[(i,j)] = donj
