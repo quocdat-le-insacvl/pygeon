@@ -126,7 +126,7 @@ def bouton_click(bouton,display,click,constant_click = 0):
     Check les evenements utilisateur
     return Faux si press ESCAPE vrai sinon
     return Click Vrai si utlisateur click faux sinon"""
-def basic_checkevent(click, game):
+def basic_checkevent(click, game=None):
     click = False
     for event in pygame.event.get():
         # handle chatbox
