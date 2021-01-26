@@ -20,6 +20,10 @@ button=pygame.image.load(path.join(path_addon,'Menu\TextBTN_Medium.png'))
 buttonp=pygame.image.load(path.join(path_addon,'Menu\TextBTN_Medium_Pressed.png'))
 
 
+shadow_monster = pygame.image.load(
+    path.join(path_ava, 'shadow.png'))
+shadow_monster = pygame.transform.scale(shadow_monster, (225, 216))
+
 
 # LOAD avata for minimap 
 ava_perso = pygame.image.load(path.join(path_ava, 'ava_perso.png'))
