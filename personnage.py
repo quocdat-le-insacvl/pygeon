@@ -401,7 +401,7 @@ class Perso(Entity,Stats):
             screen.blit(board1,(screen.get_width()//2-board.get_width()//2,20))
             screen.blit(board_icon2,(rectboard.x-board_icon.get_width()//1.5,rectboard.y+board_icon.get_height()*0.2))
             pygame.display.flip()
-            running,click=basic_checkevent(click)
+            running,click=basic_checkevent(click,None)
         self.stats_eph=[0,0,0,0,0,0]
         self.points_eph=[0,0,0,0,0,0]
         screen.blit(screenS,(0,0))
