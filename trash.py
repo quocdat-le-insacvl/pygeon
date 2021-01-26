@@ -115,13 +115,10 @@ class Game():
         is_talking = False
         self.player.pos_x = 8680
         self.player.pos_y = 800
-        self.player.xp = 2500
-        self.player.crew_mate[0].pos_x = 0
-        self.player.crew_mate[0].xp = 2500
-        self.player.crew_mate[0].pos_y = 0
-        self.player.crew_mate[1].pos_x = 0
-        self.player.crew_mate[1].xp = 2500
-        self.player.crew_mate[1].pos_y = 0
+        self.player.crew_mate[0].pos_x = 8500
+        self.player.crew_mate[0].pos_y = 750
+        self.player.crew_mate[1].pos_x = 8680
+        self.player.crew_mate[1].pos_y = 700
         ### Minimap
         self.minimap = Minimap(self.map.map,self.fog,self.map.display,self.list_mooving_entity,self.player)
     
@@ -212,6 +209,8 @@ class Game():
             
             
             print_mooving_entity(self.fog, screen,self.map.list_monster,center_x,center_y)
+            for x in self.player.crew_mate:
+                x.animate_map()
             for x in self.map.list_monster:
                 x.type_animation = "walk"
                 if x.mouvement[0] < 0 :
@@ -477,7 +476,7 @@ class Game():
                     sys.exit()
             screen.blit(pygame.transform.scale(display, WINDOWS_SIZE), (0, 0))
             pygame.display.update()
-            running, self.click = basic_checkevent(self.click)
+            running, self.click = basic_checkevent(self.click,self)
         self.click = False
         """Affiche un menu pause classique"""
     def key_menu(self):
