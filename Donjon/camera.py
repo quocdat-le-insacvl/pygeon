@@ -20,7 +20,7 @@ class Camera():
         self.list_monster = list_monster
         self.minimap = Minimap(self.piece.piece,self.fog,self.piece.display,list_monster,self.perso)
         self.liste_coffre = []
-
+        self.zoom_minimap = False
     def actualiser(self,perso):
         self.perso = perso
 
@@ -31,14 +31,16 @@ class Camera():
         self.minimap.map = self.piece.piece
         self.minimap.display_with_nature = self.piece.display
         self.minimap.fog=self.fog
-       # self.minimap.draw_minimap()
+        self.minimap.draw_minimap()
 
     def afficher(self, donotupdate=False):
         self.screen.fill((0,0,0))
         self.screen.blit(self.display_piece,(self.center_x,self.center_y))
-        #self.screen.blit(pygame.transform.scale(self.perso.img,(32,49)),(self.perso.pos_x+self.center_x,self.perso.pos_y+self.center_y))
+        self.perso.animate_map()
+
+        self.screen.blit(pygame.transform.scale(self.perso.img,(32,49)),(self.perso.pos_x+self.center_x,self.perso.pos_y+self.center_y))
         #self.screen.blit(self.perso.donjon_mask.to_surface(),(self.perso.pos_x+self.center_x,self.perso.pos_y+self.center_y +50))
-        #print_mooving_entity(self.fog, self.screen,self.list_monster,self.center_x,self.center_y)
+        print_mooving_entity(self.fog, self.screen,self.list_monster,self.center_x,self.center_y)
         for x in self.list_monster:
             self.screen.blit(x.collide_box_interact.img_collide,(x.pos_x,x.pos_y))
         for x in self.list_monster:
@@ -59,7 +61,9 @@ class Camera():
         self.screen.blit(self.fog.surface, (self.center_x, self.center_y),
                             special_flags=pygame.BLEND_MULT)
         
-        #self.minimap.draw_minimap()
+        self.minimap.draw_minimap()
+        if self.zoom_minimap:
+            self.minimap.zoom_minimap()
         for chest in self.liste_coffre:
             self.screen.blit(chest.img,(chest.pos_x+self.center_x,chest.pos_y+self.center_y))
         if not donotupdate : pygame.display.update()

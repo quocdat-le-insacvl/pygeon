@@ -61,7 +61,7 @@ class Piece():
         #self.graphiique[self.nbre_graphique]
         #dictionnaire definissant le nombre maximum d'elements par piece selon les id
         self.max_graphique = {2:50,3:15,4:25,5:50,6:50,7:50,8:50,9:50,10:50,11:50,12:50,13:50,14:50,15:0}
-        self.max_graphique={x : 10 for x in range(2,self.nbre_graphique)}
+        self.max_graphique={x : 3 for x in range(2,self.nbre_graphique)}
 
         self.max_graphique[15] = 1
         self.max_graphique[16] = self.max_graphique[8] = 1
@@ -83,7 +83,7 @@ class Piece():
         self.isSpawn = False 
         #equivalent = self.spawn != tuple()
         #graphique (id) ne pouvant se trouver que sur des bords
-        self.bord_graphique = [2,5,7,8]
+        self.bord_graphique = [5]
         self.graphique_collision = []
 
         self.image_collision_graphique = []
@@ -451,7 +451,7 @@ class Piece():
         savedPosition = position
         i=0
         random_escalier = 0
-        random_escalier = random.randint(0,len(self.linked) -1)
+        #random_escalier = random.randint(0,len(self.linked) -1)
         if self.linked != None:
             
             for direction in self.linked:
@@ -463,16 +463,7 @@ class Piece():
                 #16 ESCALIER BAS
                 #premiere piece -> graphique_count[16] = 0
 
-                
-                graphique_count[8] = graphique_count[16] = graphique_count[15] = 1
-                if random_escalier == i:
 
-                    graphique_count[16] = 0
-                if i==0:
-
-                    graphique_count[8] = 0
-                if i == len(self.linked)-1:
-                    graphique_count[17] = 0
                 if direction == 'Droite':
                     
                     if position == None:
@@ -492,9 +483,14 @@ class Piece():
                     nouvellePiece = self.__createPiece(graphique_count=graphique_count)
                     self.rognerPiece()
                     
-
+                    self.piece[position][-1] = 1
                     for _ in range(0,tailleCouloir):
                         self.piece[position].append(1)
+                    for j in range(len(self.piece[position])-1,0,-1):
+                        if self.piece[position][j] == 1:
+                            break
+                        self.piece[position][j] = 1
+
                     self.equilibrerTaillePiece()
                     self.rognerPiece()
                     self.ajouterMatrice(nouvellePiece)
@@ -515,6 +511,10 @@ class Piece():
                         position = random.randint(0,min(len(self.piece),len(nouvellePiece)) -1)
                     for _ in range(0,tailleCouloir):
                         self.piece[position].append(1)
+                    for j in range(len(self.piece[position])-1,0,-1):
+                        if self.piece[position][j] == 1:
+                            break
+                        self.piece[position][j] = 1
                     self.piece[position][-1] = 1
                     self.piece[position][-2] = 1
                     self.equilibrerTaillePiece()
@@ -534,21 +534,27 @@ class Piece():
                     #while(self.piece[position][-1] != 1):
                         #position = random.randint(0,len(self.taille))
                     nouvellePiece = self.piece
-                   
 
                     self.createRoom(graphique_count=graphique_count)
                     while not self.check_jouabilite() and check_pieces:
                         self.createRoom(graphique_count=graphique_count)
                     if position == None:
                         position = random.randint(0,min(len(self.piece),len(nouvellePiece)) -1)
-                    nouvellePiece[position][0] =1
-                    nouvellePiece[position][1] = 1
-                    nouvellePiece[position][2]=1
-                    for _ in range(0,tailleCouloir):
-                        self.piece[position].append(1)
+                    for j in range(len(nouvellePiece[position])-1,0,-1):
+                        if nouvellePiece[position][j] == 1:
+                            break
+                        nouvellePiece[position][j] = 1
+
                     self.piece[position][-1] = 1
                     self.piece[position][-2] = 1
                     self.piece[position][-3]=1
+                    for _ in range(0,tailleCouloir):
+                        self.piece[position].append(1)
+
+                    for j in range(len(self.piece[position])-1,0,-1):
+                        if self.piece[position][j] == 1:
+                            break
+                        self.piece[position][j] = 1
                     self.equilibrerTaillePiece()
                     self.ajouterMatrice(nouvellePiece)
                    
@@ -603,20 +609,21 @@ class Piece():
         testEH,testEB,testTe=False,False,False
         for i in self.piece:
             if 8 in i:
-                
                 testEH = True
-
             if 16 in i:   
                 testEB=True
             if 17 in i:
                 testTe =True
         if doEH==True and testEH ==False:
-            return False
+            if self.ajouter_escalier_haut() == False:
+                return False
         if doEB==True and testEB ==False:
-            return False
+            if self.ajouter_escalier_bas() == False:
+                return False
         if doTe==True and testTe ==False:
+            if self.ajouter_teleporter_fin() == False:
+                return False
 
-            return False
         self.pathMatrice = [[1 if self.piece[y][x] in self.important_graph else 0 if self.piece[y][x] == 0 else 100 for x in range(len(self.piece[y]))] for y in range(len(self.piece))]
         #assert len(self.pathMatrice) == len(self.pathMatrice[0])
         #permet de regarder si tous les endroits importants du donjon
@@ -838,7 +845,34 @@ class Piece():
 
         self.piece = result
      
-        
+    def ajouter_escalier_bas(self):
+        i = random.randint(0,len(self.piece)-1)
+        j = random.randint(0,len(self.piece[i]) -1)
+        count = 0
+        for count in range(1000):
+            if self.piece[j][i] == 1:
+                self.piece[j][i] = 16
+                return True
+        return False
+
+    def ajouter_teleporter_fin(self):
+        i = random.randint(0,len(self.piece)-1)
+        j = random.randint(0,len(self.piece[i]) -1)
+        count = 0
+        for count in range(1000):
+            if self.piece[j][i] == 1:
+                self.piece[j][i] = 17
+                return True
+        return False
+    def ajouter_escalier_haut(self):
+        i = random.randint(0,len(self.piece)-1)
+        j = random.randint(0,len(self.piece[i]) -1)
+        count = 0
+        for count in range(1000):
+            if self.piece[j][i] == 1:
+                self.piece[j][i] = 8
+                return True
+        return False
 
 """
 #<---Exemple de creation de piece-->
