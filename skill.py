@@ -44,6 +44,9 @@ class Stealth:
             self.last_spawn_time = pygame.time.get_ticks()
             self.casting = True
             self.player.visible = False
+            self.player.crew_mate[0].visible = False
+            self.player.crew_mate[1].visible = False
+
             '''
             for monster in self.game.list_mooving_entity:
                 monster.is_aggresive = False'''
@@ -57,6 +60,8 @@ class Stealth:
     def unuse(self):
         self.game.player.img = self.player_image
         self.player.visible = True
+        self.player.crew_mate[0].visible = False
+        self.player.crew_mate[1].visible = False
         '''for monster in self.game.list_mooving_entity:
             monster.is_aggresive = True'''
     
