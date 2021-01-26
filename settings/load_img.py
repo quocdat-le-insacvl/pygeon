@@ -308,7 +308,7 @@ graphique_donjon[len(graphique_name_donjon) +2] = [createImages("teleporter.png"
 
 graphique_donjon[len(graphique_name_donjon) +3] = [createImages("45.png",path_donjon,forceScale=True)]
 graphique_donjon[16] = graphique_donjon[8]
-graphique_donjon[17] = [createImages("teleporterEnd.png",path_donjon,scaled=(64,64))]
+graphique_donjon[17] = [createImages("teleporterEnd.png",path_donjon,scaled=(64,64),autocolorkey=True)]
 nb_graphique_donjon = len(graphique_name_donjon) +5
 collide_donjon = createImages("Collide.png",path_donjon,forceScale=True,autocolorkey=True)
 rest_table = pygame.image.load(path.join(path_addon,"table_rest.png"))

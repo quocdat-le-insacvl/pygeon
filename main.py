@@ -90,7 +90,10 @@ class Menu():
             if create_text_click('Option',Drifftype,GREY,display,self.click,display.get_width()//2,display.get_height()//1.6):
                 self.option()
             if create_text_click('Quit',Drifftype,GREY,display,self.click,display.get_width()//2,display.get_height()//1.3):
-                sys.Quit()
+                try :
+                    sys.Quit()
+                except:
+                    pass
             # REFRESH + END EVENT
             screen.blit(pygame.transform.scale(display,WINDOWS_SIZE),(0,0))
             running = self.checkevent()

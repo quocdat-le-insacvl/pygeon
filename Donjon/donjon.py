@@ -266,7 +266,10 @@ class Donjon():
                     return False
         return True
     def runningDonjon(self):
-        
+        look_level = False
+        look_level2 = False
+        look_level3 = False
+        mp = 0
         while self.listekey[pygame.K_SPACE]==False:
             self.__checkEvent()
             if(self.deplacement()==1):
@@ -297,6 +300,15 @@ class Donjon():
                         items_dropable.append(key[x.armor[1]])
                         items_dropable.append(key[x.armor[4]])
                         self.liste_monstre[self.actuel].remove(x)
+                        self.perso.xp += x.xp
+                        self.perso.crew_mate[0].xp += x.xp
+                        self.perso.crew_mate[1].xp += x.xp
+                        if self.perso.levelupchange():
+                            look_level = True
+                        if self.perso.crew_mate[0].levelupchange():
+                            look_level2 = True
+                        if self.perso.crew_mate[1].levelupchange():
+                            look_level3 = True
                     nbre_loot = random.randint(0,nbre_max_loot_possibles)
 
                     for i in range(nbre_loot):
@@ -311,11 +323,31 @@ class Donjon():
                     self.cam.liste_coffre.append(Chest(self.perso.pos_x,self.perso.pos_y,pygame.transform.scale(monstre_loot,(32,32)),"Coffre","Coffre",inv_chest))
                     self.cam.liste_coffre[-1].update_pos_collide()
 
-                    
+
                 else:
                     return -1
                 monstre = None
-            
+            if look_level:
+                mp +=1
+            if mp >= 50 and mp <= 200:
+                self.cam.screen.blit(pygame.transform.scale(pygame.image.load(path.join(path_addon,'Image/lvl_up.png')),(WINDOWS_SIZE[0]//20,WINDOWS_SIZE[1]//20)),(self.player.pos_x+100+center_x,self.player.pos_y+center_y))
+            elif mp>200:
+                look_level = False
+                mp =0
+            if look_level2:
+                mp +=1
+            if mp >= 50 and mp <= 200:
+                self.cam.screen.blit(pygame.transform.scale(pygame.image.load(path.join(path_addon,'Image/lvl_up.png')),(WINDOWS_SIZE[0]//20,WINDOWS_SIZE[1]//20)),(self.player.crew_mate[0].pos_x+100+center_x,self.player.crew_mate[0].pos_y+center_y))
+            elif mp>200:
+                look_level2 = False
+                mp =0
+            if look_level3:
+                mp +=1
+            if mp >= 50 and mp <= 200:
+                self.cam.screen.blit(pygame.transform.scale(pygame.image.load(path.join(path_addon,'Image/lvl_up.png')),(WINDOWS_SIZE[0]//20,WINDOWS_SIZE[1]//20)),(self.player.crew_mate[1].pos_x+100+center_x,self.player.crew_mate[1].pos_y+center_y))
+            elif mp>200:
+                look_level3 = False
+                mp =0
             self.cam.afficher()
             
         self.listekey[pygame.K_SPACE] = False

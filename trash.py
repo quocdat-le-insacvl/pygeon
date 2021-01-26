@@ -254,7 +254,7 @@ class Game():
                     self.player.pos_y = pos_joueur[1]
                     interact = False
             if self.player.change_level:
-                if draw_interact: draw_text("Press I for go under",ColderWeather,WHITE,screen,500,500)
+                if draw_interact: draw_text("Press I to go under",ColderWeather,WHITE,screen,500,500)
                 if interact:
                    
                     
@@ -286,7 +286,7 @@ class Game():
 
 
             if self.player.change_hupper_level:
-                if draw_interact: draw_text("Press I for go hupper",ColderWeather,WHITE,screen,500,500)
+                if draw_interact: draw_text("Press I to go upper",ColderWeather,WHITE,screen,500,500)
 
                 if interact:
                     nb=0
@@ -502,7 +502,7 @@ class Game():
                     sys.exit()
             screen.blit(pygame.transform.scale(display, WINDOWS_SIZE), (0, 0))
             pygame.display.update()
-            running, self.click = basic_checkevent(self.click,self)
+            running, self.click = basic_checkevent(self.click)
         self.click = False
         """Affiche un menu pause classique"""
     def key_menu(self):
@@ -570,38 +570,44 @@ class Game():
     def interact(self,entity,is_talking):
         display_talk = pygame.Surface((1800,1080))
         display_talk.set_colorkey((0,0,0))
-        if entity.type == "Seller":
-            if entity.talking != None:
-                if is_talking == True or Validation_screen(entity.talking,display_talk,self.click):
-                    is_talking = True
-                    entity.print_shop(self.player,self.click)
-                screen.blit(display_talk,(0,0))
-        elif entity.type == "Coffre":
-            entity.inventaire.loot_inventory(100,100,700,100,self.player.inventaire)
-            if entity.inventaire.is_empty():
-                entity.img = monstre_loot_open
-            else:
-                entity.img = monstre_loot_light
-        elif isinstance(entity,NPC):
-            if entity.quest != None:
-                if not entity.quest.is_accomplish:
-                    if entity.quest.print_text(self.click):
-                        return 0
-                    entity.quest.print_reward()
-                    if isinstance(entity.quest,Quest_find_items):
-                        entity.quest.print_items()
-                        if entity.quest.is_accept:
-                            if entity.quest.got_items(self.player):
-                                entity.quest.quest_accomplish(self.player)
-                            else:
-                                return False
-                    elif isinstance(entity.quest,Quest_kill_monster):
-                        entity.quest.print_monster()
-                        if entity.quest.is_accept:
-                            if entity.quest.is_alive():
-                                entity.quest.quest_accomplish(self.player)
-                            else:
-                                return False
+        try:
+                
+            if entity.type == "Seller":
+                if entity.talking != None:
+                    if is_talking == True or Validation_screen(entity.talking,display_talk,self.click):
+                        is_talking = True
+                        entity.print_shop(self.player,self.click)
+                    screen.blit(display_talk,(0,0))
+            elif entity.type == "Coffre":
+                entity.inventaire.loot_inventory(100,400,700,400,self.player.inventaire)
+                if entity.inventaire.is_empty():
+                    entity.img = monstre_loot_open
+                else:
+                    entity.img = monstre_loot_light
+
+            elif isinstance(entity,NPC):
+                if entity.quest != None:
+                    if not entity.quest.is_accomplish:
+                        if entity.quest.print_text(self.click):
+                            return 0
+                        entity.quest.print_reward()
+                        if isinstance(entity.quest,Quest_find_items):
+                            entity.quest.print_items()
+                            if entity.quest.is_accept:
+                                if entity.quest.got_items(self.player):
+                                    entity.quest.quest_accomplish(self.player)
+                                else:
+                                    return False
+                        elif isinstance(entity.quest,Quest_kill_monster):
+                            entity.quest.print_monster()
+                            if entity.quest.is_accept:
+                                if entity.quest.is_alive():
+                                    entity.quest.quest_accomplish(self.player)
+                                else:
+                                    return False
+
+        except:
+            return 1
         return 1
 
     #retourne le donjon le plus proche du joueur
