@@ -132,8 +132,6 @@ def basic_checkevent(click, game=None):
         # handle chatbox
         if game is not None:
             chatting = game.chat_box.handle_event(event)
-        else:
-            chatting = False
             if not chatting:
                 if event.type == QUIT:
                     sys.exit()

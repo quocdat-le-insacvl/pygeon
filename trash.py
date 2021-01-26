@@ -387,9 +387,12 @@ class Game():
                 
                 if f.player.crew_mate[0].hp > 0 or f.player.crew_mate[1].hp > 0  or f.player.hp > 0:
                     for x in monstre.group_monster:
-                        self.player.xp += x.xp
-                        self.player.crew_mate[0].xp += x.xp
-                        self.player.crew_mate[1].xp += x.xp
+                        if self.player.hp > 0:
+                            self.player.xp += x.xp
+                        if self.player.crew_mate[0].hp > 0:
+                            self.player.crew_mate[0].xp += x.xp
+                        if self.player.crew_mate[1].hp >0:
+                            self.player.crew_mate[1].xp += x.xp
                         if self.player.levelupchange():
                             look_level = True
                         if self.player.crew_mate[0].levelupchange():
