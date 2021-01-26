@@ -220,15 +220,18 @@ class ChatBox:
                 break
 
     def write_log(self, text):
-        texts = []
-        while len(text) > 41:
-            head = text[:41] + '-'
-            text = text[41:]
-            texts.append(head)
-        texts.append(text)
-        # print(texts)
-        for t in texts:
-            self.log.insert(0, t)
+        if type(text) != tuple:
+            texts = []
+            while len(text) > 41:
+                head = text[:41] + '-'
+                text = text[41:]
+                texts.append(head)
+            texts.append(text)
+            # print(texts)
+            for t in texts:
+                self.log.insert(0, t)
+        else:
+            self.log.insert(0, text)
         self.input_box.camera = 0
 
 
