@@ -211,9 +211,9 @@ class Perso(Entity,Stats):
 
         lvl_XP = (400,600,800,1200,1600,2400,3200,4800,6400,9600,12800,19200,25600,38400,51200,76800,102400,153600,204800)
         if self.level==0:
-            print("selectionner vos premiers attributs")
+            #print("selectionner vos premiers attributs")
             self.level=1
-            print("level1")
+            #print("level1")
             self.nb_hit_dice=1
             self.hp_max=8+self.score("con") 
             self.hp=self.hp_max
@@ -224,18 +224,19 @@ class Perso(Entity,Stats):
             self.av_points+=2+self.ability_score(3)
             ######Global bonus for the level 2######
             if self.level==2: 
-                print("level2")
+                #print("level2")
                 self.chose_skill=True
                 self.choseSkill()
             elif self.level==3: 
-                print("level3")
+                #print("level3")
+                pass
             ######Global bonus for the level 4######
             elif self.level==4: 
-                print("level4")
+                #print("level4")
                 self.master=True
                 self.masterAction=1
             elif self.level==5: 
-                print("level5")
+                #print("level5")
                 self.proficiency=3
             #fin des competence initialisation des statistiques de base
             self.nb_hit_dice=self.level
@@ -323,7 +324,7 @@ class Perso(Entity,Stats):
         board.set_colorkey((255,255,255))
         board_icon=pygame.transform.scale(board_init(),(board.get_width()//5,board.get_height()//5))
         # board_icon.set_colorkey((0,0,0))
-        print(self.classe)
+        #print(self.classe)
         if self.classe=='sorcerer':
             icone=pygame.transform.scale(wizard_icon,(board_icon.get_width()//2,board_icon.get_height()))
         if self.classe=='fighter':
