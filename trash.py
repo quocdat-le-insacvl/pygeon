@@ -129,6 +129,9 @@ class Game():
         look_level2 = False
         look_level3 = False
         mp = 0 
+        mp_2 = 0 
+        mp_3 = 0 
+
         ###
         show_inventory = False
         show_characteresheet = False
@@ -439,7 +442,7 @@ class Game():
             self.player.spell_bar(self.click)
             for skill in self.player.skill:
                 skill.update()
-    
+            print(look_level)
             if look_level:
                 mp +=1
             if mp >= 50 and mp <= 200:
@@ -448,19 +451,19 @@ class Game():
                 look_level = False
                 mp =0
             if look_level2:
-                mp +=1
-            if mp >= 50 and mp <= 200:
+                mp_2 +=1
+            if mp_2 >= 50 and mp_2 <= 200:
                 screen.blit(pygame.transform.scale(pygame.image.load(path.join(path_addon,'Image/lvl_up.png')),(WINDOWS_SIZE[0]//20,WINDOWS_SIZE[1]//20)),(self.player.crew_mate[0].pos_x+100+center_x,self.player.crew_mate[0].pos_y+center_y))
-            elif mp>200:
+            elif mp_2>200:
                 look_level2 = False
-                mp =0
+                mp_2 =0
             if look_level3:
-                mp +=1
-            if mp >= 50 and mp <= 200:
+                mp_3 +=1
+            if mp_3 >= 50 and mp_3 <= 200:
                 screen.blit(pygame.transform.scale(pygame.image.load(path.join(path_addon,'Image/lvl_up.png')),(WINDOWS_SIZE[0]//20,WINDOWS_SIZE[1]//20)),(self.player.crew_mate[1].pos_x+100+center_x,self.player.crew_mate[1].pos_y+center_y))
-            elif mp>200:
+            elif mp_3>200:
                 look_level3 = False
-                mp =0
+                mp_3 =0
 
             # update + draw chatbox
             self.chat_box.update()

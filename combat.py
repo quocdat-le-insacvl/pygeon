@@ -188,7 +188,7 @@ class Combat:
                 running = False
             else:
                 self.menu_action()
-                running, self.game.click = basic_checkevent(self.game.click, game)
+                running, self.game.click = basic_checkevent(self.game.click)
             #update + draw chatbox
             self.game.chat_box.update()
             self.game.chat_box.draw()

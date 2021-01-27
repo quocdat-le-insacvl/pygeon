@@ -44,6 +44,7 @@ class Sorcerer(Perso_game):
             if self.level>=2:
                 self.sPoints=self.level
                 self.attack=trunc(self.level/2)
+            return True
 
     #################Sorts#################
     #Level1:

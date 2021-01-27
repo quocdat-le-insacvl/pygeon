@@ -27,6 +27,7 @@ class Rogue(Perso_game):
     def levelupchange(self):
         if super().levelupchange():
             self.attack=self.level-1
+            return True
 
     def damage(self,sneak):
         dmg=super().damage()

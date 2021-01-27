@@ -25,7 +25,7 @@ class Fighter(Perso_game):
             if self.level==1:
                 self.SW=True
             self.attack=self.level
-
+            return True
     def rest(self):
         super().rest()
         self.SW=True
