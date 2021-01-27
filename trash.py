@@ -51,7 +51,7 @@ dict_img_npc = dict()
 
 
 donjon =  [json.loads(line) for line in open('donjon.json', 'r')]
-print(f'TAILLE DU SCREEN {screen.get_width()},{screen.get_height()}')
+#print(f'TAILLE DU SCREEN {screen.get_width()},{screen.get_height()}')
 
 
 class Game():
@@ -499,7 +499,7 @@ class Game():
                 player_for_save,self.fog.surface = load_game(self.click, player_for_save,self.fog.surface,list_map=list_map)
                 self.map = list_map[0]
                 self.minimap = Minimap(self.map.map,self.fog,self.map.display,[],self.player)
-                print(player_for_save.name)
+                #print(player_for_save.name)
                 self.player.load_player(player_for_save)
             if create_text_click('Options', Drifftype, GREY, display, self.click, display.get_width()//2, display.get_height()-400):
                 self.key_menu()
@@ -620,7 +620,7 @@ class Game():
     #retrouve les donjons les plus chauds de chez toi
     #listposdungeon est un dictionnaire
     def closest_dungeon(self,listposdungeon_keys,perso):
-        print("cest")
+        
         min = -1
         coordRetour = -1
         for coord in listposdungeon_keys:
@@ -665,7 +665,7 @@ while os.path.exists(os.path.join(path.dirname(__file__), 'map_level_'+str(num)+
     level.init_map()
     list_map.append(level)
     num +=1
-print("Nb map : %i"%len(list_map))
+#print("Nb map : %i"%len(list_map))
 
 sorcerer.crew_mate.append(sorcerer_2)
 sorcerer.crew_mate.append(sorcerer_3)

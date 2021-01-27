@@ -5,7 +5,7 @@ class Personnage():
     def __init__(self,screen):
         self.X, self.Y = [815,45]
         self.perso = self.createImages("perso.png",colorkey=(255,255,255))
-        print(self.perso.get_width())
+        #print(self.perso.get_width())
         self.pieds_mask = pygame.mask.from_surface(pygame.Surface((self.perso.get_width()-30,10)))
         self.interact_range = (10,10)
         self.perso_screen = screen

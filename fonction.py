@@ -132,8 +132,6 @@ def basic_checkevent(click, game=None):
         # handle chatbox
         if game is not None:
             chatting = game.chat_box.handle_event(event)
-        else:
-            chatting = False
             if not chatting:
                 if event.type == QUIT:
                     sys.exit()
@@ -458,7 +456,7 @@ def bonus(attribut):  # pour assigner a chaque attribut les pts bonus correspond
         return b
 def numero_case(list_case,ki,kj):
         k = 0
-        print("ki kj ",ki,kj)
+        #print("ki kj ",ki,kj)
         while k<len(list_case):
             if (list_case[k].i == ki and list_case[k].j == kj):
                 return k

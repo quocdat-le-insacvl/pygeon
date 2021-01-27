@@ -106,7 +106,7 @@ class Donjon():
                 i+=1
                 if i>100:
                     i=0
-                    print("Plus de 100 essais")
+                    #print("Plus de 100 essais")
                     salle.create_linked(3)
                     salle.createRoom()
                     salle.linkedPiece() 
@@ -119,7 +119,7 @@ class Donjon():
             self.liste_coffre.append(salle.list_coffre)
         
             j+=1
-            print(salle.nbre_graphique)        #implementation des monstres
+            #print(salle.nbre_graphique)        #implementation des monstres
         self.perso.pos_x,self.perso.pos_y = (self.pieces[self.actuel].spawn)
 
         #self.pieces[0].piece = numpy.rot90(self.pieces[0].piece,1)
@@ -221,16 +221,16 @@ class Donjon():
                 
                 self.monter_etage()
                 
-                print("ESCALIER HAUT", self.actuel)
+                #print("ESCALIER HAUT", self.actuel)
                 self.interaction=0
             if self.interaction==16:
                 
                 self.descendre_etage()
                 
-                print("ESCALIER BAS", self.actuel)
+                #print("ESCALIER BAS", self.actuel)
                 self.interaction=0
             if self.interaction == 17:
-                print("FINISHED")
+                #print("FINISHED")
                 self.interaction =0
                 return 1
             self.listekey[self.game.key["interact"]]=False

@@ -118,7 +118,7 @@ class Combat:
         self.map = l
         self.mask = souris_mask
         while running:
-            print(self.show_which_one_play().in_case.level)
+            #print(self.show_which_one_play().in_case.level)
             mx, my = pygame.mouse.get_pos()
             self.print_battleground()
             # Gestion Tours
